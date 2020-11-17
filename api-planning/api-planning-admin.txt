@@ -1,0 +1,743 @@
+STANDAR API GENERAL
+{root.api}/{version}/{level}/{grouping}/{endpoint}
+SAMPLE: http://perumahan/v1/admin/{endpoint}
+
+=====================================================================================================================================================================================================================
+STANDAR API GROUP USER
+GROUP USER => http://perumahan/v1/admin/user/
+[1] - Add User
+    [POST] http://perumahan/v1/admin/user/
+    
+    Request dari Client 
+    req = {
+        username: "fdfas",
+        password: "fdfdf",
+        level: "admin",
+        status: true
+    }
+
+    Response dari backend 
+    res = {
+        "message": "Success",
+        "data" : {
+            id_user: 1,
+            username: "fdfas",
+            level: "admin",
+            status: true
+        }
+    }
+
+    Status Response:
+        201 - Tambah User Berhasil
+        400 - Input yang Anda masukkan tidak valid
+
+[2] - Update Status User
+    [PUT] http://perumahan/v1/admin/user/{id_user}/status/
+        
+        Request dari Client 
+        req = {
+                status: false,
+            },
+
+        Response dari backend 
+        res = {
+                message: "Update Status User Berhasil",
+                data: 
+                {
+                    id_user: 1,
+                    username: "fdfas",
+                    level: "admin",
+                    status: false
+                },
+             }
+        }
+
+        Status Response:
+            201 - Update Status User Berhasil
+            404 - Data User Tidak Ditemukan
+            500 - Kesalahan Server
+
+[3] - Update Data User
+    [PUT] http://perumahan/v1/admin/user/{id_user}
+        
+        Request dari Client 
+        req = {
+                username: "admin",
+                level: "admin",
+                status: true,
+                password: "1234",
+                konfirmasi_password: "1234"
+            },
+
+        Response dari backend 
+        res = {
+                message: "Update Data User Berhasil",
+                data: 
+                {
+                    id_user: 1,
+                    username: "fdfas",
+                    level: "admin",
+                    status: true
+                },
+             }
+        }
+
+        Status Response:
+            201 - Update Data User Berhasil
+            400 - Input yang dimasukkan tidak valid
+            404 - Data User Tidak Ditemukan
+            500 - Kesalahan Server
+
+[4] - Get All Data User
+    [GET] http://perumahan/v1/admin/users/
+        
+        Request dari Client 
+        req = {
+               ~ Tidak ada parameter request body yang dikirimkan karena hanya GET ~
+            },
+
+        Response dari backend 
+        res = {
+                message: "Get All Data User Berhasil",
+                data: [
+                    {
+                        id_user: 1,
+                        username: "Nova",
+                        level: "admin",
+                        status: true
+                    },
+                    {
+                        id_user: 2,
+                        username: "Iqbal",
+                        level: "pengembang",
+                        status: true
+                    },
+                ]
+             }
+        }
+
+        Status Response:
+            201 - Get All Data User Berhasil
+            500 - Kesalahan Server
+
+[5] - Get Data User By ID
+    [GET] http://perumahan/v1/admin/user/{id_user}
+        
+        Request dari Client 
+        req = {
+               ~ Tidak ada parameter request body yang dikirimkan karena hanya GET ~
+            },
+
+        Response dari backend 
+        res = {
+                message: "Get Data User Berhasil",
+                data: {
+                        id_user: 1,
+                        username: "Nova",
+                        level: "admin",
+                        status: true
+                    },
+             }
+        }
+
+        Status Response:
+            201 - Get All Data User Berhasil
+            500 - Kesalahan Server
+
+
+
+=====================================================================================================================================================================================================================
+STANDAR API GROUP PENGEMBANG
+GROUP PENGEMBANG => http://perumahan/v1/admin/pengembang/
+
+[1] - Add Pengembang
+    [POST] http://perumahan/v1/admin/pengembang/
+    
+    Request dari Client 
+    req = {
+        nik_pengembang: "12345",
+        nama_pengembang: "nama",
+        telepon_pengembang: "098231273",
+        email_pengembang: "fdfd@mail.com",
+        alamat_pengembang: "fdfdfsa",
+        ijin_perusahaan: "pengembang/file/3434343434-izin_perusahaan.pdf",
+        foto_pengembang: "pengembang/foto/3434343434-foto_pengembang.jpg",
+        status_aktif: true,
+        user: {
+            username: "pengembang123",
+            password: "1234",
+            konfirmasi_password: "1234",
+            level: pengembang,
+            status: true
+        }
+    }
+
+    Response dari backend 
+    res = {
+        "message": "Berhasil Menambah Pengembang",
+        "data" : {
+            id_pengembang" 1,
+            nik_pengembang: "12345",
+            nama_pengembang: "nama",
+            telepon_pengembang: "098231273",
+            email_pengembang: "fdfd@mail.com",
+            alamat_pengembang: "fdfdfsa",
+            pengembang_slug: "pt-timur-adya-citra-201021334",
+            ijin_perusahaan: "pengembang/file/3434343434-izin_perusahaan.pdf",
+            foto_pengembang: "pengembang/foto/3434343434-foto_pengembang.jpg",
+            status_aktif: true,
+            status_delete: false
+            user: {
+                id_user: 1,
+                username: "pengembang123",
+                level: pengembang,
+                status: true
+            }
+        }
+    }
+
+    Status Response:
+        201 - Berhasil Menambah Pengembang
+        400 - Input yang Anda masukkan tidak valid
+
+[2] - Update Pengembang
+    [PUT] http://perumahan/v1/admin/pengembang/{id_pengembang}
+    
+    Request dari Client 
+    req = {
+        nik_pengembang: "12345",
+        nama_pengembang: "nama",
+        telepon_pengembang: "098231273",
+        email_pengembang: "fdfd@mail.com",
+        alamat_pengembang: "fdfdfsa",
+        ijin_perusahaan: "pengembang/file/3434343434-izin_perusahaan.pdf",
+        foto_pengembang: "pengembang/foto/3434343434-foto_pengembang.jpg",
+        status_aktif: true,
+    }
+
+    Response dari backend 
+    res = {
+        "message": "Berhasil Mengupdate Pengembang",
+        "data" : {
+            id_pengembang: 1,
+            nik_pengembang: "12345",
+            nama_pengembang: "nama",
+            telepon_pengembang: "098231273",
+            email_pengembang: "fdfd@mail.com",
+            alamat_pengembang: "fdfdfsa",
+            pengembang_slug: "pt-timur-adya-citra-201021334",
+            ijin_perusahaan: "pengembang/file/3434343434-izin_perusahaan.pdf",
+            foto_pengembang: "pengembang/foto/3434343434-foto_pengembang.jpg",
+            status_aktif: true,
+            user: {
+                id_user: 1,
+                username: "pengembang123",
+                level: pengembang,
+                status: true
+            }
+        }
+    }
+
+    Status Response:
+        201 - Berhasil Mengupdate Pengembang
+        400 - Input yang Anda masukkan tidak valid
+        404 - User Pengembang Tidak Ditemukan
+
+[3] - Delete Pengembang
+    [DELETE] http://perumahan/v1/admin/pengembang/{id_pengembang}
+    
+    Request dari Client 
+    req = {
+        ~ Tidak ada parameter request body yang dikirimkan karena hanya DELETE ~
+    }
+
+    Response dari backend 
+    res = {
+        "message": "Data Pengembang Berhasil Dihapus",
+        "data" : {
+            id_pengembang: 1,
+            nik_pengembang: "12345",
+            nama_pengembang: "nama",
+            telepon_pengembang: "098231273",
+            email_pengembang: "fdfd@mail.com",
+            alamat_pengembang: "fdfdfsa",
+            pengembang_slug: "pt-timur-adya-citra-201021334",
+            ijin_perusahaan: "pengembang/file/3434343434-izin_perusahaan.pdf",
+            foto_pengembang: "pengembang/foto/3434343434-foto_pengembang.jpg",
+            status_aktif: true,
+            status_delete: true,
+            user: {
+                id_user: 1,
+                username: "pengembang123",
+                level: pengembang,
+                status: true
+            }
+        }
+    }
+
+    Status Response:
+        201 - Data Pengembang Berhasil Dihapus
+        404 - User Pengembang Tidak Ditemukan
+
+[4] - Get All Pengembang
+    [GET] http://perumahan/v1/admin/pengembang/
+    
+    Request dari Client 
+    req = {
+        ~ Tidak ada parameter request body yang dikirimkan karena hanya GET ~
+    }
+
+    Response dari backend 
+    res = {
+        "message": "Get All Pengembang Berhasil",
+        "data" : [
+            {
+                id_pengembang: 1,
+                nik_pengembang: "12345",
+                nama_pengembang: "nama",
+                telepon_pengembang: "098231273",
+                email_pengembang: "fdfd@mail.com",
+                alamat_pengembang: "fdfdfsa",
+                pengembang_slug: "pt-timur-adya-citra-201021334",
+                ijin_perusahaan: "pengembang/file/3434343434-izin_perusahaan.pdf",
+                foto_pengembang: "pengembang/foto/3434343434-foto_pengembang.jpg",
+                status_aktif: true,
+                status_delete: true,
+                user: {
+                    id_user: 1,
+                    username: "pengembang123",
+                    level: pengembang,
+                    status: true
+                }
+            },
+            {
+                id_pengembang: 2,
+                nik_pengembang: "12345",
+                nama_pengembang: "nama",
+                telepon_pengembang: "098231273",
+                email_pengembang: "fdfd@mail.com",
+                alamat_pengembang: "fdfdfsa",
+                pengembang_slug: "pt-timur-adya-citra-201021334",
+                ijin_perusahaan: "pengembang/file/3434343434-izin_perusahaan.pdf",
+                foto_pengembang: "pengembang/foto/3434343434-foto_pengembang.jpg",
+                status_aktif: true,
+                status_delete: true,
+                user: {
+                    id_user: 1,
+                    username: "pengembang123",
+                    level: pengembang,
+                    status: true
+                }
+            },
+
+        ]
+    }
+
+    Status Response:
+        201 - Get All Pengembang Berhasil
+        500 - Kesalahan Server
+
+[5] - Get Pengembang By Id
+    [GET] http://perumahan/v1/admin/pengembang/{id_pengembang}
+    
+    Request dari Client 
+    req = {
+        ~ Tidak ada parameter request body yang dikirimkan karena hanya GET ~
+    }
+
+    Response dari backend 
+    res = {
+        "message": "Get Pengembang with id: 2 Berhasil Ditemukan",
+        "data" :
+            {
+                id_pengembang: 2,
+                nik_pengembang: "12345",
+                nama_pengembang: "nama",
+                telepon_pengembang: "098231273",
+                email_pengembang: "fdfd@mail.com",
+                alamat_pengembang: "fdfdfsa",
+                pengembang_slug: "pt-timur-adya-citra-201021334",
+                ijin_perusahaan: "pengembang/file/3434343434-izin_perusahaan.pdf",
+                foto_pengembang: "pengembang/foto/3434343434-foto_pengembang.jpg",
+                status_aktif: true,
+                status_delete: true,
+                user: {
+                    id_user: 1,
+                    username: "pengembang123",
+                    level: pengembang,
+                    status: true
+                }
+            }
+    }
+
+    Status Response:
+        201 - Get All Pengembang Berhasil
+        500 - Kesalahan Server
+
+
+=====================================================================================================================================================================================================================
+STANDAR API GROUP PERUMAHAN
+GROUP PERUMAHAN => http://perumahan/v1/admin/perumahan/
+
+[1] - Get All Perumahan
+    [GET] http://perumahan/v1/admin/perumahan/
+        
+        Request dari Client 
+        req = {
+               ~ Tidak ada parameter request body yang dikirimkan karena hanya GET ~
+            },
+
+        Response dari backend 
+        res = {
+                message: "Get All Perumahan Berhasil",
+                data: [
+                    {
+                        id_perumahan: 1,
+                        nama_perumahan: "Perumahan Sejahtera",
+                        deskripsi_perumahan: "Deskripsi Perumahan",
+                        lokasi: "Lorem ipsum",
+                        longitude: "222",
+                        latitude: "123",
+                        legalitas: "/perumahan/legalitas/file/123456-file_legalitas.pdf",
+                        slug: "perumahan-sejahtera",
+                        status_perumahan: 2,
+                        pengembang: {
+                            id_pengembang: 1,
+                            nama_pengembang: "Nova Dwi Sapta"
+                        },
+                        kecamatan: {
+                            id_kecamatan: 1,
+                            nama_kecamatan: "Nama Kecamatan"
+                        },
+                        kelurahan: {
+                            id_kelurahan: 1,
+                            nama_kelurahan: "Nama Kelurahan"
+                        }
+                    },
+                    {
+                        id_perumahan: 2,
+                        nama_perumahan: "Perumahan Sejahtera",
+                        deskripsi_perumahan: "Deskripsi Perumahan",
+                        lokasi: "Lorem ipsum",
+                        longitude: "222",
+                        latitude: "123",
+                        legalitas: "/perumahan/legalitas/file/123456-file_legalitas.pdf",
+                        slug: "perumahan-sejahtera",
+                        status_perumahan: 2,
+                        pengembang: {
+                            id_pengembang: 1,
+                            nama_pengembang: "Nova Dwi Sapta"
+                        },
+                        kecamatan: {
+                            id_kecamatan: 1,
+                            nama_kecamatan: "Nama Kecamatan"
+                        },
+                        kelurahan: {
+                            id_kelurahan: 1,
+                            nama_kelurahan: "Nama Kelurahan"
+                        }
+                    },
+                ] 
+             }
+        }
+
+        Status Response:
+            201 - Get All Perumahan Berhasil
+            500 - Kesalahan Server
+
+[2] - Get Perumahan By ID
+    [GET] http://perumahan/v1/admin/perumahan/{id_perumahan}
+        
+        Request dari Client 
+        req = {
+               ~ Tidak ada parameter request body yang dikirimkan karena hanya GET ~
+            },
+
+        Response dari backend 
+        res = {
+                message: "Get Perumahan dengan id: 1 Berhasil Ditemukan",
+                data: 
+                    {
+                        id_perumahan: 1,
+                        nama_perumahan: "Perumahan Sejahtera",
+                        deskripsi_perumahan: "Deskripsi Perumahan",
+                        lokasi: "Lorem ipsum",
+                        longitude: "222",
+                        latitude: "123",
+                        legalitas: "/perumahan/legalitas/file/123456-file_legalitas.pdf",
+                        slug: "perumahan-sejahtera",
+                        status_perumahan: 2,
+                        pengembang: {
+                            id_pengembang: 1,
+                            nama_pengembang: "Nova Dwi Sapta"
+                        },
+                        kecamatan: {
+                            id_kecamatan: 1,
+                            nama_kecamatan: "Nama Kecamatan"
+                        },
+                        kelurahan: {
+                            id_kelurahan: 1,
+                            nama_kelurahan: "Nama Kelurahan"
+                        }
+                        foto_perumahan: [
+                            {
+                                id_foto_perumahan: 1,
+                                id_perumahan: 1,
+                                foto_perumahan: "/perumahan/foto/123456-foto_bangunan.jpg"
+                            },
+                            {
+                                id_foto_perumahan: 2,
+                                id_perumahan: 1,
+                                foto_perumahan: "/perumahan/foto/123456-foto_bangunan2.jpg"
+                            }
+                        ]
+                    },
+             }
+        }
+
+        Status Response:
+            201 - Get Perumahan dengan id: 1 Berhasil Ditemukan
+            404 - Data Perumahan Tidak Ditemukan
+            500 - Kesalahan Server
+
+[3] - Update Status Perumahan By ID
+    [PUT] http://perumahan/v1/admin/perumahan/{id_perumahan}/status_perumahan
+        
+        Request dari Client 
+        req = {
+               status_perumahan: 1,
+            },
+
+        Response dari backend 
+        res = {
+                message: "Update Status Perumahan dengan id: 1 Berhasil ditemukan",
+                data: 
+                    {
+                        id_perumahan: 1,
+                        status_perumahan: 1,
+                    },
+             }
+        }
+
+        Status Response:
+            201 - Update Status Perumahan dengan id: 1 Berhasil
+            500 - Kesalahan Server
+
+GROUP PERUMAHAN / PROPERTI => http://perumahan/v1/admin/perumahan/{id_perumahan}/properti/
+
+[1] - Get All Properti
+    [GET] http://perumahan/v1/admin/perumahan/{id_perumahan}/properti/
+        
+        Request dari Client 
+        req = {
+               ~ Tidak ada parameter request body yang dikirimkan karena hanya GET ~
+            },
+
+        Response dari backend 
+        res = {
+                message: "Get All Perumahan Berhasil",
+                data: [
+                    {
+                        id_bangunan: 1,
+                        id_perumahan: 1,
+                        id_pengembang: 123,
+                        id_kecamatan: 1,
+                        id_kelurahan: 1,
+                        kategori_bangunan: "Kategori Bangunan",
+                        tipe_bangunan: "Tipe Bangunan",
+                        nama_bangunan: "Nama Bangunan",
+                        deskripsi_bangunan: "Deskripsi Bangunan",
+                        harga_bangunan: 2000000,
+                        lokasi_bangunan: "Lokasi Bangunan",
+                        jumlah_tersedia: 20,
+                        luas_bangunan: 100,
+                        luas_tanah: 100,
+                        dimensi_bangunan: "Dimensi Bangunan",
+                        dimensi_tanah: "Dimensi Tanah",
+                        jumlah_lantai: 4,
+                        jumlah_kamar: 4,
+                        jumlah_kamar_mandi: 2,
+                        jumlah_garasi: 1,
+                        listrik: "450 watt",
+                        longitute: "Longitude",
+                        latitude: "latitude",
+                        sertifikat: "properti/file/3234343-sertifikat.pdf",
+                        bangunan_slug: "ini-bangunan-slug",
+                        status_publish: 0,
+                        foto_bangunan: [
+                            {
+                                id_bangunan: 22,
+                                id_foto_bangunan: 22,
+                                foto_bangunan: "/bangunan/foto/74387438-foto_bangunan.jpg"
+                            },
+                            {
+                                id_bangunan: 22,
+                                id_foto_bangunan: 22,
+                                foto_bangunan: "/bangunan/foto/74387438-foto_bangunan.jpg"
+                            },
+                        ],
+                        spesifikasi_rumah: [
+                            {
+                                id_bangunan: 22,
+                                id_spesifikasi_rumah: 22,
+                                nama_spesifikasi_rumah: "Bagus dan masih baru"
+                            },
+                            {
+                                id_bangunan: 22,
+                                id_spesifikasi_rumah: 22,
+                                nama_spesifikasi_rumah: "Bagus dan masih baru"
+                            },  
+                    },
+                    {
+                        id_bangunan: 2,
+                        id_perumahan: 1,
+                        id_pengembang: 123,
+                        id_kecamatan: 1,
+                        id_kelurahan: 1,
+                        kategori_bangunan: "Kategori Bangunan",
+                        tipe_bangunan: "Tipe Bangunan",
+                        nama_bangunan: "Nama Bangunan",
+                        deskripsi_bangunan: "Deskripsi Bangunan",
+                        harga_bangunan: 2000000,
+                        lokasi_bangunan: "Lokasi Bangunan",
+                        jumlah_tersedia: 20,
+                        luas_bangunan: 100,
+                        luas_tanah: 100,
+                        dimensi_bangunan: "Dimensi Bangunan",
+                        dimensi_tanah: "Dimensi Tanah",
+                        jumlah_lantai: 4,
+                        jumlah_kamar: 4,
+                        jumlah_kamar_mandi: 2,
+                        jumlah_garasi: 1,
+                        listrik: "450 watt",
+                        longitute: "Longitude",
+                        latitude: "latitude",
+                        sertifikat: "properti/file/3234343-sertifikat.pdf",
+                        bangunan_slug: "ini-bangunan-slug",
+                        status_publish: 0,
+                        foto_bangunan: [
+                            {
+                                id_bangunan: 22,
+                                id_foto_bangunan: 22,
+                                foto_bangunan: "/bangunan/foto/74387438-foto_bangunan.jpg"
+                            },
+                            {
+                                id_bangunan: 22,
+                                id_foto_bangunan: 22,
+                                foto_bangunan: "/bangunan/foto/74387438-foto_bangunan.jpg"
+                            },
+                        ],
+                        spesifikasi_rumah: [
+                            {
+                                id_bangunan: 22,
+                                id_spesifikasi_rumah: 22,
+                                nama_spesifikasi_rumah: "Bagus dan masih baru"
+                            },
+                            {
+                                id_bangunan: 22,
+                                id_spesifikasi_rumah: 22,
+                                nama_spesifikasi_rumah: "Bagus dan masih baru"
+                            },  
+                    },
+                ] 
+             }
+        }
+
+        Status Response:
+            201 - Get All Properti Berhasil
+            500 - Kesalahan Server
+
+[2] - Get Properti By ID
+    [GET] http://perumahan/v1/admin/perumahan/{id_perumahan}/properti/{id_bangunan}
+        
+        Request dari Client 
+        req = {
+               ~ Tidak ada parameter request body yang dikirimkan karena hanya GET ~
+            },
+
+        Response dari backend 
+        res = {
+                message: "Get Properti dengan id: 1 Berhasil Ditemukan",
+                data: 
+                    {
+                        id_bangunan: 1,
+                        id_perumahan: 1,
+                        id_pengembang: 123,
+                        id_kecamatan: 1,
+                        id_kelurahan: 1,
+                        kategori_bangunan: "Kategori Bangunan",
+                        tipe_bangunan: "Tipe Bangunan",
+                        nama_bangunan: "Nama Bangunan",
+                        deskripsi_bangunan: "Deskripsi Bangunan",
+                        harga_bangunan: 2000000,
+                        lokasi_bangunan: "Lokasi Bangunan",
+                        jumlah_tersedia: 20,
+                        luas_bangunan: 100,
+                        luas_tanah: 100,
+                        dimensi_bangunan: "Dimensi Bangunan",
+                        dimensi_tanah: "Dimensi Tanah",
+                        jumlah_lantai: 4,
+                        jumlah_kamar: 4,
+                        jumlah_kamar_mandi: 2,
+                        jumlah_garasi: 1,
+                        listrik: "450 watt",
+                        longitute: "Longitude",
+                        latitude: "latitude",
+                        sertifikat: "properti/file/3234343-sertifikat.pdf",
+                        bangunan_slug: "ini-bangunan-slug",
+                        status_publish: 0,
+                        foto_bangunan: [
+                            {
+                                id_bangunan: 22,
+                                id_foto_bangunan: 22,
+                                foto_bangunan: "/bangunan/foto/74387438-foto_bangunan.jpg"
+                            },
+                            {
+                                id_bangunan: 22,
+                                id_foto_bangunan: 22,
+                                foto_bangunan: "/bangunan/foto/74387438-foto_bangunan.jpg"
+                            },
+                        ],
+                        spesifikasi_rumah: [
+                            {
+                                id_bangunan: 22,
+                                id_spesifikasi_rumah: 22,
+                                nama_spesifikasi_rumah: "Bagus dan masih baru"
+                            },
+                            {
+                                id_bangunan: 22,
+                                id_spesifikasi_rumah: 22,
+                                nama_spesifikasi_rumah: "Bagus dan masih baru"
+                            },  
+                    },
+             }
+        }
+
+        Status Response:
+            201 - Get All Properti Berhasil
+            500 - Kesalahan Server
+
+[3] - Update Status Publish Properti By ID
+    [GET] http://perumahan/v1/admin/perumahan/{id_perumahan}/properti/{id_bangunan}/status/
+        
+        Request dari Client 
+        req = {
+              status_publish: 2,
+            },
+
+        Response dari backend 
+        res = {
+                message: "Update Status Publish dengan id: 1 Berhasil",
+                data: 
+                    {
+                        id_bangunan: 1,
+                        id_perumahan: 1,
+                        id_pengembang: 123,
+                        status_publish: 2,
+                    },
+             }
+        }
+
+        Status Response:
+            201 - Get All Properti Berhasil
+            500 - Kesalahan Server
