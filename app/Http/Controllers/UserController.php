@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
@@ -53,7 +54,7 @@ class UserController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'errors' => $validator->errors()
-            ], 401);
+            ], 400);
         }
         // Jika Validasi Berhasil
         $user = new User;
@@ -148,4 +149,55 @@ class UserController extends Controller
             "data"    => $user
         ]);
     }
+
+    // Update Status User
+    public function updateStatusUser(Request $request, $id_user)
+    {
+        $user = User::where('id', $id_user)->first();
+
+        // Cek apakah user ditemukan
+        if(!$user)
+        {
+            // Jika User tidak ditemukan maka tampilkan response 404
+            return response()->json([
+                "message" => "User with id:$id_user, tidak ditemukan"
+            ], 404);
+        }
+        // Jika User Ditemukan maka lanjutkan proses update Status
+        $user->status = ($request->status !== null) ? $request->status : $user->status;
+        $user->save();
+
+        return response()->json([
+            "message" => "Update Status User Berhasil",
+            "data"    => [
+                    "id_user" => $user->id,
+                    "status"  => $user->status
+                ]
+            ], 201);
+    }
+
+    // Cek User saat ini
+    public function me()
+    {
+        $user = Auth::user();
+
+        return response()->json([
+            'message' => 'success',
+            'user'    => $user
+        ], 200);
+    }
+
+    // Logout
+    public function logout(Request $request)
+    {
+        // $user = Auth::user();
+        $request->user()->currentAccessToken()->delete();
+
+        return response()->json([
+            "message" => "Logout Success",
+            "user"    => $request->user()
+        ]);
+    }
+
+
 }

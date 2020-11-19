@@ -334,7 +334,7 @@ GROUP PENGEMBANG => http://perumahan/v1/admin/pengembang/
     }
 
     Status Response:
-        201 - Get All Pengembang Berhasil
+        200 - Get All Pengembang Berhasil
         500 - Kesalahan Server
 
 [5] - Get Pengembang By Id
@@ -371,7 +371,7 @@ GROUP PENGEMBANG => http://perumahan/v1/admin/pengembang/
     }
 
     Status Response:
-        201 - Get All Pengembang Berhasil
+        200 - Get All Pengembang Berhasil
         500 - Kesalahan Server
 
 
