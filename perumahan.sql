@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 19, 2020 at 02:29 AM
+-- Generation Time: Nov 19, 2020 at 08:57 AM
 -- Server version: 10.4.14-MariaDB
 -- PHP Version: 7.4.11
 
@@ -591,36 +591,41 @@ CREATE TABLE `pengembang` (
   `ijin_perusahaan` varchar(200) NOT NULL,
   `foto_pengembang` text NOT NULL,
   `id_user` int(11) NOT NULL,
-  `status_aktif` varchar(11) NOT NULL
+  `status_aktif` varchar(11) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `status_deleted` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `pengembang`
 --
 
-INSERT INTO `pengembang` (`id_pengembang`, `nik_pengembang`, `nama_pengembang`, `telepon_pengembang`, `email_pengembang`, `alamat_pengembang`, `pengembang_slug`, `ijin_perusahaan`, `foto_pengembang`, `id_user`, `status_aktif`) VALUES
-(6, '01283981028', 'nama', '0823123121', 'emaaail@email.com1', 'jalan alamat1', 'nama-190617444', '', '539RUMAH_SEHAT_BIRU.png', 16, '0'),
-(7, '6473839303183785', 'Iqbal wahyudi', '082352260345', 'iqbal.wahyudi_25@gmail.com', 'jalan m.said', 'iqbal-wahyudi-190430784', 'rumah.jpg', 'willsmith_actor.jpg', 17, '0'),
-(8, '6472939181281823', 'Charlotte Von Einsbern', '08235227182', 'email@email.com', 'jalan alamat', 'charlotte-von-einsbern-190617834', '', 'Iqbal_Wahyudi.JPG', 19, '0'),
-(9, '23489890890231', 'Jake Emblacne', '08236220981', 'pengembang@email.com1', 'alamat1', 'jake-emblacne-190617616', 'construction-worker.png', 'auth-img.jpg', 21, '0'),
-(10, '-', 'Rika Bersaudara Sakti', '-', '-', '-', 'rika-bersaudara-sakti-190729233', 'sampel.txt', 'smd2.png', 27, '1'),
-(11, '-', 'Cipta Inovasi Persada', '-', '-', '-', 'cipta-inovasi-persada-190729366', 'sampel1.txt', 'smd3.png', 28, '1'),
-(12, '-', 'Grha Mandiri Kaltim', '-', '-', '-', 'grha-mandiri-kaltim-190729620', 'sampel2.txt', 'smd4.png', 29, '1'),
-(13, '-', 'Hammam Nugroho', '-', '-', '-', 'hammam-nugroho-190729167', 'sampel3.txt', 'smd5.png', 30, '1'),
-(14, '-', 'Prima Griya Perkasa', '-', '-', '-', 'prima-griya-perkasa-190729450', 'sampel4.txt', 'smd6.png', 31, '1'),
-(15, '-', 'Alga Mas Propertindo', '-', '-', '-', 'alga-mas-propertindo-19072954', 'sampel5.txt', 'smd7.png', 32, '1'),
-(16, '-', 'Smart Indoland Jaya', '-', '-', '-', 'smart-indoland-jaya-190729247', 'sampel6.txt', 'smd8.png', 33, '1'),
-(17, '-', 'Embun Pagi Berseri', '-', '-', '-', 'embun-pagi-berseri-190729741', 'sampel7.txt', 'smd9.png', 34, '1'),
-(18, '-', 'Bumi Hijau Abadi', '-', '-', '-', 'bumi-hijau-abadi-190729449', 'sampel8.txt', 'smd10.png', 35, '1'),
-(19, '-', 'Mutiara Hitam Persada', '-', '-', '-', 'mutiara-hitam-persada-19072974', 'sampel9.txt', 'smd11.png', 36, '1'),
-(20, '-', 'Sarana Reri Mandiri', '-', '-', '-', 'sarana-reri-mandiri-190729829', 'sampel10.txt', 'smd12.png', 37, '1'),
-(21, '-', 'Perumahan Citra', '082352260345', 'perumahancitra@email.com', 'Jalan Perumahan Citra', 'perumahan-citra-200804834', 'image-upload.png', 'image-upload.png', 39, '1'),
-(22, '-', 'PT Ciputra Graha Mitra', '0888888888', 'email@email.com', 'alamat', 'pt-ciputra-graha-mitra-201014227', 'download_(1).jpg', 'download.jpg', 41, '1'),
-(23, '-', 'PT Wika Realty', '(0541) 7268999', 'tamansarigrandsamarinda.com', 'Jl. H. A. M. Rifaddin, Harapan Baru, Kec. Loa Janan Ilir, Kota Samarinda, Kalimantan Timur 75131', 'pt-wika-realty-201014425', 'download_(1)1.jpg', '111202053246grand-taman-sari-view-03.jpg', 42, '1'),
-(24, '-', 'PT Grha Mandiri', '0888888888', 'email@email.com', 'alamat', 'pt-grha-mandiri-201021506', 'Untitled-1.png', 'user.png', 43, '1'),
-(25, '-', 'PT Haidir Griya Karya', '081346604110', 'palaranindahresidences@yahoo.com', 'Jl. Niaga, RT 19, Kel. Handil Bhakti, Kec. Palaran', 'pt-haidir-griya-karya-201021297', 'Sertifikat_Induk.pdf', 'photo6267073617145735873.jpg', 44, '1'),
-(26, '94 Tanggal 24 April ', 'PT Embun Pagi Berseri', '082331370800', 'newbumicitralestari@gmail.com ', 'Jl Jakarta Gg. Perjuangan Blok 9 No. 9D Rt. 72 Kel. Loa Bakung Kec. sungai Kunjang Samarinda Kalimantan Timur', 'pt-embun-pagi-berseri-201021330', 'NIB_9120009551889.pdf', 'Foto_Kantor.jpg', 45, '1'),
-(27, '-', 'PT Timur Adya Citra', '08888888', 'email@email.com', 'Jl.Bukit Alaya Samarinda', 'pt-timur-adya-citra-201021334', 'Untitled-13.png', 'user3.png', 46, '1');
+INSERT INTO `pengembang` (`id_pengembang`, `nik_pengembang`, `nama_pengembang`, `telepon_pengembang`, `email_pengembang`, `alamat_pengembang`, `pengembang_slug`, `ijin_perusahaan`, `foto_pengembang`, `id_user`, `status_aktif`, `created_at`, `updated_at`, `status_deleted`) VALUES
+(6, '01283981028', 'nama', '0823123121', 'emaaail@email.com1', 'jalan alamat1', 'nama-190617444', '', '539RUMAH_SEHAT_BIRU.png', 16, '0', '2020-11-19 06:07:56', '2020-11-19 06:07:56', 0),
+(7, '6473839303183785', 'Iqbal wahyudi', '082352260345', 'iqbal.wahyudi_25@gmail.com', 'jalan m.said', 'iqbal-wahyudi-190430784', 'rumah.jpg', 'willsmith_actor.jpg', 17, '0', '2020-11-19 06:07:56', '2020-11-19 06:07:56', 0),
+(8, '6472939181281823', 'Charlotte Von Einsbern', '08235227182', 'email@email.com', 'jalan alamat', 'charlotte-von-einsbern-190617834', '', 'Iqbal_Wahyudi.JPG', 19, '0', '2020-11-19 06:07:56', '2020-11-19 06:07:56', 0),
+(9, '23489890890231', 'Jake Emblacne', '08236220981', 'pengembang@email.com1', 'alamat1', 'jake-emblacne-190617616', 'construction-worker.png', 'auth-img.jpg', 21, '0', '2020-11-19 06:07:56', '2020-11-19 06:07:56', 0),
+(10, '-', 'Rika Bersaudara Sakti', '-', '-', '-', 'rika-bersaudara-sakti-190729233', 'sampel.txt', 'smd2.png', 27, '1', '2020-11-19 06:07:56', '2020-11-19 06:07:56', 0),
+(11, '-', 'Cipta Inovasi Persada', '-', '-', '-', 'cipta-inovasi-persada-190729366', 'sampel1.txt', 'smd3.png', 28, '1', '2020-11-19 06:07:56', '2020-11-19 06:07:56', 0),
+(12, '-', 'Grha Mandiri Kaltim', '-', '-', '-', 'grha-mandiri-kaltim-190729620', 'sampel2.txt', 'smd4.png', 29, '1', '2020-11-19 06:07:56', '2020-11-19 06:07:56', 0),
+(13, '-', 'Hammam Nugroho', '-', '-', '-', 'hammam-nugroho-190729167', 'sampel3.txt', 'smd5.png', 30, '1', '2020-11-19 06:07:56', '2020-11-19 06:07:56', 0),
+(14, '-', 'Prima Griya Perkasa', '-', '-', '-', 'prima-griya-perkasa-190729450', 'sampel4.txt', 'smd6.png', 31, '1', '2020-11-19 06:07:56', '2020-11-19 06:07:56', 0),
+(15, '-', 'Alga Mas Propertindo', '-', '-', '-', 'alga-mas-propertindo-19072954', 'sampel5.txt', 'smd7.png', 32, '1', '2020-11-19 06:07:56', '2020-11-19 06:07:56', 0),
+(16, '-', 'Smart Indoland Jaya', '-', '-', '-', 'smart-indoland-jaya-190729247', 'sampel6.txt', 'smd8.png', 33, '1', '2020-11-19 06:07:56', '2020-11-19 06:07:56', 0),
+(17, '-', 'Embun Pagi Berseri', '-', '-', '-', 'embun-pagi-berseri-190729741', 'sampel7.txt', 'smd9.png', 34, '1', '2020-11-19 06:07:56', '2020-11-19 06:07:56', 0),
+(18, '-', 'Bumi Hijau Abadi', '-', '-', '-', 'bumi-hijau-abadi-190729449', 'sampel8.txt', 'smd10.png', 35, '1', '2020-11-19 06:07:56', '2020-11-19 06:07:56', 0),
+(19, '-', 'Mutiara Hitam Persada', '-', '-', '-', 'mutiara-hitam-persada-19072974', 'sampel9.txt', 'smd11.png', 36, '1', '2020-11-19 06:07:56', '2020-11-19 06:07:56', 0),
+(20, '-', 'Sarana Reri Mandiri', '-', '-', '-', 'sarana-reri-mandiri-190729829', 'sampel10.txt', 'smd12.png', 37, '1', '2020-11-19 06:07:56', '2020-11-19 06:07:56', 0),
+(21, '-', 'Perumahan Citra', '082352260345', 'perumahancitra@email.com', 'Jalan Perumahan Citra', 'perumahan-citra-200804834', 'image-upload.png', 'image-upload.png', 39, '1', '2020-11-19 06:07:56', '2020-11-19 06:07:56', 0),
+(22, '-', 'PT Ciputra Graha Mitra', '0888888888', 'email@email.com', 'alamat', 'pt-ciputra-graha-mitra-201014227', 'download_(1).jpg', 'download.jpg', 41, '1', '2020-11-19 06:07:56', '2020-11-19 06:07:56', 0),
+(23, '-', 'PT Wika Realty', '(0541) 7268999', 'tamansarigrandsamarinda.com', 'Jl. H. A. M. Rifaddin, Harapan Baru, Kec. Loa Janan Ilir, Kota Samarinda, Kalimantan Timur 75131', 'pt-wika-realty-201014425', 'download_(1)1.jpg', '111202053246grand-taman-sari-view-03.jpg', 42, '1', '2020-11-19 06:07:56', '2020-11-19 06:07:56', 0),
+(24, '-', 'PT Grha Mandiri', '0888888888', 'email@email.com', 'alamat', 'pt-grha-mandiri-201021506', 'Untitled-1.png', 'user.png', 43, '1', '2020-11-19 06:07:56', '2020-11-19 06:07:56', 0),
+(25, '-', 'PT Haidir Griya Karya', '081346604110', 'palaranindahresidences@yahoo.com', 'Jl. Niaga, RT 19, Kel. Handil Bhakti, Kec. Palaran', 'pt-haidir-griya-karya-201021297', 'Sertifikat_Induk.pdf', 'photo6267073617145735873.jpg', 44, '1', '2020-11-19 06:07:56', '2020-11-19 06:07:56', 0),
+(26, '94 Tanggal 24 April ', 'PT Embun Pagi Berseri', '082331370800', 'newbumicitralestari@gmail.com ', 'Jl Jakarta Gg. Perjuangan Blok 9 No. 9D Rt. 72 Kel. Loa Bakung Kec. sungai Kunjang Samarinda Kalimantan Timur', 'pt-embun-pagi-berseri-201021330', 'NIB_9120009551889.pdf', 'Foto_Kantor.jpg', 45, '1', '2020-11-19 06:07:56', '2020-11-19 06:07:56', 0),
+(27, '-', 'PT Timur Adya Citra', '08888888', 'email@email.com', 'Jl.Bukit Alaya Samarinda', 'pt-timur-adya-citra-201021334', 'Untitled-13.png', 'user3.png', 46, '1', '2020-11-19 06:07:56', '2020-11-19 06:07:56', 0),
+(32, '123123', 'Nova Dwi Sapta', '0812444373231', 'novagitarisav7@gmail.com', 'Jalan Slamet Riadi', '28-nova-dwi-sapta', '/api/', '/api/', 13, '0', '2020-11-18 23:31:49', '2020-11-18 23:31:49', 0),
+(33, '123123', 'Ikwal Ramadhani', '0812444373231', 'ikwal123@gmail.com', 'Jalan Slamet Riadi', '33-ikwal-ramadhani', '/api/pengembang/file/eOO8ueEiIzdg4rvfTU82bUcVUSsjMopXbdyciBd3.xlsx', '/api/pengembang/foto/a6QMhmd9hbPvwcdt43ECWiKSEvANK72uu9pbdShT.png', 14, '0', '2020-11-18 23:35:41', '2020-11-18 23:35:41', 0);
 
 -- --------------------------------------------------------
 
@@ -645,7 +650,7 @@ CREATE TABLE `personal_access_tokens` (
 --
 
 INSERT INTO `personal_access_tokens` (`id`, `tokenable_type`, `tokenable_id`, `name`, `token`, `abilities`, `last_used_at`, `created_at`, `updated_at`) VALUES
-(1, 'App\\Models\\User', 1, 'user-token', '625c59e94ddbae1dfc6bd4bfd3b0ea902292db52b2465f4909c96c22d78d10bb', '[\"*\"]', '2020-11-18 09:38:43', '2020-11-18 04:48:05', '2020-11-18 09:38:43');
+(4, 'App\\Models\\User', 2, 'user-token', '9d93ecfd5ea94d24a6d1c6fb57a20f67d710bfb4f572ae12efbd3d3131dc5841', '[\"*\"]', '2020-11-18 23:35:40', '2020-11-18 18:15:48', '2020-11-18 23:35:40');
 
 -- --------------------------------------------------------
 
@@ -913,7 +918,10 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `username`, `level`, `status`, `email_verified_at`, `password`, `remember_token`, `created_at`, `updated_at`) VALUES
-(1, 'Nova Dwi Sapta', 'admin', 0, NULL, '$2y$10$yDJnc0fWqVYwbRQEYeLjhOX8vrejPzPNc.h/U8FCIVVQWgaatjIS.', NULL, '2020-11-18 04:32:35', '2020-11-18 09:38:44');
+(2, 'novadwisapta', 'admin', 1, NULL, '$2y$10$AateYE38SbdmwcGimblKJuAzQ.SWOueG.1f57WTRDYFfH.8SB7khG', NULL, '2020-11-18 17:47:56', '2020-11-18 18:32:45'),
+(3, 'iqbalwahyudi', 'pengembang', 1, NULL, '$2y$10$USga3K138rprIA/TT6g5e./LvxtFDEFjRZmBZd8CJNN7Y3Q5UnqDm', NULL, '2020-11-18 17:54:11', '2020-11-18 18:32:12'),
+(13, 'pengembang', '2', 0, NULL, '$2y$10$VX0jePxC3wzarh1WpkeyTOsafLrxJeqVdjY4nxDiVtJs9u/Ihr7K.', NULL, '2020-11-18 23:31:49', '2020-11-18 23:31:49'),
+(14, 'pengembang2', '2', 0, NULL, '$2y$10$Z20B8ggY5RnuMzh1H1BLGun5z9S/ReFmaUVLaFbPDQ8MC53FGDmim', NULL, '2020-11-18 23:35:41', '2020-11-18 23:35:41');
 
 -- --------------------------------------------------------
 
@@ -1071,8 +1079,7 @@ ALTER TABLE `password_resets`
 -- Indexes for table `pengembang`
 --
 ALTER TABLE `pengembang`
-  ADD PRIMARY KEY (`id_pengembang`),
-  ADD KEY `id_user` (`id_user`);
+  ADD PRIMARY KEY (`id_pengembang`);
 
 --
 -- Indexes for table `personal_access_tokens`
@@ -1262,13 +1269,13 @@ ALTER TABLE `migrations`
 -- AUTO_INCREMENT for table `pengembang`
 --
 ALTER TABLE `pengembang`
-  MODIFY `id_pengembang` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
+  MODIFY `id_pengembang` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=34;
 
 --
 -- AUTO_INCREMENT for table `personal_access_tokens`
 --
 ALTER TABLE `personal_access_tokens`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `perumahan`
@@ -1310,7 +1317,7 @@ ALTER TABLE `user`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- AUTO_INCREMENT for table `wishlist`
