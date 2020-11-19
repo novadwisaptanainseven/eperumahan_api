@@ -141,7 +141,7 @@ GROUP USER => http://perumahan/v1/admin/user/
         }
 
         Status Response:
-            201 - Get All Data User Berhasil
+            200 - Get All Data User Berhasil
             500 - Kesalahan Server
 
 

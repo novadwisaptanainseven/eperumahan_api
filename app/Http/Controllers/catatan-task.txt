@@ -1,0 +1,2 @@
+1. Membuat Method Logout
+2. Membuat API untuk group pengembang
