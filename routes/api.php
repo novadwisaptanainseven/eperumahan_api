@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PengembangController;
 
 /*
@@ -21,18 +22,21 @@ use App\Http\Controllers\PengembangController;
 // });
 
 // API LEVEL ADMIN
- Route::prefix('v1/admin/')->group(function () {
+Route::prefix('v1/admin/')->group(function () {
 
     Route::group(['middleware' => 'auth:sanctum'], function () {
         //All secure URL's
 
- // GROUP USER
+        // GROUP USER
+
+        // Add User
+        Route::post('register', [UserController::class, 'register']);
 
         // Get All Data User
         Route::get('users', [UserController::class, 'getAllUsers']);
 
         // For Checking User who is active at this moment
-        Route::get('/user/me', [UserController::class, 'me']);
+        Route::get('/user/me', [AuthController::class, 'me']);
 
         // Get User By ID
         Route::get('user/{id_user}', [UserController::class, 'getUserById']);
@@ -44,12 +48,12 @@ use App\Http\Controllers\PengembangController;
         Route::put('user/{id_user}/status', [UserController::class, 'updateStatusUser']);
 
         // Logout User
-        Route::post('user/logout', [UserController::class, 'logout']);
-        
- // END GROUP USER
- // ==============================================================================================
+        Route::post('user/logout', [AuthController::class, 'logout']);
 
-// GROUP PENGEMBANG
+        // END GROUP USER
+        // ==============================================================================================
+
+        // GROUP PENGEMBANG
 
         // Add Pengembang
         Route::post('/pengembang', [PengembangController::class, 'addPengembang']);
@@ -65,15 +69,10 @@ use App\Http\Controllers\PengembangController;
 
         // Get Pengembang By ID
         Route::get('/pengembang/{id_pengembang}', [PengembangController::class, 'getPengembangById']);
-        
-
     });
 
-// END API LEVEL ADMIN
-
-    // Login User
-    Route::post('login', [UserController::class, 'login']);
-
-    // Add User
-    Route::post('register', [UserController::class, 'register']);
+    // END API LEVEL ADMIN
 });
+
+// Login User
+Route::post('/login', [AuthController::class, 'login']);

@@ -70,49 +70,6 @@ class UserController extends Controller
         ], 201);
     }
 
-    // Login
-    public function login(Request $request)
-    {
-        // return 'Hello World';
-        // Validation
-        $messages = [
-            'required' => ':attribute is required!',
-        ];
-        $validator = Validator::make(
-            $request->all(),
-            [
-                'username' => 'required',
-                'password' => 'required'
-            ],
-            $messages
-        );
-        // Cek Validasi
-        if ($validator->fails()) {
-            // Jika Validasi Gagal
-            return response()->json([
-                'errors' => $validator->errors()
-            ]);
-        }
-
-        // Jika Validasi Berhasil
-        $user = User::where('username', $request->username)->first();
-        // print_r($data);
-        if (!$user || !Hash::check($request->password, $user->password)) {
-            return response([
-                'message' => ['These credentials do not match our records.']
-            ], 404);
-        }
-
-        $token = $user->createToken('user-token')->plainTextToken;
-
-        $response = [
-            'user' => $user,
-            'token' => $token
-        ];
-
-        return response($response, 201);
-    }
-
     // Update Data User
     public function updateUser(Request $request, $id_user)
     {
@@ -156,8 +113,7 @@ class UserController extends Controller
         $user = User::where('id', $id_user)->first();
 
         // Cek apakah user ditemukan
-        if(!$user)
-        {
+        if (!$user) {
             // Jika User tidak ditemukan maka tampilkan response 404
             return response()->json([
                 "message" => "User with id:$id_user, tidak ditemukan"
@@ -170,34 +126,9 @@ class UserController extends Controller
         return response()->json([
             "message" => "Update Status User Berhasil",
             "data"    => [
-                    "id_user" => $user->id,
-                    "status"  => $user->status
-                ]
-            ], 201);
+                "id_user" => $user->id,
+                "status"  => $user->status
+            ]
+        ], 201);
     }
-
-    // Cek User saat ini
-    public function me()
-    {
-        $user = Auth::user();
-
-        return response()->json([
-            'message' => 'success',
-            'user'    => $user
-        ], 200);
-    }
-
-    // Logout
-    public function logout(Request $request)
-    {
-        // $user = Auth::user();
-        $request->user()->currentAccessToken()->delete();
-
-        return response()->json([
-            "message" => "Logout Success",
-            "user"    => $request->user()
-        ]);
-    }
-
-
 }
