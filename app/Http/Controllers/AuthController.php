@@ -13,8 +13,8 @@ class AuthController extends Controller
     // Login
     public function login(Request $request)
     {
-        // return 'Hello World';
-        // Validation
+
+        // Request Validation
         $messages = [
             'required' => ':attribute harus diisi!',
         ];
@@ -37,7 +37,7 @@ class AuthController extends Controller
         // Jika Validasi Berhasil
         $user = User::where('username', $request->username)->first();
 
-        // print_r($data);
+
         if (!$user || !Hash::check($request->password, $user->password)) {
             return response([
                 'message' => ['These credentials do not match our records.']

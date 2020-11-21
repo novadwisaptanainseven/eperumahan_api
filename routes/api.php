@@ -2,9 +2,11 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Auth\Middleware\Authenticate;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PengembangController;
+use App\Http\Controllers\PerumahanController;
 
 /*
 |--------------------------------------------------------------------------
@@ -70,6 +72,31 @@ Route::prefix('v1/admin/')->group(function () {
 
             // Get Pengembang By ID
             Route::get('/pengembang/{id_pengembang}', [PengembangController::class, 'getPengembangById']);
+
+            // END GROUP PENGEMBANG
+            // ==============================================================================================
+
+            // GROUP PERUMAHAN
+
+            // Get All Data Perumahan
+            Route::get('/perumahan', [PerumahanController::class, 'getAll']);
+
+            // Get Data Perumahan By ID
+            Route::get('/perumahan/{id_perumahan}', [PerumahanController::class, 'getById']);
+
+            // Update Status Perumahan By ID
+            Route::put('/perumahan/{id_perumahan}/status', [PerumahanController::class, 'updateStatus']);
+
+            // GROUP PERUMAHAN / PROPERTI
+
+            // Get All Properti
+            Route::get('perumahan/{id_perumahan}/properti', [PerumahanController::class, 'getAllProperti']);
+
+            // Get Properti By ID
+            Route::get('perumahan/{id_perumahan}/properti/{id_bangunan}', [PerumahanController::class, 'getPropertiById']);
+
+            // Update Status Publish Properti By ID
+            Route::put('perumahan/{id_perumahan}/properti/{id_bangunan}/status', [PerumahanController::class, 'updateStatusProperti']);
         });
     });
 
