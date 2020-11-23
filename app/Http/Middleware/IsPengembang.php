@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
-class CheckStatus
+class IsPengembang
 {
     /**
      * Handle an incoming request.
@@ -21,14 +21,14 @@ class CheckStatus
         // Get Current User
         $user = Auth::user();
 
-        // Cek Apakah User adalah Admin
-        if ($user->level == 1) {
+        // Cek Apakah User adalah Pengembang
+        if ($user->level == 2) {
             // Jika Iya, maka access url diteruskan
             return $next($request);
         }
         // Jika Bukan maka access forbidden 403
         return response()->json([
-            "message" => "Akses Ditolak, Anda Bukan Admin!"
+            "message" => "Akses Ditolak, Anda Bukan Pengembang!"
         ], 403);
     }
 }

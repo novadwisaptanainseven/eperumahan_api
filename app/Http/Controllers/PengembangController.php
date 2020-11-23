@@ -108,10 +108,9 @@ class PengembangController extends Controller
         ], 201);
     }
 
-    // Update Pengembang
+    // Update Pengembang Level Admin
     public function updatePengembang(Request $request, $id_pengembang)
     {
-
         // Validation
         $messages = [
             "required" => ":attribute harus diisi!"
@@ -149,51 +148,189 @@ class PengembangController extends Controller
         // Mengambil data pengembang yang akan diupdate berdasarkan ID
         $pengembang = Pengembang::where('id_pengembang', $id_pengembang)->first();
 
-        // Lakukan proses update
-        $pengembang->nik_pengembang     = ($request->nik_pengembang !== null) ? $request->nik_pengembang : $pengembang->nik_pengembang;
-        $pengembang->nama_pengembang    = ($request->nama_pengembang !== null) ? $request->nama_pengembang : $pengembang->nama_pengembang;
-        $pengembang->telepon_pengembang = ($request->telepon_pengembang !== null) ? $request->telepon_pengembang : $pengembang->telepon_pengembang;
-        $pengembang->alamat_pengembang  = ($request->alamat_pengembang !== null) ? $request->alamat_pengembang : $pengembang->alamat_pengembang;
-        $pengembang->email_pengembang   = ($request->email_pengembang !== null) ? $request->email_pengembang : $pengembang->email_pengembang;
+        if ($pengembang) {
+            // Lakukan proses update
+            $pengembang->nik_pengembang     = ($request->nik_pengembang !== null) ? $request->nik_pengembang : $pengembang->nik_pengembang;
+            $pengembang->nama_pengembang    = ($request->nama_pengembang !== null) ? $request->nama_pengembang : $pengembang->nama_pengembang;
+            $pengembang->telepon_pengembang = ($request->telepon_pengembang !== null) ? $request->telepon_pengembang : $pengembang->telepon_pengembang;
+            $pengembang->alamat_pengembang  = ($request->alamat_pengembang !== null) ? $request->alamat_pengembang : $pengembang->alamat_pengembang;
+            $pengembang->email_pengembang   = ($request->email_pengembang !== null) ? $request->email_pengembang : $pengembang->email_pengembang;
 
-        // Pembuatan Slug -> id-nama_pengembang
-        // Dapatkan data terakhir di tabel pengembang
-        $slug                           = Str::of($pengembang->id_pengembang . ' ' . $pengembang->nama_pengembang)->slug('-');
-        $pengembang->pengembang_slug    = $slug;
-        // End Pembuatan Slug
+            // Pembuatan Slug -> id-nama_pengembang
+            // Dapatkan data terakhir di tabel pengembang
+            $slug                           = Str::of($pengembang->id_pengembang . ' ' . $pengembang->nama_pengembang)->slug('-');
+            $pengembang->pengembang_slug    = $slug;
+            // End Pembuatan Slug
 
-        $pengembang->ijin_perusahaan = ($ijin !== '') ? $ijin : $pengembang->ijin_perusahaan;
-        $pengembang->foto_pengembang = ($foto !== '') ? $foto : $pengembang->foto_pengembang;
+            $pengembang->ijin_perusahaan = ($ijin !== '') ? "/api/$ijin" : $pengembang->ijin_perusahaan;
+            $pengembang->foto_pengembang = ($foto !== '') ? "/api/$foto" : $pengembang->foto_pengembang;
 
-        // $pengembang->save();
+            $pengembang->save();
 
-        return response()->json([
-            "message" => "Update Data Pengembang with id: $id_pengembang, Berhasil",
-            "data"    => $pengembang
-        ], 201);
+            return response()->json([
+                "message" => "Update Data Pengembang with id: $id_pengembang, Berhasil",
+                "data"    => $pengembang
+            ], 201);
+        } else {
+            return response()->json([
+                "message" => "Update Data Gagal, Data Tidak Ditemukan!"
+            ], 404);
+        }
+    }
+
+    // Update Pengembang Level Pengembang
+    public function updatePengembang2(Request $request)
+    {
+        // Validation
+        $messages = [
+            "required" => ":attribute harus diisi!"
+        ];
+        $validator = Validator::make(
+            $request->all(),
+            [
+                'foto_pengembang'    => 'mimes:jpg,jpeg,png|max:5048',
+                'ijin_perusahaan'    => 'mimes:pdf,xls,xlsx|max:10048'
+            ],
+            $messages
+        );
+        // Cek Validasi
+        if ($validator->fails()) {
+            // Jika Validasi Gagal, tampilkan response 400
+            return response()->json([
+                'errors' => $validator->errors()
+            ], 400);
+        }
+        // Jika Validasi Berhasil
+
+        // Cek Apakah Tidak ada file foto
+        if (!$request->file('foto_pengembang'))
+            $foto = '';
+        else
+            $foto = $request->foto_pengembang->store('pengembang/foto');
+
+
+        // Cek Apakah Tidak ada file ijin perusahaan
+        if (!$request->file('ijin_perusahaan'))
+            $ijin = '';
+        else
+            $ijin = $request->ijin_perusahaan->store('pengembang/file');
+
+        // Proses Update Password User
+        $table_user= 'users';
+        $table_pengembang = 'pengembang';
+
+        $user = Auth::user();
+        $pengembang = Pengembang::where(["$table_pengembang.id_user" => $user->id])
+                    ->select("$table_pengembang.*", "$table_user.username")
+                    ->leftJoin($table_user, "$table_user.id", "=", "$table_pengembang.id_user")                
+                    ->first();
+        // $user = User::where(["id" => $pengembang->id_user])->first();
+
+        if (!empty($request->password_lama)) {
+            if (Hash::check($request->password_lama, $user->password)) {
+                if ($request->password_baru === $request->konf_pass) {
+                    $hash = Hash::make($request->password_baru);
+                    $user->password = $hash;
+                    $user->save();
+
+                    // return response()->json([
+                    //     "message" => "Update Berhasil"
+                    // ]);
+                } else {
+                    return response()->json([
+                        "message" => "Konfirmasi Password Tidak Sesuai"
+                    ], 400);
+                }
+            } else {
+                return response()->json([
+                    "message" => "Password Lama Salah",
+                    "user"    => $user
+                ], 400);
+            }
+        }
+        
+        // Update Data Pengembang
+        $request->ijin = $ijin;
+        $request->foto = $foto;
+        $data = Pengembang::updatePengembang($request, $pengembang);
+        if($data)
+        {
+            return response()->json([
+                "message" => "Update Data Pengembang Berhasil",
+                "data"    => $data
+            ]);
+        }
     }
 
     // Get All Pengembang
     public function getAllPengembang()
     {
+        $pengembang = Pengembang::getAll();
+
         return response()->json([
-            "message" => "Get All Data Pengembang Berhasil"
+            "message" => "Get All Data Pengembang Berhasil",
+            "data"    => $pengembang
         ], 200);
     }
 
     // Get Pengembang By ID
     public function getPengembangById($id_pengembang)
     {
-        return response()->json([
-            "message" => "Get Data Pengembang with id: $id_pengembang Berhasil"
-        ], 200);
+        $pengembang = Pengembang::getById($id_pengembang);
+
+        if ($pengembang) {
+            return response()->json([
+                "message" => "Get Data Pengembang with id: $id_pengembang Berhasil",
+                "data"    => $pengembang
+            ], 200);
+        } else {
+            return response()->json([
+                "message" => "Data Pengembang Tidak Ditemukan!"
+            ], 404);
+        }
+    }
+
+    // Get Akun Pengembang
+    public function getAkun()
+    {
+        $table_user= 'users';
+        $table_pengembang = 'pengembang';
+        $user = Auth::user();
+
+        $pengembang = Pengembang::where(["$table_pengembang.id_user" => $user->id])
+                    ->select("$table_pengembang.*", "$table_user.username")
+                    ->leftJoin($table_user, "$table_user.id", "=", "$table_pengembang.id_user")                
+                    ->first();
+        
+        if($pengembang)
+        {
+            return response()->json([
+                "message" => "Get Akun Pengembang Berhasil",
+                "data"    => $pengembang
+            ], 200);
+        }
+        else
+        {
+            return response()->json([
+                "message" => "Get Akun Pengembang Gagal, Data Tidak Ditemukan",
+                "data"    => $pengembang
+            ], 404);
+        }
     }
 
     // Delete Pengembang
     public function deletePengembang($id_pengembang)
     {
-        return response()->json([
-            "message" => "Delete Data Pengembang with id: $id_pengembang, Berhasil"
-        ], 201);
+        $delete = Pengembang::softDelete($id_pengembang);
+
+        if ($delete) {
+            return response()->json([
+                "message" => "Delete Data Pengembang with id: $id_pengembang, Berhasil"
+            ], 201);
+        } else {
+            return response()->json([
+                "message" => "Data Tidak Ditemukan atau Telah Terhapus"
+            ], 404);
+        }
     }
 }
