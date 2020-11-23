@@ -29,14 +29,20 @@ class Pengembang extends Model
     // Get Pengembang By ID
     public static function getById($id_pengembang)
     {
-        $pengembang = DB::table('pengembang')
+        // Tabel - Tabel
+        $pengembang = 'pengembang';
+        $user       = 'users';
+
+        $data_pengembang = DB::table($pengembang)
+            ->select("$pengembang.*", "$user.username")
             ->where(['id_pengembang' => $id_pengembang])
+            ->leftJoin($user, "$user.id", "=", "$pengembang.id_user")
             ->first();
 
-        if ($pengembang)
-            return $pengembang;
+        if ($data_pengembang)
+            return $data_pengembang;
         else
-            return false;
+            return null;
     }
 
     // Soft Deleted
@@ -49,6 +55,6 @@ class Pengembang extends Model
         if ($pengembang)
             return true;
         else
-            return false;
+            return null;
     }
 }

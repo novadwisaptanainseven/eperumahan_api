@@ -108,7 +108,7 @@ class PengembangController extends Controller
         ], 201);
     }
 
-    // Update Pengembang
+    // Update Pengembang Level Admin
     public function updatePengembang(Request $request, $id_pengembang)
     {
         // Validation
@@ -176,6 +176,99 @@ class PengembangController extends Controller
                 "message" => "Update Data Gagal, Data Tidak Ditemukan!"
             ], 404);
         }
+    }
+
+    // Update Pengembang Level Pengembang
+    // Add Pengembang
+    public function updatePengembang2(Request $request, $id_pengembang)
+    {
+        // Validation
+        $messages = [
+            "required" => ":attribute harus diisi!"
+        ];
+        $validator = Validator::make(
+            $request->all(),
+            [
+                'foto_pengembang'    => 'mimes:jpg,jpeg,png|max:5048',
+                'ijin_perusahaan'    => 'mimes:pdf,xls,xlsx|max:10048'
+            ],
+            $messages
+        );
+        // Cek Validasi
+        if ($validator->fails()) {
+            // Jika Validasi Gagal, tampilkan response 400
+            return response()->json([
+                'errors' => $validator->errors()
+            ], 400);
+        }
+        // Jika Validasi Berhasil
+
+        // Cek Apakah Tidak ada file foto
+        if (!$request->file('foto_pengembang'))
+            $foto = '';
+        else
+            $foto = $request->foto_pengembang->store('pengembang/foto');
+
+
+        // Cek Apakah Tidak ada file ijin perusahaan
+        if (!$request->file('ijin_perusahaan'))
+            $ijin = '';
+        else
+            $ijin = $request->ijin_perusahaan->store('pengembang/file');
+
+        // Proses Update Password User
+        $pengembang = Pengembang::getById($id_pengembang);
+        $user = User::where(["id" => $pengembang->id_user])->first();
+
+        if (!empty($request->password_lama)) {
+            if (Hash::check($request->password_lama, $user->password)) {
+                if ($request->password_baru === $request->konf_pass) {
+                    $hash = Hash::make($request->password_baru);
+                    $user->password = $hash;
+                    $user->save();
+
+                    return response()->json([
+                        "message" => "Update Berhasil"
+                    ]);
+                } else {
+                    return response()->json([
+                        "message" => "Konfirmasi Password Tidak Sesuai"
+                    ], 400);
+                }
+            } else {
+                return response()->json([
+                    "message" => "Password Lama Salah",
+                    "user"    => $user
+                ], 400);
+            }
+        }
+
+        // Tambah Data Pengembang
+        // $pengembang = new Pengembang;
+        // $pengembang->nik_pengembang     = $request->nik_pengembang;
+        // $pengembang->nama_pengembang    = $request->nama_pengembang;
+        // $pengembang->telepon_pengembang = $request->telepon_pengembang;
+        // $pengembang->alamat_pengembang  = $request->alamat_pengembang;
+        // $pengembang->email_pengembang   = $request->email_pengembang;
+
+        // // Pembuatan Slug -> id-nama_pengembang
+        // // Dapatkan data terakhir di tabel pengembang
+        // $last_data                      = DB::table('pengembang')->orderBy('id_pengembang', 'DESC')->first();
+        // $slug                           = Str::of($last_data->id_pengembang + 1 . ' ' . $pengembang->nama_pengembang)->slug('-');
+        // $pengembang->pengembang_slug    = $slug;
+        // // End Pembuatan Slug
+
+        // $pengembang->ijin_perusahaan    = '/api/' . $ijin;
+        // $pengembang->foto_pengembang    = '/api/' . $foto;
+        // $pengembang->status_aktif       = 0;
+        // $pengembang->id_user            = $id_user;
+        // $pengembang->status_deleted     = 0;
+        // // Simpan Data Pengembag ke database
+        // $pengembang->save();
+        // return response()->json([
+        //     "message" => "Tambah Data Pengembang Berhasil",
+        //     "data"    => $pengembang
+        // ], 201);
     }
 
     // Get All Pengembang

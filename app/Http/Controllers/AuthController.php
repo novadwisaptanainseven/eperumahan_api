@@ -13,7 +13,12 @@ class AuthController extends Controller
     // Login
     public function login(Request $request)
     {
-
+        $curr_user = Auth::user();
+        if (!$curr_user) {
+            return response()->json([
+                "user" => $curr_user
+            ]);
+        }
         // Request Validation
         $messages = [
             'required' => ':attribute harus diisi!',
@@ -40,7 +45,7 @@ class AuthController extends Controller
 
         if (!$user || !Hash::check($request->password, $user->password)) {
             return response([
-                'message' => ['These credentials do not match our records.']
+                'message' => ['Username atau password salah!']
             ], 404);
         }
 

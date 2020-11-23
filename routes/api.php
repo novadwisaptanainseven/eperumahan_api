@@ -7,6 +7,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PengembangController;
 use App\Http\Controllers\PerumahanController;
+use App\Models\Pengembang;
 
 /*
 |--------------------------------------------------------------------------
@@ -87,20 +88,43 @@ Route::prefix('v1/admin/')->group(function () {
             // Update Status Perumahan By ID
             Route::put('/perumahan/{id_perumahan}/status', [PerumahanController::class, 'updateStatus']);
 
+
             // GROUP PERUMAHAN / PROPERTI
 
             // Get All Properti
-            Route::get('perumahan/{id_perumahan}/properti', [PerumahanController::class, 'getAllProperti']);
+            Route::get('properti', [PerumahanController::class, 'getAllProperti']);
 
             // Get Properti By ID
+            Route::get('properti/{id_properti}', [PerumahanController::class, 'getPropertiById2']);
+
+            // Update Status Publish By ID
+            Route::put('properti/{id_properti}/status', [PerumahanController::class, 'updateStatusProperti2']);
+
+            // Get All Properti By ID Perumahan
+            Route::get('perumahan/{id_perumahan}/properti', [PerumahanController::class, 'getAllPropertiById']);
+
+            // Get Properti By ID Perumahan & ID Bangunan
             Route::get('perumahan/{id_perumahan}/properti/{id_bangunan}', [PerumahanController::class, 'getPropertiById']);
 
-            // Update Status Publish Properti By ID
+            // Update Status Publish Properti By ID Perumahan & ID Bangunan
             Route::put('perumahan/{id_perumahan}/properti/{id_bangunan}/status', [PerumahanController::class, 'updateStatusProperti']);
         });
     });
+});
+// END API LEVEL ADMIN
 
-    // END API LEVEL ADMIN
+// API LEVEL PENGEMBANG
+Route::prefix('v1/pengembang/')->group(function () {
+
+    Route::group(['middleware' => "auth:sanctum"], function () {
+
+        // All secure URL's
+
+        Route::get('akun/{id_pengembang}', [PengembangController::class, 'getPengembangById']);
+
+        // Update Akun By ID
+        Route::post('akun/{id_pengembang}', [PengembangController::class, 'updatePengembang2']);
+    });
 });
 
 // Login User

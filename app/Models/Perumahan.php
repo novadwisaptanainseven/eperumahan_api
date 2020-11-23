@@ -11,16 +11,31 @@ class Perumahan extends Model
 {
     use HasApiTokens, HasFactory;
 
+    protected $table = 'perumahan';
     // GROUP PERUMAHAN
 
     // Get All Data Perumahan
     public static function getAll()
     {
-        $perumahan = DB::table('perumahan')
-            ->leftJoin('pengembang', 'perumahan.id_pengembang', '=', 'pengembang.id_pengembang')
+        $perumahan = 'perumahan';
+        $pengembang = 'pengembang';
+        $kelurahan = 'kelurahan';
+        $kecamatan = 'kecamatan';
+
+        $data_perumahan = DB::table($perumahan)
+            ->leftJoin($pengembang, "$perumahan.id_pengembang", '=', "$pengembang.id_pengembang")
+            ->leftJoin($kelurahan, "$kelurahan.id_kelurahan", "=", "$perumahan.id_kelurahan")
+            ->leftJoin($kecamatan, "$kecamatan.id_kecamatan", "=", "$perumahan.id_kecamatan")
             ->get();
 
-        return $perumahan;
+        $belum_konfirmasi = DB::table($perumahan)
+            ->where(["status_perumahan" => 0])
+            ->count();
+
+        $data_perumahan->total = $data_perumahan->count();
+        $data_perumahan->total_sudah_konfirmasi = $data_perumahan->total - $belum_konfirmasi;
+        $data_perumahan->total_belum_konfirmasi = $belum_konfirmasi;
+        return $data_perumahan;
     }
 
     // Get Data Perumahan By ID
@@ -43,14 +58,14 @@ class Perumahan extends Model
             ->leftJoin('kelurahan', 'perumahan.id_kelurahan', '=', 'kelurahan.id_kelurahan')
             ->first();
 
-        // Gabungkan semua hasil pencarian data dengan id yang sama
-        $perumahan->sarana_prasarana_perumahan = $sarana_prasarana;
-        $perumahan->foto_perumahan = $foto;
 
-        if ($perumahan)
+        if ($perumahan) {
+            // Gabungkan semua hasil pencarian data dengan id yang sama
+            $perumahan->sarana_prasarana_perumahan = $sarana_prasarana;
+            $perumahan->foto_perumahan = $foto;
             return $perumahan;
-        else
-            return false;
+        } else
+            return null;
     }
 
     // Update Status Perumahan By ID
@@ -70,7 +85,38 @@ class Perumahan extends Model
     // GROUP PERUMAHAN / PROPERTI
 
     // Get All Properti
-    public static function getAllProperti($id_perumahan)
+    public static function getAllProperti()
+    {
+        // Tabel - Tabel
+        $bangunan   = 'bangunan';
+        $pengembang = 'pengembang';
+        $kelurahan  = 'kelurahan';
+        $kecamatan  = 'kecamatan';
+
+        // Mengambil Semua Data Properti
+        $properti = DB::table($bangunan)
+            ->leftJoin($pengembang, "$bangunan.id_pengembang", "=", "$pengembang.id_pengembang")
+            ->leftJoin($kelurahan, "$bangunan.id_kelurahan", "=", "$kelurahan.id_kelurahan")
+            ->leftJoin($kecamatan, "$bangunan.id_kecamatan", "=", "$kecamatan.id_kecamatan")
+            ->get();
+
+        $properti_belum_konfirmasi = DB::table($bangunan)
+            ->where(["status_publish" => 0])
+            ->count();
+
+        $properti->total = $properti->count();
+        $properti->total_sudah_konfirmasi = $properti->total - $properti_belum_konfirmasi;
+        $properti->total_belum_konfirmasi = $properti_belum_konfirmasi;
+
+        // Cek Apakah properti ada isinya
+        if ($properti)
+            return $properti;
+        else
+            return null;
+    }
+
+    // Get All Properti By ID Perumahan
+    public static function getAllPropertiById($id_perumahan)
     {
         // Tabel - Tabel
         $bangunan   = 'bangunan';
@@ -95,7 +141,7 @@ class Perumahan extends Model
     }
 
     // Get Properti By ID
-    public static function getPropertiById($id_perumahan, $id_bangunan)
+    public static function getPropertiById($id_bangunan)
     {
         // Tabel - Tabel
         $bangunan = 'bangunan';
@@ -131,11 +177,11 @@ class Perumahan extends Model
 
             return $data_bangunan;
         } else
-            return false;
+            return null;
     }
 
     // Update Status Publish By ID
-    public static function updateStatusProperti($id_perumahan, $id_bangunan, $status)
+    public static function updateStatusProperti($id_bangunan, $status)
     {
         $bangunan = 'bangunan';
 
