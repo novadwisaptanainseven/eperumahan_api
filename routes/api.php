@@ -144,11 +144,31 @@ Route::prefix('v1/pengembang/')->group(function () {
             // Update Data Perumahan
             Route::post('/perumahan/{id_perumahan}', [PerumahanController::class, 'updatePerumahanById']);
 
+            // Get All Perumahan
+            Route::get('/perumahan', [PerumahanController::class, 'getAllPerumahan']);
+
+            // Get Perumahan By ID
+            Route::get('/perumahan/{id_perumahan}', [PerumahanController::class, 'getById']);
+
             // Get Foto Perumahan
             Route::get('/perumahan/foto/{filename}', [PerumahanController::class, 'getFotoPerumahan']);
 
             // Get File Legalitas Perumahan
             Route::get('/perumahan/file/{filename}', [PerumahanController::class, 'getFileLegalitas']);
+
+            // GROUP PERUMAHAN / FOTO
+
+            // Add Foto Perumahan
+            Route::post('/perumahan/{id_perumahan}/foto', [PerumahanController::class, 'addFotoPerumahan']);
+
+            // Update Status Utama Foto Perumahan
+            Route::put('/perumahan/{id_perumahan}/foto/{id_foto_perumahan}/status', [PerumahanController::class, 'updateStatusFoto']);
+
+            // Delete Foto Perumahan By ID
+            Route::delete('/perumahan/{id_perumahan}/foto/{id_foto_perumahan}', [PerumahanController::class, 'deleteFoto']);
+
+            // Get All Foto Perumahan
+            Route::get('/perumahan/{id_perumahan}/foto', [PerumahanController::class, 'getAllFoto']);
             
         });
     });

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Perumahan;
+use App\Models\Pengembang;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
@@ -27,7 +28,7 @@ class PerumahanController extends Controller
                 "nama_perumahan"      => "required",
                 "deskripsi_perumahan" => "required",
                 "lokasi"              => "required",
-                'foto_perumahan'      => 'mimes:jpg,jpeg,png|max:5048',
+                // 'foto_perumahan'      => 'mimes:jpg,jpeg,png|max:5048',
                 'legalitas'           => 'mimes:pdf,xls,xlsx|max:10048',
                 "longitude"           => "required",
                 "latitude"            => "required",
@@ -38,11 +39,22 @@ class PerumahanController extends Controller
             ],
             $message
         );
-
+        // Cek Validasi
+        if($validator->fails())
+        {
+            // Jika Validasi Gagal, tampilkan response 400 BAD REQUEST
+            return response()->json([
+                'errors' => $validator->errors()
+            ], 400);
+        }
+        // Jika Validasi Berhasil, lakukan proses dibawah
         // Proses Tambah Data
         $tambahData = Perumahan::addPerumahan($request); 
+
+        // Cek apakah proses tambah data berhasil
         if($tambahData)
         {
+            // Jika berhasil, maka tampilkan response 201 CREATED
             return response()->json([
                 "message" => "Tambah Data Perumahan Berhasil",
                 "data"    => $tambahData
@@ -50,18 +62,51 @@ class PerumahanController extends Controller
         }
         else
         {
+            // Jika gagal, maka tampilkan response 500 INTERNAL SERVER ERROR
             return response()->json([
                 "message" => "Tambah Data Perumahan Gagal"
             ], 400);
         }
-        
-        // $data_file = [];
-        // $files = $request->file('foto_perumahan');
-        // foreach($files as $file)
-        // {
-        //     $data_file[] = $file->path();
-        // }
+    }
 
+     // Update Data Perumahan By ID
+    public function updatePerumahanById(Request $request, $id_perumahan)
+    {
+        // Validation
+        $validator = Validator::make(
+            $request->all(),
+            [
+                "foto_perumahan" => 'mimes:jpg,jpeg,png|max:5048',
+                "legalitas"      => 'mimes:pdf,xls,xlsx|max:10048'
+            ]
+        );
+        // Cek Validasi
+        if($validator->fails()){
+            // Jika Validasi Gagal, maka tampilkan response 400 BAD REQUEST
+            return response()->json([
+                "errors" => $validator->errors()
+            ], 400);
+        }
+        // Jika Validasi Berhasil, lakukan proses dibawah
+        // Proses Update Data
+        $updateData = Perumahan::updatePerumahanById($request, $id_perumahan);
+        
+        // Cek apakah proses update data berhasil
+        if($updateData)
+        {
+            // Jika berhasil, maka tampilkan response 201 CREATED
+            return response()->json([
+                "message" => "Update Data Perumahan dengan id: $id_perumahan, Berhasil",
+                "data"    => $updateData
+            ], 201);
+        }
+        else
+        {
+             // Jika gagal, maka tampilkan response 404 NOT FOUND
+             return response()->json([
+                "message" => "Update Data Perumahan Gagal, Data Tidak Ditemukan"
+            ], 404);
+        }
     }
 
     // Get Foto Perumahan
@@ -78,14 +123,6 @@ class PerumahanController extends Controller
          
      }
 
-    // Update Data Perumahan By ID
-    public function updatePerumahanById($id_perumahan)
-    {
-        return response()->json([
-            "message" => "Update Data dengan id: $id_perumahan, Berhasil"
-        ], 201);
-    }
-
     // Get All Data Perumahan
     public function getAll()
     {
@@ -98,6 +135,35 @@ class PerumahanController extends Controller
             "total_belum_konfirmasi" => $perumahan->total_belum_konfirmasi,
             "data"    => $perumahan
         ]);
+    }
+
+    // Get All Perumahan By Pengembang
+    public function getAllPerumahan()
+    {
+        // Get Current User untuk mendapatkan id pengembang
+        $user = Auth::user();
+        $pengembang = Pengembang::where('id_user', $user->id)->first();
+
+        // Get Perumahan By ID Pengembang
+        $perumahan = Perumahan::where('id_pengembang', $pengembang->id_pengembang)->get();
+
+        // Cek apakah pengembang sudah memiliki perumahan
+        if($perumahan)
+        {
+            // Jika sudah, tampilkan response 200 OK
+            return response()->json([
+                "message" => "Get All Perumahan dari Pengembang: $pengembang->nama_pengembang",
+                "data"    => $perumahan
+            ], 200);
+        }
+        else
+        {
+            // Jika belum, tetap tampilkan response 200 OK dengan alasan
+            return response()->json([
+                "message" => "Pengembang: $pengembang->nama_pengembang, belum memiliki perumahan",
+                "data"    => $perumahan
+            ], 200);
+        }
     }
 
     // Get Data Perumahan By ID
@@ -252,5 +318,78 @@ class PerumahanController extends Controller
                 "message" => "Gagal Update, Data Tidak Ditemukan"
             ], 201);
         }
+    }
+
+    // Tambah Foto by ID Perumahan
+    public function addFotoPerumahan(Request $request, $id_perumahan)
+    {
+        // Validation 
+        $message = [
+            "required" => ":attribute belum ada file!"
+        ];
+
+        $validator = Validator::make(
+            $request->all(),
+            [
+                
+                'foto_perumahan' => 'max:5048|required',
+            ],
+            $message
+        );
+        // Cek Validation
+        if($validator->fails())
+        {
+            // Jika validasi gagal, tampilkan response 400 BAD REQUEST
+            return response()->json([
+                "errors" => $validator->errors()
+            ], 400);
+        }
+        // Jika validasi berhasil, lanjutkan proses di bawah ini
+
+        // Tambah Foto
+        $tambahFoto = Perumahan::addFotoPerumahan($request, $id_perumahan);
+
+        // Cek apakah proses tambah berhasil
+        if($tambahFoto)
+        {
+            // Jika berhasil, tampilkan response 201 CREATED
+            return response()->json([
+                "message" => "Tambah foto dengan id perumahan: $id_perumahan, Berhasil",
+                "data"    => $tambahFoto
+            ], 201);
+        }
+        else
+        {
+            // Jika gagal, tampilkan response 400 BAD REQUEST
+            return response()->json([
+                "message" => "Tambah foto dengan id perumahan: $id_perumahan, Gagal",
+                "data"    => $tambahFoto
+            ], 400);
+        }
+    }
+
+    
+    // Update Status Utama Foto Perumahan By ID Foto
+    public function updateStatusFoto(Request $request, $id_perumahan, $id_foto)
+    {
+        return response()->json([
+            "message" => "Update status utama foto perumahan: $id_perumahan dengan id foto: $id_foto"
+        ]);
+    }
+
+    // Delete Foto Perumahan By ID Foto
+    public function deleteFoto(Request $request, $id_perumahan, $id_foto)
+    {
+        return response()->json([
+            "message" => "Delete data foto perumahan: $id_perumahan dengan id foto: $id_foto_perumahan, Berhasil"
+        ]);
+    }
+
+    // Get All Foto Perumahan by ID Perumahan
+    public function getAllFoto($id_perumahan)
+    {
+        return response()->json([
+            "message" => "Get All Foto Perumahan dengan id: $id_perumahan, Berhasil"
+        ]);
     }
 }

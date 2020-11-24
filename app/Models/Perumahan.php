@@ -26,6 +26,10 @@ class Perumahan extends Model
         $sarana_prasarana = 'sarana_prasarana_perumahan';
         $fasilitas = 'fasilitas_perumahan';
 
+        
+        $user = Auth::user();
+        $data_pengembang = DB::table($pengembang)->where(['id_user' => $user->id])->first();
+
         // Cek Apakah ada file foto
         $foto = [];
         if(!$req->hasFile('foto_perumahan'))
@@ -35,7 +39,7 @@ class Perumahan extends Model
             $images = $req->file('foto_perumahan');
             foreach($images as $image)
             {
-                $foto[] = $image->store('perumahan/foto');
+                $foto[] = $image->storeAs("perumahan/foto", rand(0,9999) . '-' . date('Ymd') . '-' . $image->getClientOriginalName());
             }
         }
 
@@ -44,13 +48,10 @@ class Perumahan extends Model
             $legalitas = '';
         else {
             $file = $req->file('legalitas');
-            $legalitas = $file->store('perumahan/file');
+            $legalitas = $file->storeAs("perumahan/file", rand(0,9999) . '-' . date('Ymd') . '-' . $file->getClientOriginalName());
         }
 
         // Lakukan Proses Tambah Data
-        $user = Auth::user();
-        $data_pengembang = DB::table($pengembang)->where(['id_user' => $user->id])->first();
-
         // Pembuatan Slug
         $last_data           = DB::table($perumahan)->orderBy('id_perumahan', 'DESC')->first();
         $slug                = Str::of($last_data->id_perumahan + 1 . ' ' . $req->nama_perumahan)->slug('-');
@@ -134,32 +135,95 @@ class Perumahan extends Model
         }
         else
             return null;
+    }
 
-        // return $data_perumahan;
+    // Update Data Perumahan By ID
+    public static function updatePerumahanById($req, $id_perumahan)
+    {
+        // Tabel - tabel
+        $perumahan  = 'perumahan';
+        $kelurahan  = 'kelurahan';
+        $kecamatan  = 'kecamatan';
+        $pengembang = 'pengembang';
 
+        // Cari data perumahan yang akan diupdate berdasarkan ID
+        $data_perumahan = DB::table($perumahan)->where(['id_perumahan' => $id_perumahan])->first();
+
+        // Cari data id pengembang berdasarkan id user yang sedang aktif sekarang
+        $user = Auth::user();
+        $id_pengembang = DB::table($pengembang)->where(['id_user' => $user->id])->first()->id_pengembang;
+
+        // Cek apakah ada data perumahan ditemukan
+        if($data_perumahan)
+        {
+            // Jika ada, lakukan proses update
+
+            // Persiapan data perumahan
+
+            // Cek apakah ada file legalitas
+            if(!$req->hasFile('legalitas'))
+            {
+                $legalitas = $data_perumahan->legalitas;
+            }
+            else
+            {
+                $file = $req->file('legalitas');
+                $legalitas = $file->storeAs("perumahan/file", $user->username . rand(0,9999) . time() . '-' .     $file->getClientOriginalName());
+            }
+
+            $data = [
+                'id_pengembang' => $id_pengembang,
+                'nama_perumahan' => ($req->nama_perumahan !== null) ? $req->nama_perumahan : $data_perumahan->nama_perumahan,
+                'deskripsi_perumahan' => ($req->deskripsi_perumahan !== null) ? $req->deskripsi_perumahan : $data_perumahan->deskripsi_perumahan,
+                'lokasi' => ($req->lokasi !== null) ? $req->lokasi : $data_perumahan->lokasi,
+                'legalitas' => $legalitas,
+                'latitude' => ($req->latitude !== null) ? $req->latitude : $data_perumahan->latitude,
+                'longitude' => ($req->longitude !== null) ? $req->longitude : $data_perumahan->longitude,
+                'id_kelurahan' => ($req->id_kelurahan !== null) ? $req->id_kelurahan : $data_perumahan->id_kelurahan,
+                'id_kecamatan' => ($req->id_kecamatan !== null) ? $req->id_kecamatan : $data_perumahan->id_kecamatan,
+            ];
+            // Update data in database
+            DB::table($perumahan)->where('id_perumahan', $id_perumahan)->update($data);
+
+            $data_perumahan = DB::table($perumahan)
+                                ->where('id_perumahan', $id_perumahan)
+                                ->leftJoin($kelurahan, "$kelurahan.id_kelurahan", "=", "$perumahan.id_kelurahan")
+                                ->leftJoin($kecamatan, "$kecamatan.id_kecamatan", "=", "$perumahan.id_kecamatan")
+                                ->first();
+            return $data_perumahan;
+        }
+        else
+        {
+            return null;
+        }
     }
 
     // Get All Data Perumahan
     public static function getAll()
     {
+        // Tabel - Tabel
         $perumahan = 'perumahan';
         $pengembang = 'pengembang';
         $kelurahan = 'kelurahan';
         $kecamatan = 'kecamatan';
 
+        // Get data perumahan
         $data_perumahan = DB::table($perumahan)
             ->leftJoin($pengembang, "$perumahan.id_pengembang", '=', "$pengembang.id_pengembang")
             ->leftJoin($kelurahan, "$kelurahan.id_kelurahan", "=", "$perumahan.id_kelurahan")
             ->leftJoin($kecamatan, "$kecamatan.id_kecamatan", "=", "$perumahan.id_kecamatan")
             ->get();
 
+        //  Get data belum konfirmasi
         $belum_konfirmasi = DB::table($perumahan)
             ->where(["status_perumahan" => 0])
             ->count();
 
+        //  Gabungkan data perumahan, belum konfirmasi, dan sudah konfirmasi
         $data_perumahan->total = $data_perumahan->count();
         $data_perumahan->total_sudah_konfirmasi = $data_perumahan->total - $belum_konfirmasi;
         $data_perumahan->total_belum_konfirmasi = $belum_konfirmasi;
+
         return $data_perumahan;
     }
 
@@ -319,5 +383,48 @@ class Perumahan extends Model
             ->first();
 
         return $data;
+    }
+
+    // Add Foto Perumahan
+    public static function addFotoPerumahan($req, $id_perumahan)
+    {
+        // Tabel - Tabel
+        $foto = 'foto_perumahan';
+
+        // Get Current User
+        $user = Auth::user();
+
+        // Cek Apakah ada file foto
+        if($req->hasFile('foto_perumahan'))
+        {
+            $data_foto = [];
+            $status = 0;
+            $i = 0;
+            $images = $req->file('foto_perumahan');
+            foreach($images as $image)
+            {
+                $data_foto[] = $image->storeAs('perumahan/foto', rand(0,9999) . '-' . date('Ymd') . '-' . $image->getClientOriginalName());
+
+                // Persiapan Data Foto
+                $data = [
+                    "id_perumahan"   => $id_perumahan,
+                    "foto_perumahan" => $data_foto[$i++],
+                    "status_foto"    => $status
+                ];
+                // Insert foto to database
+                DB::table($foto)->insert($data);
+            }
+        }
+        else
+        {
+            return null;
+        }
+
+        // Tampilkan foto hasil proses tambah
+        $data_foto = DB::table($foto)
+            ->where('id_perumahan', $id_perumahan)
+            ->orderBy('id_foto_perumahan', 'DESC')->get();
+
+        return $data_foto;
     }
 }
