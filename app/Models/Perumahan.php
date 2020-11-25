@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class Perumahan extends Model
@@ -14,6 +15,7 @@ class Perumahan extends Model
     use HasApiTokens, HasFactory;
 
     protected $table = 'perumahan';
+
     // GROUP PERUMAHAN
 
     // Add Data Perumahan
@@ -372,18 +374,31 @@ class Perumahan extends Model
     // Update Status Publish By ID
     public static function updateStatusProperti($id_bangunan, $status)
     {
+        // Tabel - Tabel
         $bangunan = 'bangunan';
 
+        // Get data hasil sebelum update status publish
+        $data = DB::table($bangunan)
+            ->where('id_bangunan', $id_bangunan)
+            ->first();
+
+        // Untuk mengatasi error jika status bernilai null
+        $status = ($status !== null) ? $status : $data->status_publish; 
+
+        // Proses Update
         DB::table($bangunan)
             ->where(['id_bangunan' => $id_bangunan])
             ->update(['status_publish' => $status]);
 
+        // Get data hasil setelah update status publish
         $data = DB::table($bangunan)
             ->where('id_bangunan', $id_bangunan)
             ->first();
 
         return $data;
     }
+
+    // GROUP PERUMAHAN / FOTO
 
     // Add Foto Perumahan
     public static function addFotoPerumahan($req, $id_perumahan)
@@ -426,5 +441,347 @@ class Perumahan extends Model
             ->orderBy('id_foto_perumahan', 'DESC')->get();
 
         return $data_foto;
+    }
+
+    // Update Status Utama Foto
+    public static function updateStatusFoto($status, $id_perumahan, $id_foto)
+    {
+        // Tabel - Tabel
+        $foto = 'foto_perumahan';
+
+         // Get foto hasil sebelum update status utama
+         $data_foto = DB::table($foto)
+         ->where([
+             'id_perumahan' => $id_perumahan,
+             'id_foto_perumahan' => $id_foto
+         ])
+         ->first();
+        
+        // Untuk mengatasi error jika status bernilai null
+        $status = ($status !== null) ? $status : $data_foto->status_foto;
+
+        // Proses update status foto utama
+        DB::table($foto)->where(
+            [
+                'id_perumahan' => $id_perumahan,
+                'id_foto_perumahan'      => $id_foto
+            ])
+            ->update(['status_foto' => $status]);
+        
+        // Get foto hasil setelah update status utama
+        $data_foto = DB::table($foto)
+                        ->where([
+                            'id_perumahan' => $id_perumahan,
+                            'id_foto_perumahan' => $id_foto
+                        ])
+                        ->first();
+        
+        // Cek apakah ada foto yang ditemukan
+        if($data_foto)
+            return $data_foto;
+        else
+            return null;
+    }
+
+    // Delete Foto Menggunakan
+    public static function deleteFoto($id_perumahan, $id_foto)
+    {
+        // Tabel - Tabel
+        $foto = 'foto_perumahan';
+
+        // Get data yang akan dihapus
+        $data_foto = DB::table($foto)
+                        ->where([
+                            "id_perumahan"      => $id_perumahan,
+                            "id_foto_perumahan" => $id_foto
+                        ])
+                        ->first();
+        
+        // Cek apakah ada data foto yang ditemukan
+        if(!$data_foto)
+        {
+            // Jika tidak ada, kembalikan nilai null
+            return null;
+        }
+        // Jika ada, lanjutkan proses dibawah
+
+        // Proses Delete
+        DB::table($foto)
+            ->where([
+                "id_perumahan"      => $id_perumahan,
+                "id_foto_perumahan" => $id_foto
+            ])
+            ->delete();
+        
+        // Get path foto untuk keperluan menghapus file foto di storage
+        $path_foto = $data_foto->foto_perumahan;
+
+        Storage::delete("$path_foto");
+
+        return true;
+    }
+
+    // Get All Foto By ID Perumahan
+    public static function getAllFoto($id_perumahan)
+    {
+        // Tabel - Tabel
+        $foto = 'foto_perumahan';
+        $perumahan = 'perumahan';
+
+        // Get Data Perumahan By ID
+        $data_perumahan = DB::table($perumahan)->where('id_perumahan', $id_perumahan)->first();
+        
+        // Get All Foto
+        $data_foto = DB::table($foto)->where('id_perumahan', $id_perumahan)->get();
+
+        // Cek apakah ada data Perumahan
+        if(!$data_perumahan)
+        {
+            return 'NOT_FOUND';
+        }
+
+        // Cek apakah ada data Foto
+        if($data_foto)
+        {
+            $data_foto->total = $data_foto->count();
+
+            return $data_foto;
+        }
+        else
+            return null;
+    }
+
+    // GROUP PERUMAHAN / SARANA DAN PRASARANA
+
+    // Add Sarana dan Prasarana By ID Perumahan
+    public static function addSaranaPrasarana($req, $id_perumahan)
+    {
+        // Tabel - Tabel
+        $sarana_prasarana = 'sarana_prasarana_perumahan';
+        $perumahan = 'perumahan';
+
+        // Get data perumahan
+        $data_perumahan = DB::table($perumahan)->where('id_perumahan', $id_perumahan)->first();
+
+        // Cek apakah ada data perumahan
+        if(!$data_perumahan)
+            return 'NOT_FOUND';
+
+        $data_sarana_prasarana = $req->sarana_prasarana_perumahan;
+
+        // Dilakukan perulangan FOREACH dikarenakan request bertipe Array
+        foreach($data_sarana_prasarana as $data)
+        {
+            // Proses update
+            $tambah = DB::table($sarana_prasarana)->insert([
+                "id_perumahan" => $id_perumahan,
+                "nama_sarana_prasarana_perumahan" => $data
+            ]);
+
+            if(!$tambah)
+                return null;
+        }
+        
+        // Get data sarana prasarana setelah ditambahkan
+        $data_sarana_prasarana = DB::table($sarana_prasarana)
+                                    ->select("$sarana_prasarana.id_sarana_prasarana_perumahan", "$sarana_prasarana.nama_sarana_prasarana_perumahan")
+                                    ->where('id_perumahan', $id_perumahan)
+                                    ->orderBy('id_sarana_prasarana_perumahan', 'DESC')
+                                    ->get();
+
+        // Gabungkan semua hasil proses ke dalam 1 variabel
+        $data = [
+            "id_perumahan" => $id_perumahan,
+            "sarana_prasarana_perumahan" => $data_sarana_prasarana
+        ];
+
+        return $data;
+    }
+
+    // Get All Sarana dan Prasarana By ID Perumahan
+    public static function getSaranaPrasarana($id_perumahan)
+    {
+        // Tabel - Tabel
+        $sarana_prasarana = 'sarana_prasarana_perumahan';
+        $perumahan = 'perumahan';
+
+        // Get data perumahan
+        $data_perumahan = DB::table($perumahan)->where('id_perumahan', $id_perumahan)->first();
+
+        // Cek apakah ada data perumahan
+        if(!$data_perumahan)
+            return 'NOT_FOUND';
+
+        // Get all data sarana prasarana by id perumahan
+        $data_sarana_prasarana = DB::table($sarana_prasarana)
+                                    ->select("$sarana_prasarana.id_sarana_prasarana_perumahan", "$sarana_prasarana.nama_sarana_prasarana_perumahan")
+                                    ->where('id_perumahan', $id_perumahan)
+                                    ->orderBy('id_sarana_prasarana_perumahan', 'desc')
+                                    ->get();
+
+        // Gabungkan semua hasil proses ke dalam 1 variabel
+        $data = [
+            "id_perumahan" => $id_perumahan,
+            "sarana_prasarana_perumahan" => $data_sarana_prasarana
+        ];
+
+        return $data;
+    }
+
+    // Delete Sarana dan Prasarana By ID Perumahan
+    public static function deleteSaranaPrasarana($id_perumahan, $id_sarana_prasarana)
+    {
+        // Tabel - Tabel
+        $sarana_prasarana = 'sarana_prasarana_perumahan';
+        $perumahan = 'perumahan';
+
+        // Get data perumahan dan sarana prasarana
+        $data_perumahan = DB::table($perumahan)->where('id_perumahan', $id_perumahan)->first();
+        $data_sarana_prasarana = DB::table($sarana_prasarana)
+                                    ->where([
+                                            "id_perumahan" => $id_perumahan,
+                                            "id_sarana_prasarana_perumahan" => $id_sarana_prasarana
+                                    ])
+                                    ->first();
+
+        // Cek apakah ada data perumahan dan sarana prasarana ditemukan
+        if(!$data_perumahan || !$data_sarana_prasarana)
+            return 'NOT_FOUND';
+
+        // Proses delete
+        $delete = DB::table($sarana_prasarana)
+                    ->where([
+                            "id_perumahan" => $id_perumahan,
+                            "id_sarana_prasarana_perumahan" => $id_sarana_prasarana
+                        ])
+                    ->delete();
+       
+        if($delete)
+        {
+            $data = [
+                "id_sarana_prasarana_perumahan" => $data_sarana_prasarana->id_sarana_prasarana_perumahan
+            ];
+    
+            return $data;
+        }
+        else 
+            return null;
+    }
+
+     // GROUP PERUMAHAN / FASILITAS
+
+    // Add Fasilitas By ID Perumahan
+    public static function addFasilitas($req, $id_perumahan)
+    {
+        // Tabel - Tabel
+        $fasilitas = 'fasilitas_perumahan';
+        $perumahan = 'perumahan';
+
+        // Get data perumahan
+        $data_perumahan = DB::table($perumahan)->where('id_perumahan', $id_perumahan)->first();
+
+        // Cek apakah ada data perumahan
+        if(!$data_perumahan)
+            return 'NOT_FOUND';
+
+        $data_fasilitas = $req->fasilitas_perumahan;
+
+        // Dilakukan perulangan FOREACH dikarenakan request bertipe Array
+        foreach($data_fasilitas as $data)
+        {
+            // Proses update
+            $tambah = DB::table($fasilitas)->insert([
+                "id_perumahan" => $id_perumahan,
+                "nama_fasilitas_perumahan" => $data
+            ]);
+
+            if(!$tambah)
+                return null;
+        }
+        
+        // Get data fasilitas setelah ditambahkan
+        $data_fasilitas = DB::table($fasilitas)
+                                    ->select("$fasilitas.id_fasilitas_perumahan", "$fasilitas.nama_fasilitas_perumahan")
+                                    ->where('id_perumahan', $id_perumahan)
+                                    ->orderBy('id_fasilitas_perumahan', 'DESC')
+                                    ->get();
+
+        // Gabungkan semua hasil proses ke dalam 1 variabel
+        $data = [
+            "id_perumahan" => $id_perumahan,
+            "fasilitas_perumahan" => $data_fasilitas
+        ];
+
+        return $data;
+    }
+
+    // Get All Fasilitas By ID Perumahan
+    public static function getFasilitas($id_perumahan)
+    {
+        // Tabel - Tabel
+        $fasilitas = 'fasilitas_perumahan';
+        $perumahan = 'perumahan';
+
+        // Get data perumahan
+        $data_perumahan = DB::table($perumahan)->where('id_perumahan', $id_perumahan)->first();
+
+        // Cek apakah ada data perumahan
+        if(!$data_perumahan)
+            return 'NOT_FOUND';
+
+        // Get all data fasilitas by id perumahan
+        $data_fasilitas = DB::table($fasilitas)
+                                    ->select("$fasilitas.id_fasilitas_perumahan", "$fasilitas.nama_fasilitas_perumahan")
+                                    ->where('id_perumahan', $id_perumahan)
+                                    ->orderBy('id_fasilitas_perumahan', 'desc')
+                                    ->get();
+
+        // Gabungkan semua hasil proses ke dalam 1 variabel
+        $data = [
+            "id_perumahan" => $id_perumahan,
+            "fasilitas_perumahan" => $data_fasilitas
+        ];
+
+        return $data;
+    }
+
+    // Delete Fasilitas By ID Perumahan
+    public static function deleteFasilitas($id_perumahan, $id_fasilitas)
+    {
+        // Tabel - Tabel
+        $fasilitas = 'fasilitas_perumahan';
+        $perumahan = 'perumahan';
+
+        // Get data perumahan dan fasilitas
+        $data_perumahan = DB::table($perumahan)->where('id_perumahan', $id_perumahan)->first();
+        $data_fasilitas = DB::table($fasilitas)
+                                    ->where([
+                                            "id_perumahan" => $id_perumahan,
+                                            "id_fasilitas_perumahan" => $id_fasilitas
+                                    ])
+                                    ->first();
+
+        // Cek apakah ada data perumahan dan fasilitas ditemukan
+        if(!$data_perumahan || !$data_fasilitas)
+            return 'NOT_FOUND';
+
+        // Proses delete
+        $delete = DB::table($fasilitas)
+                    ->where([
+                            "id_perumahan" => $id_perumahan,
+                            "id_fasilitas_perumahan" => $id_fasilitas
+                        ])
+                    ->delete();
+       
+        if($delete)
+        {
+            $data = [
+                "id_fasilitas_perumahan" => $data_fasilitas->id_fasilitas_perumahan
+            ];
+    
+            return $data;
+        }
+        else 
+            return null;
     }
 }

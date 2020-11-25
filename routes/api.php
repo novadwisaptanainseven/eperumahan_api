@@ -169,6 +169,28 @@ Route::prefix('v1/pengembang/')->group(function () {
 
             // Get All Foto Perumahan
             Route::get('/perumahan/{id_perumahan}/foto', [PerumahanController::class, 'getAllFoto']);
+
+            // GROUP PERUMAHAN / SARANA DAN PRASARANA
+
+            // Add Sarana dan Prasarana
+            Route::post('/perumahan/{id_perumahan}/sarana_prasarana', [PerumahanController::class, 'addSaranaPrasarana']);
+
+            // Get All Sarana dan Prasarana By ID Perumahan
+            Route::get('/perumahan/{id_perumahan}/sarana_prasarana', [PerumahanController::class, 'getSaranaPrasarana']);
+
+            // Delete Sarana dan Prasarana By ID
+            Route::delete('/perumahan/{id_perumahan}/sarana_prasarana/{id_sarana_prasarana_perumahan}', [PerumahanController::class, 'deleteSaranaPrasarana']);
+
+             // GROUP PERUMAHAN / FASILITAS
+
+            // Add Sarana dan Prasarana
+            Route::post('/perumahan/{id_perumahan}/fasilitas', [PerumahanController::class, 'addFasilitas']);
+
+            // Get All Sarana dan Prasarana By ID Perumahan
+            Route::get('/perumahan/{id_perumahan}/fasilitas', [PerumahanController::class, 'getFasilitas']);
+
+            // Delete Sarana dan Prasarana By ID
+            Route::delete('/perumahan/{id_perumahan}/fasilitas/{id_fasilitas_perumahan}', [PerumahanController::class, 'deleteFasilitas']);
             
         });
     });
