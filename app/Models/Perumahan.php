@@ -275,6 +275,150 @@ class Perumahan extends Model
 
     // GROUP PERUMAHAN / PROPERTI
 
+    // Add Properti By ID Perumahan
+    public static function addProperti($req, $id_perumahan)
+    {
+        // Tabel - Tabel
+        $perumahan = 'perumahan';
+        $pengembang = 'pengembang';
+        $foto_bangunan = 'foto_bangunan';
+        $spesifikasi = 'spesifikasi_rumah';
+        $bangunan = 'bangunan';
+        $kelurahan = 'kelurahan';
+        $kecamatan = 'kecamatan';
+
+        // Get Data Perumahan by ID Perumahan
+        $data_perumahan = DB::table($perumahan)->where('id_perumahan', $id_perumahan)->first();
+
+        // Get data pengembang yang sedang aktif sekarang
+        $user = Auth::user();
+        $data_pengembang = DB::table($pengembang)->where('id_user', $user->id)->first();
+
+        // Cek apakah ada data perumahan
+        if(!$data_perumahan)
+            return 'NOT_FOUND';
+
+        // Proses tambah data properti / bangunan
+        // Persiapan data
+
+        // Cek apakah ada file foto
+        if($req->hasFile('foto_bangunan'))
+        {
+            foreach($req->foto_bangunan as $foto)
+            {   
+                $ext_allowed = $req->ext_allowed;
+                $ext_file = $foto->extension();
+                if(!in_array($ext_file, $ext_allowed))
+                {
+                    return 'WRONG_EXTENSION';
+                }
+                else
+                {
+                    $path_foto[] = $foto->storeAs("bangunan/foto", rand(0,9999) . '-' . date('Ymd') . '-' . $foto->getClientOriginalName());
+                }
+            }
+        }
+
+        // Pembuatan Slug
+        $last_data           = DB::table($bangunan)->orderBy('id_bangunan', 'DESC')->first();
+        $bangunan_slug       = Str::of($last_data->id_bangunan + 1 . ' ' . $req->nama_bangunan)->slug('-');
+        // End Pembuatan Slug
+
+        $data_bangunan = [
+            "id_perumahan"       => $id_perumahan,
+            "id_pengembang"      => $data_pengembang->id_pengembang,
+            "id_kecamatan"       => $data_perumahan->id_kecamatan,
+            "id_kelurahan"       => $data_perumahan->id_kelurahan,
+            "lokasi_bangunan"    => $data_perumahan->lokasi,
+            "longitude"          => $data_perumahan->longitude,
+            "latitude"           => $data_perumahan->latitude,
+            "nama_bangunan"      => $req->nama_bangunan,
+            "kategori_bangunan"  => $req->kategori_bangunan,
+            "tipe_bangunan"      => $req->tipe_bangunan,
+            "deskripsi_bangunan" => $req->deskripsi_bangunan,
+            "harga_bangunan"     => $req->harga_bangunan,
+            "jumlah_tersedia"    => $req->jumlah_tersedia,
+            "luas_bangunan"      => $req->luas_bangunan,
+            "luas_tanah"         => $req->luas_tanah,
+            "dimensi_bangunan"   => $req->dimensi_bangunan,
+            "dimensi_tanah"      => $req->dimensi_tanah,
+            "jumlah_lantai"      => $req->jumlah_lantai,
+            "jumlah_kamar"       => $req->jumlah_kamar,
+            "jumlah_kamar_mandi" => $req->jumlah_kamar_mandi,
+            "jumlah_garasi"      => $req->jumlah_garasi,
+            "listrik"            => $req->listrik,
+            "bangunan_slug"      => $bangunan_slug,
+            "sertifikat"         => '',
+            "status_publish"     => 0
+        ];
+
+        // Insert data bangunan to database
+        $tambah = DB::table($bangunan)->insert($data_bangunan);
+
+        // Cek apakah proses tambah data berhasil
+        if($tambah)
+        {
+            // Jika berhasil, lakukan proses tambah foto dan spesifikasi
+
+            // Get id bangunan terbaru
+            $id_bangunan = DB::table($bangunan)->orderBy('id_bangunan', 'DESC')->first()->id_bangunan;
+
+            // Foto Bangunan
+            $i = 0;
+            $status = 0;
+            foreach($path_foto as $path)
+            {
+                if($i == 0)
+                    $status = 1;
+                else
+                    $status = 0;
+                    
+                $data_foto = [
+                    "id_bangunan" => $id_bangunan,
+                    "foto_bangunan" => $path,
+                    "level_foto" => $status
+                ];
+            
+                // Insert Data Foto Bangunan ke Database
+                DB::table($foto_bangunan)->insert($data_foto);
+                $i++;
+            }
+
+            // Spesifikasi Rumah
+            foreach($req->spesifikasi_rumah as $spek)
+            {
+                $data_spek = [
+                    "id_bangunan" => $id_bangunan,
+                    "nama_spesifikasi_rumah" => $spek,
+                ];
+
+                // Insert Data Spesifikasi ke database
+                DB::table($spesifikasi)->insert($data_spek);
+            }
+            
+            // Get data bangunan terbaru
+            $data_bangunan = DB::table($bangunan)
+                                ->where('id_bangunan', $id_bangunan)
+                                ->leftJoin($kelurahan, "$kelurahan.id_kelurahan", "=", "$bangunan.id_kelurahan")
+                                ->leftJoin($kecamatan, "$kecamatan.id_kecamatan", "=", "$bangunan.id_kecamatan")
+                                ->first();
+
+            
+            $data_spek = $req->spesifikasi_rumah;
+            $data_foto = $path_foto;
+
+            // Gabungkan semua data untuk ditampilkan dalam response
+            $data_bangunan->spesifikasi_rumah = $data_spek;
+            $data_bangunan->foto_bangunan = $data_foto;
+
+            return $data_bangunan;
+        }
+        else
+        {
+            null;
+        }
+    }
+
     // Get All Properti
     public static function getAllProperti()
     {
@@ -371,6 +515,84 @@ class Perumahan extends Model
             return null;
     }
 
+    // Update Properti By ID
+    public static function updatePropertiById($req, $id_perumahan, $id_bangunan)
+    {
+        // Tabel - Tabel
+        $perumahan = 'perumahan';
+        $pengembang = 'pengembang';
+        $bangunan = 'bangunan';
+        $kelurahan = 'kelurahan';
+        $kecamatan = 'kecamatan';
+
+        // Get Data Perumahan by ID Perumahan
+        $data_perumahan = DB::table($perumahan)->where('id_perumahan', $id_perumahan)->first();
+
+        // Get data pengembang yang sedang aktif sekarang
+        $user = Auth::user();
+        $data_pengembang = DB::table($pengembang)->where('id_user', $user->id)->first();
+
+        // Get data bangunan sebelum diupdate
+        $data_bangunan = DB::table($bangunan)
+                        ->where([
+                            "id_perumahan" => $id_perumahan,
+                            "id_bangunan"  => $id_bangunan
+                        ])
+                        ->first();
+
+        // Cek apakah ada data perumahan
+        if(!$data_perumahan)
+            return 'NOT_FOUND';
+
+        // Proses update data properti / bangunan
+        // Persiapan data
+    
+        // Pembuatan Slug
+        $bangunan_slug       = Str::of($data_bangunan->id_bangunan . ' ' . ($req->nama_bangunan !== null ? $req->nama_bangunan : $data_bangunan->nama_bangunan))->slug('-');
+        // End Pembuatan Slug
+
+        $data = [
+            "nama_bangunan"      => ($req->nama_bangunan !== null) ? $req->nama_bangunan : $data_bangunan->nama_bangunan,
+            "kategori_bangunan"  => ($req->kategori_bangunan !== null) ? $req->kategori_bangunan : $data_bangunan->kategori_bangunan,
+            "tipe_bangunan"      => ($req->tipe_bangunan !== null) ? $req->tipe_bangunan : $data_bangunan->tipe_bangunan,
+            "deskripsi_bangunan" => ($req->deskripsi_bangunan !== null) ? $req->deskripsi_bangunan : $data_bangunan->deskripsi_bangunan,
+            "harga_bangunan"     => ($req->harga_bangunan !== null) ? $req->harga_bangunan : $data_bangunan->harga_bangunan,
+            "jumlah_tersedia"    => ($req->jumlah_tersedia !== null) ? $req->jumlah_tersedia : $data_bangunan->jumlah_tersedia,
+            "luas_bangunan"      => ($req->luas_bangunan !== null) ? $req->luas_bangunan : $data_bangunan->luas_bangunan,
+            "luas_tanah"         => ($req->luas_tanah !== null) ? $req->luas_tanah : $data_bangunan->luas_tanah,
+            "dimensi_bangunan"   => ($req->dimensi_bangunan !== null) ? $req->dimensi_bangunan : $data_bangunan->dimensi_bangunan,
+            "dimensi_tanah"      => ($req->dimensi_tanah !== null) ? $req->dimensi_tanah : $data_bangunan->dimensi_tanah,
+            "jumlah_lantai"      => ($req->jumlah_lantai !== null) ? $req->jumlah_lantai : $data_bangunan->jumlah_lantai,
+            "jumlah_kamar"       => ($req->jumlah_kamar !== null) ? $req->jumlah_kamar : $data_bangunan->jumlah_kamar,
+            "jumlah_kamar_mandi" => ($req->jumlah_kamar_mandi !== null) ? $req->jumlah_kamar_mandi : $data_bangunan->jumlah_kamar_mandi,
+            "jumlah_garasi"      => ($req->jumlah_garasi !== null) ? $req->jumlah_garasi : $data_bangunan->jumlah_garasi,
+            "listrik"            => ($req->listrik !== null) ? $req->listrik : $data_bangunan->listrik,
+            "bangunan_slug"      => $bangunan_slug,
+            "status_publish"     => $data_bangunan->status_publish
+        ];
+
+        // Insert data bangunan to database
+        $update = DB::table($bangunan)
+                    ->where([
+                        "id_perumahan" => $id_perumahan,
+                        "id_bangunan"  => $id_bangunan
+                    ])
+                    ->update($data);
+
+        // Get data bangunan setelah update
+        $data_bangunan = DB::table($bangunan)
+                            ->where('id_bangunan', $id_bangunan)
+                            ->leftJoin($kelurahan, "$kelurahan.id_kelurahan", "=", "$bangunan.id_kelurahan")
+                            ->leftJoin($kecamatan, "$kecamatan.id_kecamatan", "=", "$bangunan.id_kecamatan")
+                            ->first();
+
+        if($data_bangunan)
+            return $data_bangunan;
+        else
+            return null;
+
+    }
+
     // Update Status Publish By ID
     public static function updateStatusProperti($id_bangunan, $status)
     {
@@ -394,6 +616,93 @@ class Perumahan extends Model
         $data = DB::table($bangunan)
             ->where('id_bangunan', $id_bangunan)
             ->first();
+
+        return $data;
+    }
+
+    // GROUP PERUMAHAN / PROPERTI / SPESIFIKASI
+
+    // Add Spesifikasi Properti
+    public static function addSpesifikasiProperti($req, $id_perumahan, $id_bangunan)
+    {
+        // Tabel - Tabel
+        $spesifikasi = 'spesifikasi_rumah';
+        $bangunan = 'bangunan';
+        $perumahan = 'perumahan';
+
+        // Get data perumahan
+        $data_perumahan = DB::table($perumahan)->where('id_perumahan', $id_perumahan)->first();
+
+        // Get data bangunan
+        $data_bangunan = DB::table($bangunan)->where('id_bangunan', $id_bangunan)->first();
+
+        // Cek apakah ada data perumahan atau data bangunan
+        if(!$data_perumahan || !$data_bangunan)
+            return 'NOT_FOUND';
+
+        $data_spesifikasi = $req->spesifikasi_rumah;
+
+        // Dilakukan perulangan FOREACH dikarenakan request bertipe Array
+        foreach($data_spesifikasi as $data)
+        {
+            // Proses update
+            $tambah = DB::table($spesifikasi)->insert([
+                "id_bangunan" => $id_bangunan,
+                "nama_spesifikasi_rumah" => $data
+            ]);
+
+            if(!$tambah)
+                return null;
+        }
+        
+        // Get data spesifikasi rumah setelah ditambahkan
+        $data_spesifikasi = DB::table($spesifikasi)
+                                    ->select("$spesifikasi.id_spesifikasi_rumah", "$spesifikasi.nama_spesifikasi_rumah")
+                                    ->where('id_bangunan', $id_bangunan)
+                                    ->orderBy('id_spesifikasi_rumah', 'DESC')
+                                    ->get();
+
+        // Gabungkan semua hasil proses ke dalam 1 variabel
+        $data = [
+            "id_perumahan" => $id_perumahan,
+            "id_bangunan" => $id_bangunan,
+            "spesifikasi_rumah" => $data_spesifikasi
+        ];
+
+        return $data;
+    }
+
+    // Get All Spesifikasi Rumah by ID Bangunan
+    public static function getSpesifikasiProperti($id_perumahan, $id_bangunan)
+    {
+        // Tabel - Tabel
+        $spesifikasi = 'spesifikasi_rumah';
+        $perumahan = 'perumahan';
+        $bangunan = 'bangunan';
+
+        // Get data perumahan
+        $data_perumahan = DB::table($perumahan)->where('id_perumahan', $id_perumahan)->first();
+
+        // Get data bangunan
+        $data_bangunan = DB::table($bangunan)->where('id_bangunan', $id_bangunan)->first();
+
+        // Cek apakah ada data perumahan atau data bangunan
+        if(!$data_perumahan || !$data_bangunan)
+            return 'NOT_FOUND';
+
+        // Get all data fasilitas by id bangunan
+        $data_bangunan = DB::table($spesifikasi)
+                            ->select("$spesifikasi.id_spesifikasi_rumah", "$spesifikasi.nama_spesifikasi_rumah")
+                            ->where('id_bangunan', $id_bangunan)
+                            ->orderBy('id_spesifikasi_rumah', 'desc')
+                            ->get();
+
+        // Gabungkan semua hasil proses ke dalam 1 variabel
+        $data = [
+            "id_perumahan" => $id_perumahan,
+            "id_bangunan"  => $id_bangunan,
+            "spesifikasi_rumah" => $data_bangunan
+        ];
 
         return $data;
     }

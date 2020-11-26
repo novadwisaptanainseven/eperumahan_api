@@ -191,6 +191,44 @@ Route::prefix('v1/pengembang/')->group(function () {
 
             // Delete Sarana dan Prasarana By ID
             Route::delete('/perumahan/{id_perumahan}/fasilitas/{id_fasilitas_perumahan}', [PerumahanController::class, 'deleteFasilitas']);
+
+             // GROUP PERUMAHAN / PROPERTI
+
+            // Add Properti By ID Perumahan
+            Route::post('perumahan/{id_perumahan}/properti', [PerumahanController::class, 'addProperti']);
+
+            // Get All Properti
+            Route::get('properti', [PerumahanController::class, 'getAllProperti']);
+
+            // Get Properti By ID
+            Route::get('properti/{id_properti}', [PerumahanController::class, 'getPropertiById2']);
+
+            // Update Status Publish By ID
+            Route::put('properti/{id_properti}/status', [PerumahanController::class, 'updateStatusProperti2']);
+
+            // Get All Properti By ID Perumahan
+            Route::get('perumahan/{id_perumahan}/properti', [PerumahanController::class, 'getAllPropertiById']);
+
+            // Get Properti By ID Perumahan & ID Bangunan
+            Route::get('perumahan/{id_perumahan}/properti/{id_bangunan}', [PerumahanController::class, 'getPropertiById']);
+            
+            // Update Properti By ID
+            Route::post('perumahan/{id_perumahan}/properti/{id_bangunan}', [PerumahanController::class, 'updatePropertiById
+            ']);
+
+            // Update Status Publish Properti By ID Perumahan & ID Bangunan
+            Route::put('perumahan/{id_perumahan}/properti/{id_bangunan}/status', [PerumahanController::class, 'updateStatusProperti']);
+
+            // GROUP PERUMAHAN / PROPERTI / SPESIFIKASI
+
+            // Add Spesifikasi Bangunan
+            Route::post('perumahan/{id_perumahan}/properti/{id_bangunan}/spesifikasi', [PerumahanController::class, 'addSpesifikasiProperti']);
+
+            // Get All Spesifikasi By ID Bangunan
+            Route::get('perumahan/{id_perumahan}/properti/{id_bangunan}/spesifikasi', [PerumahanController::class, 'getSpesifikasiProperti']);
+
+            // Delete Spesifikasi Bangunan By ID
+            Route::delete('perumahan/{id_perumahan}/properti/{id_bangunan}/spesifikasi/{id_spesifikasi_rumah}', [PerumahanController::class, 'deleteSpesifikasiProperti']);
             
         });
     });

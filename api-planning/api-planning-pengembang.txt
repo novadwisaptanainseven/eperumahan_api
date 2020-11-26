@@ -838,7 +838,7 @@ GROUP PROPERTI => http://perumahan/v1/pengembang/perumahan/{id_perumahan}/proper
 
         Response dari backend 
         res = {
-                message: "Get Properti Berhasil",
+                message: "Update Properti Berhasil",
                 data: 
                 [
                     {
