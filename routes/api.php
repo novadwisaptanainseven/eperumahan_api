@@ -8,6 +8,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PengembangController;
 use App\Http\Controllers\PerumahanController;
+use App\Http\Controllers\BrosurController;
 use App\Models\Pengembang;
 
 /*
@@ -120,7 +121,7 @@ Route::prefix('v1/pengembang/')->group(function () {
     Route::group(['middleware' => "auth:sanctum"], function () {
 
         // All secure URL's
-        Route::group(['middleware' => "is_pengembang"], function(){
+        Route::group(['middleware' => "is_pengembang"], function () {
 
             // Logout User Pengembang
             Route::post('user/logout', [AuthController::class, 'logout']);
@@ -129,7 +130,7 @@ Route::prefix('v1/pengembang/')->group(function () {
 
             // Get Akun Pengembang
             Route::get('akun', [PengembangController::class, 'getAkun']);
-    
+
             // Update Akun Pengembang
             Route::post('akun', [PengembangController::class, 'updatePengembang2']);
 
@@ -184,7 +185,7 @@ Route::prefix('v1/pengembang/')->group(function () {
             // Delete Sarana dan Prasarana By ID
             Route::delete('/perumahan/{id_perumahan}/sarana_prasarana/{id_sarana_prasarana_perumahan}', [PerumahanController::class, 'deleteSaranaPrasarana']);
 
-             // GROUP PERUMAHAN / FASILITAS
+            // GROUP PERUMAHAN / FASILITAS
 
             // Add Sarana dan Prasarana
             Route::post('/perumahan/{id_perumahan}/fasilitas', [PerumahanController::class, 'addFasilitas']);
@@ -195,7 +196,7 @@ Route::prefix('v1/pengembang/')->group(function () {
             // Delete Sarana dan Prasarana By ID
             Route::delete('/perumahan/{id_perumahan}/fasilitas/{id_fasilitas_perumahan}', [PerumahanController::class, 'deleteFasilitas']);
 
-             // GROUP PERUMAHAN / PROPERTI
+            // GROUP PERUMAHAN / PROPERTI
 
             // Add Properti By ID Perumahan
             Route::post('perumahan/{id_perumahan}/properti', [PerumahanController::class, 'addProperti']);
@@ -214,7 +215,7 @@ Route::prefix('v1/pengembang/')->group(function () {
 
             // Get Properti By ID Perumahan & ID Bangunan
             Route::get('perumahan/{id_perumahan}/properti/{id_bangunan}', [PerumahanController::class, 'getPropertiById']);
-            
+
             // Update Properti By ID
             Route::post('perumahan/{id_perumahan}/properti/{id_bangunan}', [PerumahanController::class, 'updatePropertiById
             ']);
@@ -246,6 +247,25 @@ Route::prefix('v1/pengembang/')->group(function () {
 
             // Delete Foto Bangunan
             Route::delete('properti/{id_bangunan}/foto/{id_foto}', [PerumahanController::class, 'deleteFotoBangunan']);
+
+            // END GROUP PERUMAHAN
+
+            // ===========================================================================================
+            // GROUP BROSUR PENGEMBANG
+
+            // Get All Brosur
+            Route::get('brosur/', [BrosurController::class, 'getAllBrosur']);
+
+            // Get Brosur By ID
+            Route::get('brosur/{id_brosur}', [BrosurController::class, 'getBrosurById']);
+
+            // Add Brosur
+            Route::post('brosur/', [BrosurController::class, 'addBrosur']);
+
+            // Update Brosur By ID
+
+            // Delete Brosur By ID
+            Route::delete('brosur/{id_brosur}', [BrosurController::class, 'deleteBrosur']);
         });
     });
 });

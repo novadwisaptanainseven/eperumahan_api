@@ -28,7 +28,7 @@ class PerumahanController extends Controller
                 "nama_perumahan"      => "required",
                 "deskripsi_perumahan" => "required",
                 "lokasi"              => "required",
-                // 'foto_perumahan'      => 'mimes:jpg,jpeg,png|max:5048',
+                'foto_perumahan'      => 'max:5048|required',
                 'legalitas'           => 'mimes:pdf,xls,xlsx|max:10048',
                 "longitude"           => "required",
                 "latitude"            => "required",
@@ -39,37 +39,58 @@ class PerumahanController extends Controller
             ],
             $message
         );
+
+        // Set ekstensi yang diizinkan untuk upload foto bangunan
+        $request->ext_allowed = ['jpg', 'jpeg', 'png'];
+
+        // Cek apakah ada data request fasilitas perumahan, dibuat pengecekan tersendiri karena fitur validasi request Laravel belum bisa menangani request tipe array
+        if (in_array(null, $request->fasilitas_perumahan)) {
+            return response()->json([
+                "message" => "Fasilitas perumahan harus diisi!",
+                "status_response" => "400 BAD REQUEST"
+            ], 400);
+        }
+        // Cek apakah ada data request sarana prasarana perumahan
+        if (in_array(null, $request->sarana_prasarana_perumahan)) {
+            return response()->json([
+                "message" => "Sarana prasarana perumahan harus diisi!",
+                "status_response" => "400 BAD REQUEST"
+            ], 400);
+        }
+
         // Cek Validasi
-        if($validator->fails())
-        {
+        if ($validator->fails()) {
             // Jika Validasi Gagal, tampilkan response 400 BAD REQUEST
             return response()->json([
                 'errors' => $validator->errors()
             ], 400);
         }
-        // Jika Validasi Berhasil, lakukan proses dibawah
+        // Jika Validasi Berhasil, lakukan proses dibawah ini
         // Proses Tambah Data
-        $tambahData = Perumahan::addPerumahan($request); 
+        $tambah = Perumahan::addPerumahan($request);
 
         // Cek apakah proses tambah data berhasil
-        if($tambahData)
-        {
+        if ($tambah !== 'WRONG_EXTENSION') {
             // Jika berhasil, maka tampilkan response 201 CREATED
             return response()->json([
                 "message" => "Tambah Data Perumahan Berhasil",
-                "data"    => $tambahData
+                "data"    => $tambah
             ], 201);
-        }
-        else
-        {
+        } else if ($tambah === 'WRONG_EXTENSION') {
+            // Jika ekstensi file yang dimasukkan tidak diizinkan, tampilkan response 400 BAD REQUEST
+            return response()->json([
+                "message" => "Ekstensi file foto / gambar harus bertipe jpg, jpeg, atau png!",
+                "status_response" => "400 BAD REQUEST"
+            ], 400);
+        } else {
             // Jika gagal, maka tampilkan response 500 INTERNAL SERVER ERROR
             return response()->json([
                 "message" => "Tambah Data Perumahan Gagal"
-            ], 400);
+            ], 500);
         }
     }
 
-     // Update Data Perumahan By ID
+    // Update Data Perumahan By ID
     public function updatePerumahanById(Request $request, $id_perumahan)
     {
         // Validation
@@ -81,7 +102,7 @@ class PerumahanController extends Controller
             ]
         );
         // Cek Validasi
-        if($validator->fails()){
+        if ($validator->fails()) {
             // Jika Validasi Gagal, maka tampilkan response 400 BAD REQUEST
             return response()->json([
                 "errors" => $validator->errors()
@@ -90,20 +111,17 @@ class PerumahanController extends Controller
         // Jika Validasi Berhasil, lakukan proses dibawah
         // Proses Update Data
         $updateData = Perumahan::updatePerumahanById($request, $id_perumahan);
-        
+
         // Cek apakah proses update data berhasil
-        if($updateData)
-        {
+        if ($updateData) {
             // Jika berhasil, maka tampilkan response 201 CREATED
             return response()->json([
                 "message" => "Update Data Perumahan dengan id: $id_perumahan, Berhasil",
                 "data"    => $updateData
             ], 201);
-        }
-        else
-        {
-             // Jika gagal, maka tampilkan response 404 NOT FOUND
-             return response()->json([
+        } else {
+            // Jika gagal, maka tampilkan response 404 NOT FOUND
+            return response()->json([
                 "message" => "Update Data Perumahan Gagal, Data Tidak Ditemukan"
             ], 404);
         }
@@ -113,15 +131,13 @@ class PerumahanController extends Controller
     public function getFotoPerumahan($filename)
     {
         return response()->download(storage_path("/app/perumahan/foto/$filename"));
-        
     }
 
-     // Get File Legalitas Perumahan
-     public function getFileLegalitas($filename)
-     {
-         return response()->download(storage_path("/app/perumahan/file/$filename"));
-         
-     }
+    // Get File Legalitas Perumahan
+    public function getFileLegalitas($filename)
+    {
+        return response()->download(storage_path("/app/perumahan/file/$filename"));
+    }
 
     // Get All Data Perumahan
     public function getAll()
@@ -148,16 +164,13 @@ class PerumahanController extends Controller
         $perumahan = Perumahan::where('id_pengembang', $pengembang->id_pengembang)->get();
 
         // Cek apakah pengembang sudah memiliki perumahan
-        if($perumahan)
-        {
+        if ($perumahan) {
             // Jika sudah, tampilkan response 200 OK
             return response()->json([
                 "message" => "Get All Perumahan dari Pengembang: $pengembang->nama_pengembang",
                 "data"    => $perumahan
             ], 200);
-        }
-        else
-        {
+        } else {
             // Jika belum, tetap tampilkan response 200 OK dengan alasan
             return response()->json([
                 "message" => "Pengembang: $pengembang->nama_pengembang, belum memiliki perumahan",
@@ -218,7 +231,7 @@ class PerumahanController extends Controller
             "numeric"  => ":attribute harus berupa angka!",
         ];
 
-        $validator = Validator::make($request->all(),[
+        $validator = Validator::make($request->all(), [
             "nama_bangunan"      => "required",
             "deskripsi_bangunan" => "required",
             "kategori_bangunan"  => "required",
@@ -227,7 +240,6 @@ class PerumahanController extends Controller
             "harga_bangunan"     => "required|numeric",
             "luas_bangunan"      => "required|numeric",
             "dimensi_bangunan"   => "required",
-            'foto_perumahan'     => 'max:5048|required',
             "luas_tanah"         => "required|numeric",
             "dimensi_tanah"      => "required",
             "jumlah_lantai"      => "required",
@@ -236,15 +248,14 @@ class PerumahanController extends Controller
             "jumlah_garasi"      => "required",
             "listrik"            => "required",
             "spesifikasi_rumah"  => "required",
-            "foto_bangunan"      => "required"
+            "foto_bangunan"      => "max:5048|required"
         ], $message);
 
         // Set ekstensi yang diizinkan untuk upload foto bangunan
         $request->ext_allowed = ['jpg', 'jpeg', 'png'];
 
         // Cek apakah ada data request spesifikasi rumah, dibuat pengecekan tersendiri karena fitur validasi request Laravel belum bisa menangani request tipe array
-        if(in_array(null, $request->spesifikasi_rumah))
-        {
+        if (in_array(null, $request->spesifikasi_rumah)) {
             return response()->json([
                 "message" => "Spesifikasi rumah harus diisi!",
                 "status_response" => "400 BAD REQUEST"
@@ -252,8 +263,7 @@ class PerumahanController extends Controller
         }
 
         // Cek Validasi
-        if($validator->fails())
-        {
+        if ($validator->fails()) {
             // Jika validasi gagal, tampilkan response 400 BAD REQUEST
             return response()->json([
                 "errors" => $validator->errors()
@@ -264,32 +274,25 @@ class PerumahanController extends Controller
         // Proses Tambah Data Properti
         $tambah = Perumahan::addProperti($request, $id_perumahan);
 
-        if($tambah === 'WRONG_EXTENSION')
-        {
+        if ($tambah === 'WRONG_EXTENSION') {
             // Jika ekstensi file yang dimasukkan tidak diizinkan, tampilkan response 400 BAD REQUEST
             return response()->json([
                 "message" => "Ekstensi file foto / gambar harus bertipe jpg, jpeg, atau png!",
                 "status_response" => "400 BAD REQUEST"
             ], 400);
-        }
-        else if($tambah !== 'NOT_FOUND')
-        {
+        } else if ($tambah !== 'NOT_FOUND') {
             // Jika berhasil dan data perumahan ditemukan, maka tampilkan response 201 CREATED
             return response()->json([
                 "message" => "Tambah data properti dengan id perumahan: $id_perumahan, Berhasil",
                 "data"    => $tambah
             ], 201);
-        }
-        else if($tambah === 'NOT_FOUND')
-        {
+        } else if ($tambah === 'NOT_FOUND') {
             // Jika data perumahan tidak ditemukan, maka tampilkan response 404 NOT FOUND
             return response()->json([
                 "message" => "Data dengan id perumahan: $id_perumahan, Tidak Ditemukan!",
                 "status"  => "404 NOT FOUND"
             ], 404);
-        }
-        else
-        {
+        } else {
             // Jika gagal, tampilkan response 500 INTERNAL SERVER ERROR
             return response()->json([
                 "message" => "Tambah data properti dengan id perumahan: $id_perumahan, Gagal.",
@@ -373,13 +376,13 @@ class PerumahanController extends Controller
     // Update Properti By ID
     public function updatePropertiById(Request $request, $id_perumahan, $id_bangunan)
     {
-         // Validation
+        // Validation
         $message = [
             "required" => ":attribute harus diisi!",
             "numeric"  => ":attribute harus berupa angka!",
         ];
 
-        $validator = Validator::make($request->all(),[
+        $validator = Validator::make($request->all(), [
             "jumlah_tersedia"    => "numeric",
             "harga_bangunan"     => "numeric",
             "luas_bangunan"      => "numeric",
@@ -387,8 +390,7 @@ class PerumahanController extends Controller
         ], $message);
 
         // Cek Validasi
-        if($validator->fails())
-        {
+        if ($validator->fails()) {
             // Jika validasi gagal, tampilkan response 400 BAD REQUEST
             return response()->json([
                 "errors" => $validator->errors()
@@ -398,24 +400,19 @@ class PerumahanController extends Controller
         // Proses Update Data Properti
         $update = Perumahan::updatePropertiById($request, $id_perumahan, $id_bangunan);
 
-        if($update !== 'NOT_FOUND')
-        {
+        if ($update !== 'NOT_FOUND') {
             // Jika berhasil dan data perumahan ditemukan, maka tampilkan response 201 CREATED
             return response()->json([
                 "message" => "Update properti dengan id: $id_bangunan dari perumahan: $id_perumahan, Berhasil",
                 "data"    => $update
             ], 201);
-        }
-        else if($update === 'NOT_FOUND')
-        {
+        } else if ($update === 'NOT_FOUND') {
             // Jika data perumahan tidak ditemukan, maka tampilkan response 404 NOT FOUND
             return response()->json([
                 "message" => "Data dengan id perumahan: $id_perumahan, Tidak Ditemukan!",
                 "status"  => "404 NOT FOUND"
             ], 404);
-        }
-        else
-        {
+        } else {
             // Jika gagal, tampilkan response 500 INTERNAL SERVER ERROR
             return response()->json([
                 "message" => "Update data properti dengan id perumahan: $id_perumahan, Gagal.",
@@ -473,15 +470,16 @@ class PerumahanController extends Controller
             'required' => ':attribute harus diisi!'
         ];
 
-        $validator = Validator::make($request->all(),[
+        $validator = Validator::make(
+            $request->all(),
+            [
                 "spesifikasi_rumah" => "required"
             ],
             $message
         );
 
         // Cek Validasi
-        if($validator->fails())
-        {
+        if ($validator->fails()) {
             // Jika validasi gagal, tampilkan response 400 BAD REQUEST
             return response()->json([
                 "error" => $validator->errors()
@@ -492,22 +490,18 @@ class PerumahanController extends Controller
         $spesifikasi = Perumahan::addSpesifikasiProperti($request, $id_perumahan, $id_bangunan);
 
         // Cek apakah proses tambah berhasil
-        if($spesifikasi !== 'NOT_FOUND')
-        {
+        if ($spesifikasi !== 'NOT_FOUND') {
             // Jika iya, tampilkan response 201 CREATED
             return response()->json([
                 "message" => "Tambah data spesifikasi properti dengan id bangunan: $id_bangunan, Berhasil",
                 "data"    => $spesifikasi
             ], 201);
-        }
-        else if($spesifikasi === 'NOT_FOUND')
-        {
+        } else if ($spesifikasi === 'NOT_FOUND') {
             // Jika tidak ditemukan, tampilkan response 404 NOT FOUND
             return response()->json([
                 "message" => "Gagal tambah data, Data Tidak Ditemukan"
             ], 404);
-        }
-        else {
+        } else {
             // Jika tidak, tampilkan response 400 BAD REQUEST
             return response()->json([
                 "message" => "Tambah data spesifikasi properti dengan id bangunan: $id_bangunan, Gagal"
@@ -518,32 +512,29 @@ class PerumahanController extends Controller
     // Get All Spesifikasi Properti by ID Bangunan
     public function getSpesifikasiProperti($id_bangunan)
     {
-         // Get All Spesifikasi
-         $spesifikasi = Perumahan::getSpesifikasiProperti($id_bangunan);
+        // Get All Spesifikasi
+        $spesifikasi = Perumahan::getSpesifikasiProperti($id_bangunan);
 
-         // Cek proses
-         if($spesifikasi !== 'NOT_FOUND')
-         {
-             // Jika berhasil, tampilkan response 200 OK
-             return response()->json([
-                 "message" => "Get all spesifikasi dengan id bangunan: $id_bangunan, Berhasil",
-                 "data"    => $spesifikasi
-             ], 200);
-         }
-         else if ($spesifikasi === 'NOT_FOUND'){
-             // Jika perumahan atau bangunan tidak ditemukan, tampilkan response 404 NOT FOUND
-             return response()->json([
-                 "message" => "Data tidak ditemukan",
-                 "data"    => $spesifikasi
-             ], 404);
-         }
-         else {
-             // Jika bangunan belum memiliki spesifikasi, tetap tampilkan response 200 OK
-             return response()->json([
-                 "message" => "Bangunan dengan id: $id_bangunan, Belum Spesifikasi Rumah",
-                 "data"    => $spesifikasi
-             ], 200);
-         }
+        // Cek proses
+        if ($spesifikasi !== 'NOT_FOUND') {
+            // Jika berhasil, tampilkan response 200 OK
+            return response()->json([
+                "message" => "Get all spesifikasi dengan id bangunan: $id_bangunan, Berhasil",
+                "data"    => $spesifikasi
+            ], 200);
+        } else if ($spesifikasi === 'NOT_FOUND') {
+            // Jika perumahan atau bangunan tidak ditemukan, tampilkan response 404 NOT FOUND
+            return response()->json([
+                "message" => "Data tidak ditemukan",
+                "data"    => $spesifikasi
+            ], 404);
+        } else {
+            // Jika bangunan belum memiliki spesifikasi, tetap tampilkan response 200 OK
+            return response()->json([
+                "message" => "Bangunan dengan id: $id_bangunan, Belum Spesifikasi Rumah",
+                "data"    => $spesifikasi
+            ], 200);
+        }
     }
 
     // Delete Spesifikasi Properti By ID
@@ -553,22 +544,19 @@ class PerumahanController extends Controller
         $spesifikasi = Perumahan::deleteSpesifikasiProperti($id_bangunan, $id_spesifikasi_rumah);
 
         // Cek proses
-        if($spesifikasi !== 'NOT_FOUND')
-        {
+        if ($spesifikasi !== 'NOT_FOUND') {
             // Jika berhasil, tampilkan response 200 OK
             return response()->json([
                 "message" => "Delete spesifikasi rumah dengan id: $id_spesifikasi_rumah dari bangunan: $id_bangunan, Berhasil",
                 "data_deleted"    => $spesifikasi
             ], 201);
-        }
-        else if ($spesifikasi === 'NOT_FOUND'){
+        } else if ($spesifikasi === 'NOT_FOUND') {
             // Jika perumahan, properti, atau spesifikasi tidak ditemukan, tampilkan response 404 NOT FOUND
             return response()->json([
                 "message" => "Data Tidak Ditemukan, id bangunan: $id_bangunan, id spesifikasi: $id_spesifikasi_rumah",
                 "data"    => $spesifikasi
             ], 404);
-        }
-        else {
+        } else {
             // Jika ada terjadi kesalahan dalam proses delete, tampilkan response 500 INTERNAL SERVER ERROR
             return response()->json([
                 "message" => "Delete spesifikasi rumah dengan id: $id_spesifikasi_rumah dari bangunan: $id_bangunan, Gagal"
@@ -577,7 +565,7 @@ class PerumahanController extends Controller
 
         return response()->json([
             "message" => "Delete spesifikasi rumah dengan id bangunan: $id_bangunan, Berhasil",
-            
+
         ], 201);
     }
 
@@ -590,8 +578,7 @@ class PerumahanController extends Controller
         $foto = Perumahan::getAllFotoBangunan($id_bangunan);
 
         // Cek apakah ada data foto
-        if($foto !== 'NOT_FOUND')
-        {
+        if ($foto !== 'NOT_FOUND') {
             // Jika ada, tampilkan response 200 OK
             return response()->json([
                 "message" => "Get All Foto Bangunan dengan id: $id_bangunan, Berhasil",
@@ -599,16 +586,14 @@ class PerumahanController extends Controller
             ], 200);
         }
         // Cek apakah data foto perumahan ditemukan
-        else if($foto === 'NOT_FOUND')
-        {
+        else if ($foto === 'NOT_FOUND') {
             // Jika tidak, tampilkan response 404 NOT FOUND
             return response()->json([
                 "message" => "Bangunan dengan id: $id_bangunan, Tidak Ditemukan"
             ], 404);
-        }
-        else {
-             // Jika tidak, tampilkan response 200 OK karena bukan error hanya belum memiliki foto
-             return response()->json([
+        } else {
+            // Jika tidak, tampilkan response 200 OK karena bukan error hanya belum memiliki foto
+            return response()->json([
                 "message" => "Bangunan dengan id: $id_bangunan, Belum Memiliki Foto",
                 "data"    => $foto
             ], 200);
@@ -631,12 +616,11 @@ class PerumahanController extends Controller
             $message
         );
 
-         // Set ekstensi yang diizinkan untuk upload foto bangunan
-         $request->ext_allowed = ['jpg', 'jpeg', 'png'];
+        // Set ekstensi yang diizinkan untuk upload foto bangunan
+        $request->ext_allowed = ['jpg', 'jpeg', 'png'];
 
         // Cek Validation
-        if($validator->fails())
-        {
+        if ($validator->fails()) {
             // Jika validasi gagal, tampilkan response 400 BAD REQUEST
             return response()->json([
                 "errors" => $validator->errors()
@@ -648,31 +632,24 @@ class PerumahanController extends Controller
         $tambahFoto = Perumahan::addFotoBangunan($request, $id_bangunan);
 
         // Cek apakah proses tambah berhasil
-        if($tambahFoto === 'WRONG_EXTENSION')
-        {
+        if ($tambahFoto === 'WRONG_EXTENSION') {
             // Jika ekstensi file yang dimasukkan tidak diizinkan, tampilkan response 400 BAD REQUEST
             return response()->json([
                 "message" => "Ekstensi file foto / gambar harus bertipe jpg, jpeg, atau png!",
                 "status_response" => "400 BAD REQUEST"
             ], 400);
-        }
-        else if($tambahFoto !== 'NOT_FOUND')
-        {
+        } else if ($tambahFoto !== 'NOT_FOUND') {
             // Jika berhasil, tampilkan response 201 CREATED
             return response()->json([
                 "message" => "Tambah foto dengan id bangunan: $id_bangunan, Berhasil",
                 "data"    => $tambahFoto
             ], 201);
-        }
-        else if($tambahFoto === 'NOT_FOUND')
-        {
+        } else if ($tambahFoto === 'NOT_FOUND') {
             // Jika data bangunan tidak ditemukan, tampilkan response 404 NOT FOUND
             return response()->json([
                 "message" => "Data properti tidak ditemukan!"
             ], 404);
-        }
-        else
-        {
+        } else {
             // Jika gagal, tampilkan response 500 INTERNAL SERVER ERROR
             return response()->json([
                 "message" => "Tambah foto dengan id bangunan: $id_bangunan, Gagal",
@@ -690,16 +667,13 @@ class PerumahanController extends Controller
         $foto = Perumahan::updateStatusFotoBangunan($status, $id_bangunan, $id_foto);
 
         // Cek Apakah hasil update status foto ditemukan
-        if($foto)
-        {
+        if ($foto) {
             // Jika iya, tampilkan response 201 CREATED
             return response()->json([
                 "message" => "Update status utama foto bangunan: $id_bangunan dengan id foto: $id_foto, Berhasil",
                 "data"    => $foto
             ], 201);
-        }
-        else
-        {
+        } else {
             // Jika tidak, tampilkan response 404 NOT FOUND
             return response()->json([
                 "message" => "Update status utama foto bangunan Gagal, Data Tidak Ditemukan"
@@ -714,21 +688,17 @@ class PerumahanController extends Controller
         $deleteFoto = Perumahan::deleteFotoBangunan($id_bangunan, $id_foto);
 
         // Cek apakah proses delete berhasil
-        if($deleteFoto !== 'NOT_FOUND')
-        {
+        if ($deleteFoto !== 'NOT_FOUND') {
             // Jika berhasil, tampilkan response 201 CREATED
             return response()->json([
                 "message" => "Delete data foto bangunan: $id_bangunan dengan id foto: $id_foto, Berhasil"
             ], 201);
-        }
-        else if($deleteFoto === 'NOT_FOUND'){
+        } else if ($deleteFoto === 'NOT_FOUND') {
             // Jika bangunan atau foto tidak ditemukan, tampilkan response 404 NOT FOUND
             return response()->json([
                 "message" => "Delete data foto bangunan Gagal. Data Tidak Ditemukan"
             ], 404);
-        }
-        else
-        {
+        } else {
             // Jika gagal, tampilkan response 500 INTERNAL SERVER ERROR
             return response()->json([
                 "message" => "Delete data foto bangunan Gagal. Terjadi kesalahan server"
@@ -737,7 +707,7 @@ class PerumahanController extends Controller
     }
 
     // GROUP PERUMAHAN / FOTO
-    
+
     // Tambah Foto by ID Perumahan
     public function addFotoPerumahan(Request $request, $id_perumahan)
     {
@@ -749,14 +719,13 @@ class PerumahanController extends Controller
         $validator = Validator::make(
             $request->all(),
             [
-                
+
                 'foto_perumahan' => 'max:5048|required',
             ],
             $message
         );
         // Cek Validation
-        if($validator->fails())
-        {
+        if ($validator->fails()) {
             // Jika validasi gagal, tampilkan response 400 BAD REQUEST
             return response()->json([
                 "errors" => $validator->errors()
@@ -768,16 +737,13 @@ class PerumahanController extends Controller
         $tambahFoto = Perumahan::addFotoPerumahan($request, $id_perumahan);
 
         // Cek apakah proses tambah berhasil
-        if($tambahFoto)
-        {
+        if ($tambahFoto) {
             // Jika berhasil, tampilkan response 201 CREATED
             return response()->json([
                 "message" => "Tambah foto dengan id perumahan: $id_perumahan, Berhasil",
                 "data"    => $tambahFoto
             ], 201);
-        }
-        else
-        {
+        } else {
             // Jika gagal, tampilkan response 400 BAD REQUEST
             return response()->json([
                 "message" => "Tambah foto dengan id perumahan: $id_perumahan, Gagal",
@@ -785,7 +751,7 @@ class PerumahanController extends Controller
             ], 400);
         }
     }
-    
+
     // Update Status Utama Foto Perumahan By ID Foto
     public function updateStatusFoto(Request $request, $id_perumahan, $id_foto)
     {
@@ -795,16 +761,18 @@ class PerumahanController extends Controller
         $foto = Perumahan::updateStatusFoto($status, $id_perumahan, $id_foto);
 
         // Cek Apakah hasil update status foto ditemukan
-        if($foto)
-        {
+        if ($foto !== 'NOT_FOUND') {
             // Jika iya, tampilkan response 201 CREATED
             return response()->json([
                 "message" => "Update status utama foto perumahan: $id_perumahan dengan id foto: $id_foto, Berhasil",
                 "data"    => $foto
             ], 201);
-        }
-        else
-        {
+        } else if ($foto === 'NOT_FOUND') {
+            // Jika data perumahan atau foto tidak ditemukan, tampilkan response 404 NOT FOUND
+            return response()->json([
+                "message" => "Data tidak ditemukan!"
+            ], 404);
+        } else {
             // Jika tidak, tampilkan response 404 NOT FOUND
             return response()->json([
                 "message" => "Update status utama foto perumahan Gagal, Data Tidak Ditemukan"
@@ -819,16 +787,13 @@ class PerumahanController extends Controller
         $deleteFoto = Perumahan::deleteFoto($id_perumahan, $id_foto);
 
         // Cek apakah proses delete berhasil
-        if($deleteFoto)
-        {
+        if ($deleteFoto) {
             // Jika berhasil, tampilkan response 201 CREATED
             return response()->json([
                 "message" => "Delete data foto perumahan: $id_perumahan dengan id foto: $id_foto, Berhasil",
                 "data"    => $deleteFoto
             ], 201);
-        }
-        else
-        {
+        } else {
             // Jika gagal, tampilkan response 404 NOT FOUND
             return response()->json([
                 "message" => "Delete data foto perumahan Gagal. Data Tidak Ditemukan"
@@ -843,8 +808,7 @@ class PerumahanController extends Controller
         $foto = Perumahan::getAllFoto($id_perumahan);
 
         // Cek apakah ada data foto
-        if($foto !== 'NOT_FOUND')
-        {
+        if ($foto !== 'NOT_FOUND') {
             // Jika ada, tampilkan response 200 OK
             return response()->json([
                 "message" => "Get All Foto Perumahan dengan id: $id_perumahan, Berhasil",
@@ -853,16 +817,14 @@ class PerumahanController extends Controller
             ], 200);
         }
         // Cek apakah data foto perumahan ditemukan
-        else if($foto === 'NOT_FOUND')
-        {
+        else if ($foto === 'NOT_FOUND') {
             // Jika tidak, tampilkan response 404 NOT FOUND
             return response()->json([
                 "message" => "Perumahan dengan id: $id_perumahan, Tidak Ditemukan"
             ], 404);
-        }
-        else {
-             // Jika tidak, tampilkan response 200 OK karena bukan error hanya belum memiliki foto
-             return response()->json([
+        } else {
+            // Jika tidak, tampilkan response 200 OK karena bukan error hanya belum memiliki foto
+            return response()->json([
                 "message" => "Perumahan dengan id: $id_perumahan, Belum Memiliki Foto",
                 "data"    => $foto
             ], 200);
@@ -879,15 +841,16 @@ class PerumahanController extends Controller
             'required' => ':attribute harus diisi!'
         ];
 
-        $validator = Validator::make($request->all(),[
+        $validator = Validator::make(
+            $request->all(),
+            [
                 "sarana_prasarana_perumahan" => "required"
             ],
             $message
         );
 
         // Cek Validasi
-        if($validator->fails())
-        {
+        if ($validator->fails()) {
             // Jika validasi gagal, tampilkan response 400 BAD REQUEST
             return response()->json([
                 "error" => $validator->errors()
@@ -898,28 +861,23 @@ class PerumahanController extends Controller
         $sarana_prasarana = Perumahan::addSaranaPrasarana($request, $id_perumahan);
 
         // Cek apakah proses tambah berhasil
-        if($sarana_prasarana !== 'NOT_FOUND')
-        {
+        if ($sarana_prasarana !== 'NOT_FOUND') {
             // Jika iya, tampilkan response 201 CREATED
             return response()->json([
                 "message" => "Tambah data sarana dan prasarana dengan id perumahan: $id_perumahan, Berhasil",
                 "data"    => $sarana_prasarana
             ], 201);
-        }
-        else if($sarana_prasarana === 'NOT_FOUND')
-        {
+        } else if ($sarana_prasarana === 'NOT_FOUND') {
             // Jika tidak ditemukan, tampilkan response 404 NOT FOUND
             return response()->json([
                 "message" => "Gagal tambah data, Perumahan Tidak Ditemukan"
             ], 404);
-        }
-        else {
+        } else {
             // Jika tidak, tampilkan response 400 BAD REQUEST
             return response()->json([
                 "message" => "Tambah data sarana dan prasarana dengan id perumahan: $id_perumahan, Gagal"
             ], 400);
         }
-
     }
 
     // Get All Sarana dan Prasarana By ID Perumahan
@@ -929,22 +887,19 @@ class PerumahanController extends Controller
         $sarana_prasarana = Perumahan::getSaranaPrasarana($id_perumahan);
 
         // Cek proses
-        if($sarana_prasarana !== 'NOT_FOUND')
-        {
+        if ($sarana_prasarana !== 'NOT_FOUND') {
             // Jika berhasil, tampilkan response 200 OK
             return response()->json([
                 "message" => "Get all sarana dan prasarana dengan id perumahan : $id_perumahan, Berhasil",
                 "data"    => $sarana_prasarana
             ], 200);
-        }
-        else if ($sarana_prasarana === 'NOT_FOUND'){
+        } else if ($sarana_prasarana === 'NOT_FOUND') {
             // Jika perumahan tidak ditemukan, tampilkan response 404 NOT FOUND
             return response()->json([
                 "message" => "Perumahan dengan id: $id_perumahan, Tidak Ditemukan",
                 "data"    => $sarana_prasarana
             ], 404);
-        }
-        else {
+        } else {
             // Jika perumahan belum memiliki sarana dan prasarana, tetap tampilkan response 200 OK
             return response()->json([
                 "message" => "Perumahan dengan id: $id_perumahan, Belum Memiliki Sarana dan Prasarana",
@@ -960,22 +915,19 @@ class PerumahanController extends Controller
         $sarana_prasarana = Perumahan::deleteSaranaPrasarana($id_perumahan, $id_sarana_prasarana_perumahan);
 
         // Cek proses
-        if($sarana_prasarana !== 'NOT_FOUND')
-        {
+        if ($sarana_prasarana !== 'NOT_FOUND') {
             // Jika berhasil, tampilkan response 200 OK
             return response()->json([
                 "message" => "Delete sarana dan prasarana dengan id: $id_sarana_prasarana_perumahan dari perumahan: $id_perumahan, Berhasil",
                 "data_deleted"    => $sarana_prasarana
             ], 201);
-        }
-        else if ($sarana_prasarana === 'NOT_FOUND'){
+        } else if ($sarana_prasarana === 'NOT_FOUND') {
             // Jika perumahan tidak ditemukan, tampilkan response 404 NOT FOUND
             return response()->json([
                 "message" => "Data Tidak Ditemukan",
                 "data"    => $sarana_prasarana
             ], 404);
-        }
-        else {
+        } else {
             // Jika ada terjadi kesalahan dalam proses delete, maka tampilkan response 500 INTERNAL SERVER ERROR
             return response()->json([
                 "message" => "Delete sarana dan prasarana dengan id: $id_sarana_prasarana_perumahan dari perumahan: $id_perumahan, Gagal"
@@ -983,7 +935,7 @@ class PerumahanController extends Controller
         }
     }
 
-     // GROUP PERUMAHAN / FASILITAS
+    // GROUP PERUMAHAN / FASILITAS
 
     // Add Fasilitas Perumahan
     public function addFasilitas(Request $request, $id_perumahan)
@@ -993,15 +945,16 @@ class PerumahanController extends Controller
             'required' => ':attribute harus diisi!'
         ];
 
-        $validator = Validator::make($request->all(),[
+        $validator = Validator::make(
+            $request->all(),
+            [
                 "fasilitas_perumahan" => "required"
             ],
             $message
         );
 
         // Cek Validasi
-        if($validator->fails())
-        {
+        if ($validator->fails()) {
             // Jika validasi gagal, tampilkan response 400 BAD REQUEST
             return response()->json([
                 "error" => $validator->errors()
@@ -1012,28 +965,23 @@ class PerumahanController extends Controller
         $fasilitas = Perumahan::addFasilitas($request, $id_perumahan);
 
         // Cek apakah proses tambah berhasil
-        if($fasilitas !== 'NOT_FOUND')
-        {
+        if ($fasilitas !== 'NOT_FOUND') {
             // Jika iya, tampilkan response 201 CREATED
             return response()->json([
                 "message" => "Tambah data fasilitas dengan id perumahan: $id_perumahan, Berhasil",
                 "data"    => $fasilitas
             ], 201);
-        }
-        else if($fasilitas === 'NOT_FOUND')
-        {
+        } else if ($fasilitas === 'NOT_FOUND') {
             // Jika tidak ditemukan, tampilkan response 404 NOT FOUND
             return response()->json([
                 "message" => "Gagal tambah data, Perumahan Tidak Ditemukan"
             ], 404);
-        }
-        else {
+        } else {
             // Jika tidak, tampilkan response 400 BAD REQUEST
             return response()->json([
                 "message" => "Tambah data fasilitas dengan id perumahan: $id_perumahan, Gagal"
             ], 400);
         }
-
     }
 
     // Get All Fasilitas By ID Perumahan
@@ -1043,22 +991,19 @@ class PerumahanController extends Controller
         $fasilitas = Perumahan::getFasilitas($id_perumahan);
 
         // Cek proses
-        if($fasilitas !== 'NOT_FOUND')
-        {
+        if ($fasilitas !== 'NOT_FOUND') {
             // Jika berhasil, tampilkan response 200 OK
             return response()->json([
                 "message" => "Get all fasilitas dengan id perumahan : $id_perumahan, Berhasil",
                 "data"    => $fasilitas
             ], 200);
-        }
-        else if ($fasilitas === 'NOT_FOUND'){
+        } else if ($fasilitas === 'NOT_FOUND') {
             // Jika perumahan tidak ditemukan, tampilkan response 404 NOT FOUND
             return response()->json([
                 "message" => "Perumahan dengan id: $id_perumahan, Tidak Ditemukan",
                 "data"    => $fasilitas
             ], 404);
-        }
-        else {
+        } else {
             // Jika perumahan belum memiliki fasilitas, tetap tampilkan response 200 OK
             return response()->json([
                 "message" => "Perumahan dengan id: $id_perumahan, Belum Memiliki Fasilitas",
@@ -1074,22 +1019,19 @@ class PerumahanController extends Controller
         $fasilitas = Perumahan::deleteFasilitas($id_perumahan, $id_fasilitas_perumahan);
 
         // Cek proses
-        if($fasilitas !== 'NOT_FOUND')
-        {
+        if ($fasilitas !== 'NOT_FOUND') {
             // Jika berhasil, tampilkan response 200 OK
             return response()->json([
                 "message" => "Delete fasilitas dengan id: $id_fasilitas_perumahan dari perumahan: $id_perumahan, Berhasil",
                 "data_deleted"    => $fasilitas
             ], 201);
-        }
-        else if ($fasilitas === 'NOT_FOUND'){
+        } else if ($fasilitas === 'NOT_FOUND') {
             // Jika perumahan atau fasilitas tidak ditemukan, tampilkan response 404 NOT FOUND
             return response()->json([
                 "message" => "Data Tidak Ditemukan",
                 "data"    => $fasilitas
             ], 404);
-        }
-        else {
+        } else {
             // Jika proses update gagal, tampilkan response 500 INTERNAL SERVER ERROR
             return response()->json([
                 "message" => "Delete fasilitas dengan id: $id_fasilitas_perumahan dari perumahan: $id_perumahan, Gagal"

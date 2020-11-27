@@ -23,34 +23,39 @@ class Perumahan extends Model
     {
         // Tabel - Tabel
         $perumahan = 'perumahan';
+        $kelurahan = 'kelurahan';
+        $kecamatan = 'kecamatan';
         $pengembang = 'pengembang';
         $foto_perumahan = 'foto_perumahan';
         $sarana_prasarana = 'sarana_prasarana_perumahan';
         $fasilitas = 'fasilitas_perumahan';
 
-        
+        // Get pengembang
         $user = Auth::user();
         $data_pengembang = DB::table($pengembang)->where(['id_user' => $user->id])->first();
 
-        // Cek Apakah ada file foto
+        // Cek Apakah ada file foto / Validasi ekstensi file apakah sesuai dengan ext_allowed
         $foto = [];
-        if(!$req->hasFile('foto_perumahan'))
+        if (!$req->hasFile('foto_perumahan'))
             $foto = '';
-        else
-        {
+        else {
             $images = $req->file('foto_perumahan');
-            foreach($images as $image)
-            {
-                $foto[] = $image->storeAs("perumahan/foto", rand(0,9999) . '-' . date('Ymd') . '-' . $image->getClientOriginalName());
+            foreach ($images as $image) {
+                $ext_allowed = $req->ext_allowed;
+                $ext_file = $image->extension();
+                if (!in_array($ext_file, $ext_allowed)) {
+                    return 'WRONG_EXTENSION';
+                }
             }
         }
+        // Akhir validasi
 
         // Cek Apakah ada file legalitas
-        if(!$req->hasFile('legalitas'))
+        if (!$req->hasFile('legalitas'))
             $legalitas = '';
         else {
             $file = $req->file('legalitas');
-            $legalitas = $file->storeAs("perumahan/file", rand(0,9999) . '-' . date('Ymd') . '-' . $file->getClientOriginalName());
+            $legalitas = $file->storeAs("perumahan/file", rand(0, 9999) . '-' . date('Ymd') . '-' . $file->getClientOriginalName());
         }
 
         // Lakukan Proses Tambah Data
@@ -78,30 +83,31 @@ class Perumahan extends Model
         $cek_insert = DB::table($perumahan)->insert($data_perumahan);
 
         // Persiapan Data Foto
-        $get_latest_id_perumahan= DB::table($perumahan)->orderBy('id_perumahan', 'DESC')->first()->id_perumahan;
+        $get_latest_id_perumahan = DB::table($perumahan)->orderBy('id_perumahan', 'DESC')->first()->id_perumahan;
         $i = 0;
         $status = 0;
-        foreach($foto as $f)
-        {
-            if($i == 0)
+        foreach ($req->foto_perumahan as $foto) {
+            $f = $foto->storeAs("perumahan/foto", rand(0, 9999) . '-' . date('Ymd') . '-' . $image->getClientOriginalName());
+
+            // Request foto pertama akan menjadi status utama
+            if ($i == 0)
                 $status = 1;
             else
                 $status = 0;
-                
+
             $data_foto = [
                 "id_perumahan" => $get_latest_id_perumahan,
                 "foto_perumahan" => $f,
                 "status_foto" => $status
             ];
-            
+
             // Insert Data Foto Perumahan ke Database
             DB::table($foto_perumahan)->insert($data_foto);
             $i++;
         }
 
         // Persiapan Data Sarana dan Prasarana
-        foreach($req->sarana_prasarana_perumahan as $s)
-        {
+        foreach ($req->sarana_prasarana_perumahan as $s) {
             $data_sarana = [
                 "id_perumahan" => $get_latest_id_perumahan,
                 "nama_sarana_prasarana_perumahan" => $s
@@ -111,8 +117,7 @@ class Perumahan extends Model
         }
 
         // Persiapan Data Fasilitas
-        foreach($req->fasilitas_perumahan as $f)
-        {
+        foreach ($req->fasilitas_perumahan as $f) {
             $data_fasilitas = [
                 "id_perumahan" => $get_latest_id_perumahan,
                 "nama_fasilitas_perumahan" => $f
@@ -121,21 +126,23 @@ class Perumahan extends Model
             DB::table($fasilitas)->insert($data_fasilitas);
         }
 
-        $getPerumahan = DB::table($perumahan)->where('id_perumahan', $get_latest_id_perumahan)->first();
+        $getPerumahan = DB::table($perumahan)
+            ->where('id_perumahan', $get_latest_id_perumahan)
+            ->leftJoin($kelurahan, "$kelurahan.id_kelurahan", "=", "$perumahan.id_kelurahan")
+            ->leftJoin($kecamatan, "$kecamatan.id_kecamatan", "=", "$perumahan.id_kecamatan")
+            ->first();
         $getFoto      = DB::table($foto_perumahan)->where('id_perumahan', $get_latest_id_perumahan)->get();
         $getFasilitas = DB::table($fasilitas)->where('id_perumahan', $get_latest_id_perumahan)->get();
         $getSarana    = DB::table($sarana_prasarana)->where('id_perumahan', $get_latest_id_perumahan)->get();
-        
-        if($cek_insert)
-        {
+
+        if ($cek_insert) {
             // Gabungkan Semua Data untuk ditampilkan pada response
             $getPerumahan->foto_perumahan = $getFoto;
             $getPerumahan->sarana_prasarana_perumahan = $getSarana;
             $getPerumahan->fasilitas_perumahan = $getFasilitas;
-            
+
             return $getPerumahan;
-        }
-        else
+        } else
             return null;
     }
 
@@ -156,21 +163,17 @@ class Perumahan extends Model
         $id_pengembang = DB::table($pengembang)->where(['id_user' => $user->id])->first()->id_pengembang;
 
         // Cek apakah ada data perumahan ditemukan
-        if($data_perumahan)
-        {
+        if ($data_perumahan) {
             // Jika ada, lakukan proses update
 
             // Persiapan data perumahan
 
             // Cek apakah ada file legalitas
-            if(!$req->hasFile('legalitas'))
-            {
+            if (!$req->hasFile('legalitas')) {
                 $legalitas = $data_perumahan->legalitas;
-            }
-            else
-            {
+            } else {
                 $file = $req->file('legalitas');
-                $legalitas = $file->storeAs("perumahan/file", $user->username . rand(0,9999) . time() . '-' .     $file->getClientOriginalName());
+                $legalitas = $file->storeAs("perumahan/file", $user->username . rand(0, 9999) . time() . '-' .     $file->getClientOriginalName());
             }
 
             $data = [
@@ -188,14 +191,12 @@ class Perumahan extends Model
             DB::table($perumahan)->where('id_perumahan', $id_perumahan)->update($data);
 
             $data_perumahan = DB::table($perumahan)
-                                ->where('id_perumahan', $id_perumahan)
-                                ->leftJoin($kelurahan, "$kelurahan.id_kelurahan", "=", "$perumahan.id_kelurahan")
-                                ->leftJoin($kecamatan, "$kecamatan.id_kecamatan", "=", "$perumahan.id_kecamatan")
-                                ->first();
+                ->where('id_perumahan', $id_perumahan)
+                ->leftJoin($kelurahan, "$kelurahan.id_kelurahan", "=", "$perumahan.id_kelurahan")
+                ->leftJoin($kecamatan, "$kecamatan.id_kecamatan", "=", "$perumahan.id_kecamatan")
+                ->first();
             return $data_perumahan;
-        }
-        else
-        {
+        } else {
             return null;
         }
     }
@@ -295,27 +296,22 @@ class Perumahan extends Model
         $data_pengembang = DB::table($pengembang)->where('id_user', $user->id)->first();
 
         // Cek apakah ada data perumahan
-        if(!$data_perumahan)
+        if (!$data_perumahan)
             return 'NOT_FOUND';
 
         // Proses tambah data properti / bangunan
         // Persiapan data
 
         // Cek apakah ada file foto
-        if($req->hasFile('foto_bangunan'))
-        {
+        if ($req->hasFile('foto_bangunan')) {
             $path_foto = [];
-            foreach($req->foto_bangunan as $foto)
-            {   
+            foreach ($req->foto_bangunan as $foto) {
                 $ext_allowed = $req->ext_allowed;
                 $ext_file = $foto->extension();
-                if(!in_array($ext_file, $ext_allowed))
-                {
+                if (!in_array($ext_file, $ext_allowed)) {
                     return 'WRONG_EXTENSION';
-                }
-                else
-                {
-                    $path_foto[] = $foto->storeAs("bangunan/foto", rand(0,9999) . '-' . date('Ymd') . '-' . $foto->getClientOriginalName());
+                } else {
+                    $path_foto[] = $foto->storeAs("bangunan/foto", rand(0, 9999) . '-' . date('Ymd') . '-' . $foto->getClientOriginalName());
                 }
             }
         }
@@ -357,8 +353,7 @@ class Perumahan extends Model
         $tambah = DB::table($bangunan)->insert($data_bangunan);
 
         // Cek apakah proses tambah data berhasil
-        if($tambah)
-        {
+        if ($tambah) {
             // Jika berhasil, lakukan proses tambah foto dan spesifikasi
 
             // Get id bangunan terbaru
@@ -367,27 +362,25 @@ class Perumahan extends Model
             // Foto Bangunan
             $i = 0;
             $status = 0;
-            foreach($path_foto as $path)
-            {
-                if($i == 0)
+            foreach ($path_foto as $path) {
+                if ($i == 0)
                     $status = 1;
                 else
                     $status = 0;
-                    
+
                 $data_foto = [
                     "id_bangunan" => $id_bangunan,
                     "foto_bangunan" => $path,
                     "level_foto" => $status
                 ];
-            
+
                 // Insert Data Foto Bangunan ke Database
                 DB::table($foto_bangunan)->insert($data_foto);
                 $i++;
             }
 
             // Spesifikasi Rumah
-            foreach($req->spesifikasi_rumah as $spek)
-            {
+            foreach ($req->spesifikasi_rumah as $spek) {
                 $data_spek = [
                     "id_bangunan" => $id_bangunan,
                     "nama_spesifikasi_rumah" => $spek,
@@ -396,15 +389,15 @@ class Perumahan extends Model
                 // Insert Data Spesifikasi ke database
                 DB::table($spesifikasi)->insert($data_spek);
             }
-            
+
             // Get data bangunan terbaru
             $data_bangunan = DB::table($bangunan)
-                                ->where('id_bangunan', $id_bangunan)
-                                ->leftJoin($kelurahan, "$kelurahan.id_kelurahan", "=", "$bangunan.id_kelurahan")
-                                ->leftJoin($kecamatan, "$kecamatan.id_kecamatan", "=", "$bangunan.id_kecamatan")
-                                ->first();
+                ->where('id_bangunan', $id_bangunan)
+                ->leftJoin($kelurahan, "$kelurahan.id_kelurahan", "=", "$bangunan.id_kelurahan")
+                ->leftJoin($kecamatan, "$kecamatan.id_kecamatan", "=", "$bangunan.id_kecamatan")
+                ->first();
 
-            
+
             $data_spek = $req->spesifikasi_rumah;
             $data_foto = $path_foto;
 
@@ -413,9 +406,7 @@ class Perumahan extends Model
             $data_bangunan->foto_bangunan = $data_foto;
 
             return $data_bangunan;
-        }
-        else
-        {
+        } else {
             null;
         }
     }
@@ -535,19 +526,19 @@ class Perumahan extends Model
 
         // Get data bangunan sebelum diupdate
         $data_bangunan = DB::table($bangunan)
-                        ->where([
-                            "id_perumahan" => $id_perumahan,
-                            "id_bangunan"  => $id_bangunan
-                        ])
-                        ->first();
+            ->where([
+                "id_perumahan" => $id_perumahan,
+                "id_bangunan"  => $id_bangunan
+            ])
+            ->first();
 
         // Cek apakah ada data perumahan
-        if(!$data_perumahan)
+        if (!$data_perumahan)
             return 'NOT_FOUND';
 
         // Proses update data properti / bangunan
         // Persiapan data
-    
+
         // Pembuatan Slug
         $bangunan_slug       = Str::of($data_bangunan->id_bangunan . ' ' . ($req->nama_bangunan !== null ? $req->nama_bangunan : $data_bangunan->nama_bangunan))->slug('-');
         // End Pembuatan Slug
@@ -574,24 +565,23 @@ class Perumahan extends Model
 
         // Insert data bangunan to database
         $update = DB::table($bangunan)
-                    ->where([
-                        "id_perumahan" => $id_perumahan,
-                        "id_bangunan"  => $id_bangunan
-                    ])
-                    ->update($data);
+            ->where([
+                "id_perumahan" => $id_perumahan,
+                "id_bangunan"  => $id_bangunan
+            ])
+            ->update($data);
 
         // Get data bangunan setelah update
         $data_bangunan = DB::table($bangunan)
-                            ->where('id_bangunan', $id_bangunan)
-                            ->leftJoin($kelurahan, "$kelurahan.id_kelurahan", "=", "$bangunan.id_kelurahan")
-                            ->leftJoin($kecamatan, "$kecamatan.id_kecamatan", "=", "$bangunan.id_kecamatan")
-                            ->first();
+            ->where('id_bangunan', $id_bangunan)
+            ->leftJoin($kelurahan, "$kelurahan.id_kelurahan", "=", "$bangunan.id_kelurahan")
+            ->leftJoin($kecamatan, "$kecamatan.id_kecamatan", "=", "$bangunan.id_kecamatan")
+            ->first();
 
-        if($data_bangunan)
+        if ($data_bangunan)
             return $data_bangunan;
         else
             return null;
-
     }
 
     // Update Status Publish By ID
@@ -606,7 +596,7 @@ class Perumahan extends Model
             ->first();
 
         // Untuk mengatasi error jika status bernilai null
-        $status = ($status !== null) ? $status : $data->status_publish; 
+        $status = ($status !== null) ? $status : $data->status_publish;
 
         // Proses Update
         DB::table($bangunan)
@@ -638,30 +628,29 @@ class Perumahan extends Model
         $data_bangunan = DB::table($bangunan)->where('id_bangunan', $id_bangunan)->first();
 
         // Cek apakah ada data perumahan atau data bangunan
-        if(!$data_perumahan || !$data_bangunan)
+        if (!$data_perumahan || !$data_bangunan)
             return 'NOT_FOUND';
 
         $data_spesifikasi = $req->spesifikasi_rumah;
 
         // Dilakukan perulangan FOREACH dikarenakan request bertipe Array
-        foreach($data_spesifikasi as $data)
-        {
+        foreach ($data_spesifikasi as $data) {
             // Proses update
             $tambah = DB::table($spesifikasi)->insert([
                 "id_bangunan" => $id_bangunan,
                 "nama_spesifikasi_rumah" => $data
             ]);
 
-            if(!$tambah)
+            if (!$tambah)
                 return null;
         }
-        
+
         // Get data spesifikasi rumah setelah ditambahkan
         $data_spesifikasi = DB::table($spesifikasi)
-                                    ->select("$spesifikasi.id_spesifikasi_rumah", "$spesifikasi.nama_spesifikasi_rumah")
-                                    ->where('id_bangunan', $id_bangunan)
-                                    ->orderBy('id_spesifikasi_rumah', 'DESC')
-                                    ->get();
+            ->select("$spesifikasi.id_spesifikasi_rumah", "$spesifikasi.nama_spesifikasi_rumah")
+            ->where('id_bangunan', $id_bangunan)
+            ->orderBy('id_spesifikasi_rumah', 'DESC')
+            ->get();
 
         // Gabungkan semua hasil proses ke dalam 1 variabel
         $data = [
@@ -682,20 +671,20 @@ class Perumahan extends Model
 
         // Get data bangunan
         $data_bangunan = DB::table($bangunan)->where('id_bangunan', $id_bangunan)->first();
-        
+
         // Cek apakah ada data perumahan atau data bangunan
-        if(!$data_bangunan)
-        return 'NOT_FOUND';
-        
+        if (!$data_bangunan)
+            return 'NOT_FOUND';
+
         // Get id perumahan
         $id_perumahan = $data_bangunan->id_perumahan;
 
         // Get all data fasilitas by id bangunan
         $data_bangunan = DB::table($spesifikasi)
-                            ->select("$spesifikasi.id_spesifikasi_rumah", "$spesifikasi.nama_spesifikasi_rumah")
-                            ->where('id_bangunan', $id_bangunan)
-                            ->orderBy('id_spesifikasi_rumah', 'desc')
-                            ->get();
+            ->select("$spesifikasi.id_spesifikasi_rumah", "$spesifikasi.nama_spesifikasi_rumah")
+            ->where('id_bangunan', $id_bangunan)
+            ->orderBy('id_spesifikasi_rumah', 'desc')
+            ->get();
 
         // Gabungkan semua hasil proses ke dalam 1 variabel
         $data = [
@@ -717,32 +706,30 @@ class Perumahan extends Model
         // Get data bangunan dan spesifikasi properti
         $data_bangunan = DB::table($bangunan)->where('id_bangunan', $id_bangunan)->first();
         $data_spesifikasi = DB::table($spesifikasi)
-                                ->where([
-                                    'id_spesifikasi_rumah' => $id_spesifikasi,
-                                    'id_bangunan' => $id_bangunan
-                                ])
-                                ->first();
+            ->where([
+                'id_spesifikasi_rumah' => $id_spesifikasi,
+                'id_bangunan' => $id_bangunan
+            ])
+            ->first();
 
-        if(!$data_bangunan || !$data_spesifikasi)
+        if (!$data_bangunan || !$data_spesifikasi)
             return 'NOT_FOUND';
 
         // Proses delete
         $delete = DB::table($spesifikasi)
-                    ->where([
-                            "id_spesifikasi_rumah" => $id_spesifikasi,
-                            "id_bangunan" => $id_bangunan
-                    ])
-                    ->delete();
-       
-        if($delete)
-        {
+            ->where([
+                "id_spesifikasi_rumah" => $id_spesifikasi,
+                "id_bangunan" => $id_bangunan
+            ])
+            ->delete();
+
+        if ($delete) {
             $data = [
                 "id_spesifikasi_properti" => $data_spesifikasi->id_spesifikasi_rumah
             ];
-    
+
             return $data;
-        }
-        else 
+        } else
             return null;
     }
 
@@ -755,9 +742,9 @@ class Perumahan extends Model
 
         // Get Data Perumahan By ID
         $data_bangunan = DB::table($bangunan)->where('id_bangunan', $id_bangunan)->first();
-        
+
         // Cek apakah ada data Perumahan
-        if(!$data_bangunan)
+        if (!$data_bangunan)
             return 'NOT_FOUND';
 
         // Get All Foto
@@ -765,8 +752,7 @@ class Perumahan extends Model
 
 
         // Cek apakah ada data Foto
-        if($data_foto)
-        {
+        if ($data_foto) {
             $data = [
                 "id_perumahan" => $data_bangunan->id_perumahan,
                 "id_bangunan" => $data_bangunan->id_bangunan,
@@ -774,10 +760,9 @@ class Perumahan extends Model
                 "total_foto"    => $data_foto->count(),
                 "foto_bangunan" => $data_foto
             ];
-            
+
             return $data;
-        }
-        else
+        } else
             return null;
     }
 
@@ -792,34 +777,28 @@ class Perumahan extends Model
         $data_bangunan = DB::table($bangunan)->where('id_bangunan', $id_bangunan)->first();
 
         // Cek apakah ada data bangunan
-        if(!$data_bangunan)
+        if (!$data_bangunan)
             return 'NOT_FOUND';
 
         // Cek Apakah ada file foto
-        if($req->hasFile('foto_bangunan'))
-        {
+        if ($req->hasFile('foto_bangunan')) {
             $data_foto = [];
             $status = 0;
             $i = 0;
             $images = $req->file('foto_bangunan');
-            foreach($images as $image)
-            {
+            foreach ($images as $image) {
                 $ext_allowed = $req->ext_allowed;
                 $ext_file = $image->extension();
-                if(!in_array($ext_file, $ext_allowed))
-                {
+                if (!in_array($ext_file, $ext_allowed)) {
                     return 'WRONG_EXTENSION';
-                }
-                else
-                {
-                    $data_foto[] = $image->storeAs('bangunan/foto', rand(0,9999) . '-' . date('Ymd') . '-' . $image->getClientOriginalName());
+                } else {
+                    $data_foto[] = $image->storeAs('bangunan/foto', rand(0, 9999) . '-' . date('Ymd') . '-' . $image->getClientOriginalName());
                 }
             }
         }
 
         // Proses tambah foto bangunan
-        foreach($data_foto as $foto)
-        {
+        foreach ($data_foto as $foto) {
             $data = [
                 'id_bangunan' => $data_bangunan->id_bangunan,
                 'foto_bangunan' => $foto,
@@ -840,25 +819,25 @@ class Perumahan extends Model
     // Update Status Utama Foto Bangunan
     public static function updateStatusFotoBangunan($status, $id_bangunan, $id_foto)
     {
-         // Tabel - Tabel
-         $foto = 'foto_bangunan';
-         $bangunan = 'bangunan';
+        // Tabel - Tabel
+        $foto = 'foto_bangunan';
+        $bangunan = 'bangunan';
 
         // Get data bangunan
         $data_bangunan = DB::table($bangunan)->where('id_bangunan', $id_bangunan)->first();
-        
+
         // Get foto hasil sebelum update status utama
         $data_foto = DB::table($foto)
-        ->where([
-            'id_bangunan' => $id_bangunan,
-            'id_foto_bangunan' => $id_foto
-        ])
-        ->first();
+            ->where([
+                'id_bangunan' => $id_bangunan,
+                'id_foto_bangunan' => $id_foto
+            ])
+            ->first();
 
         // Cek apakah terdapat data bangunan dan foto
-        if(!$data_bangunan || !$data_foto)
+        if (!$data_bangunan || !$data_foto)
             return null;
-             
+
         // Untuk mengatasi error jika status bernilai null
         $status = ($status !== null) ? $status : $data_foto->level_foto;
 
@@ -867,31 +846,30 @@ class Perumahan extends Model
             [
                 'id_bangunan'      => $id_bangunan,
                 'id_foto_bangunan' => $id_foto
-            ])
+            ]
+        )
             ->update(['level_foto' => $status]);
 
         // Setelah update status utama foto dengan id yang bersangkutan
         // Maka perlu mengupdate semua status foto menjadi 0 karena status utama tidak boleh lebih dari 2 foto
-        if($status == 1)
-        {
+        if ($status == 1) {
             DB::table($foto)->where([
                 ['id_bangunan', '=', $id_bangunan],
                 ['id_foto_bangunan', '<>', $id_foto]
-            ]
-            )
-            ->update(['level_foto' => 0]);
+            ])
+                ->update(['level_foto' => 0]);
         }
-        
+
         // Get foto hasil setelah update status utama
         $data_foto = DB::table($foto)
-                        ->where([
-                            'id_bangunan' => $id_bangunan,
-                            'id_foto_bangunan' => $id_foto
-                        ])
-                        ->first();  
-        
+            ->where([
+                'id_bangunan' => $id_bangunan,
+                'id_foto_bangunan' => $id_foto
+            ])
+            ->first();
+
         // Cek apakah ada foto yang ditemukan
-        if($data_foto)
+        if ($data_foto)
             return $data_foto;
         else
             return null;
@@ -905,15 +883,14 @@ class Perumahan extends Model
 
         // Get data yang akan dihapus
         $data_foto = DB::table($foto)
-                        ->where([
-                            "id_bangunan"      => $id_bangunan,
-                            "id_foto_bangunan" => $id_foto
-                        ])
-                        ->first();
-        
+            ->where([
+                "id_bangunan"      => $id_bangunan,
+                "id_foto_bangunan" => $id_foto
+            ])
+            ->first();
+
         // Cek apakah ada data foto yang ditemukan
-        if(!$data_foto)
-        {
+        if (!$data_foto) {
             // Jika tidak ada, kembalikan nilai null
             return 'NOT_FOUND';
         }
@@ -926,7 +903,7 @@ class Perumahan extends Model
                 "id_foto_bangunan" => $id_foto
             ])
             ->delete();
-        
+
         // Get path foto untuk keperluan menghapus file foto di storage
         $path_foto = $data_foto->foto_bangunan;
 
@@ -947,16 +924,14 @@ class Perumahan extends Model
         $user = Auth::user();
 
         // Cek Apakah ada file foto
-        if($req->hasFile('foto_perumahan'))
-        {
+        if ($req->hasFile('foto_perumahan')) {
             $data_foto = [];
             $status = 0;
             $i = 0;
             $images = $req->file('foto_perumahan');
-            foreach($images as $image)
-            {
-                
-                $data_foto[] = $image->storeAs('perumahan/foto', rand(0,9999) . '-' . date('Ymd') . '-' . $image->getClientOriginalName());
+            foreach ($images as $image) {
+
+                $data_foto[] = $image->storeAs('perumahan/foto', rand(0, 9999) . '-' . date('Ymd') . '-' . $image->getClientOriginalName());
 
                 // Persiapan Data Foto
                 $data = [
@@ -967,9 +942,7 @@ class Perumahan extends Model
                 // Insert foto to database
                 DB::table($foto)->insert($data);
             }
-        }
-        else
-        {
+        } else {
             return null;
         }
 
@@ -986,15 +959,23 @@ class Perumahan extends Model
     {
         // Tabel - Tabel
         $foto = 'foto_perumahan';
+        $perumahan = 'perumahan';
 
-         // Get foto hasil sebelum update status utama
-         $data_foto = DB::table($foto)
-         ->where([
-             'id_perumahan' => $id_perumahan,
-             'id_foto_perumahan' => $id_foto
-         ])
-         ->first();
-        
+        // Get data perumahan
+        $data_perumahan = DB::table($perumahan)->where('id_perumahan', $id_perumahan)->first();
+
+        // Get foto hasil sebelum update status utama
+        $data_foto = DB::table($foto)
+            ->where([
+                'id_perumahan' => $id_perumahan,
+                'id_foto_perumahan' => $id_foto
+            ])
+            ->first();
+
+        // Cek apakah data perumahan atau foto ditemuan
+        if (!$data_perumahan || !$data_foto)
+            return 'NOT_FOUND';
+
         // Untuk mengatasi error jika status bernilai null
         $status = ($status !== null) ? $status : $data_foto->status_foto;
 
@@ -1002,20 +983,31 @@ class Perumahan extends Model
         DB::table($foto)->where(
             [
                 'id_perumahan' => $id_perumahan,
-                'id_foto_perumahan'      => $id_foto
-            ])
+                'id_foto_perumahan' => $id_foto
+            ]
+        )
             ->update(['status_foto' => $status]);
-        
+
+        // Setelah update status utama foto dengan id yang bersangkutan
+        // Maka perlu mengupdate semua status foto menjadi 0 karena status utama tidak boleh lebih dari 2 foto
+        if ($status >= 1) {
+            DB::table($foto)->where([
+                ['id_perumahan', '=', $id_perumahan],
+                ['id_foto_perumahan', '<>', $id_foto]
+            ])
+                ->update(['status_foto' => 0]);
+        }
+
         // Get foto hasil setelah update status utama
         $data_foto = DB::table($foto)
-                        ->where([
-                            'id_perumahan' => $id_perumahan,
-                            'id_foto_perumahan' => $id_foto
-                        ])
-                        ->first();
-        
+            ->where([
+                'id_perumahan' => $id_perumahan,
+                'id_foto_perumahan' => $id_foto
+            ])
+            ->first();
+
         // Cek apakah ada foto yang ditemukan
-        if($data_foto)
+        if ($data_foto)
             return $data_foto;
         else
             return null;
@@ -1029,15 +1021,14 @@ class Perumahan extends Model
 
         // Get data yang akan dihapus
         $data_foto = DB::table($foto)
-                        ->where([
-                            "id_perumahan"      => $id_perumahan,
-                            "id_foto_perumahan" => $id_foto
-                        ])
-                        ->first();
-        
+            ->where([
+                "id_perumahan"      => $id_perumahan,
+                "id_foto_perumahan" => $id_foto
+            ])
+            ->first();
+
         // Cek apakah ada data foto yang ditemukan
-        if(!$data_foto)
-        {
+        if (!$data_foto) {
             // Jika tidak ada, kembalikan nilai null
             return null;
         }
@@ -1050,7 +1041,7 @@ class Perumahan extends Model
                 "id_foto_perumahan" => $id_foto
             ])
             ->delete();
-        
+
         // Get path foto untuk keperluan menghapus file foto di storage
         $path_foto = $data_foto->foto_perumahan;
 
@@ -1068,24 +1059,21 @@ class Perumahan extends Model
 
         // Get Data Perumahan By ID
         $data_perumahan = DB::table($perumahan)->where('id_perumahan', $id_perumahan)->first();
-        
+
         // Get All Foto
         $data_foto = DB::table($foto)->where('id_perumahan', $id_perumahan)->get();
 
         // Cek apakah ada data Perumahan
-        if(!$data_perumahan)
-        {
+        if (!$data_perumahan) {
             return 'NOT_FOUND';
         }
 
         // Cek apakah ada data Foto
-        if($data_foto)
-        {
+        if ($data_foto) {
             $data_foto->total = $data_foto->count();
 
             return $data_foto;
-        }
-        else
+        } else
             return null;
     }
 
@@ -1102,30 +1090,29 @@ class Perumahan extends Model
         $data_perumahan = DB::table($perumahan)->where('id_perumahan', $id_perumahan)->first();
 
         // Cek apakah ada data perumahan
-        if(!$data_perumahan)
+        if (!$data_perumahan)
             return 'NOT_FOUND';
 
         $data_sarana_prasarana = $req->sarana_prasarana_perumahan;
 
         // Dilakukan perulangan FOREACH dikarenakan request bertipe Array
-        foreach($data_sarana_prasarana as $data)
-        {
+        foreach ($data_sarana_prasarana as $data) {
             // Proses update
             $tambah = DB::table($sarana_prasarana)->insert([
                 "id_perumahan" => $id_perumahan,
                 "nama_sarana_prasarana_perumahan" => $data
             ]);
 
-            if(!$tambah)
+            if (!$tambah)
                 return null;
         }
-        
+
         // Get data sarana prasarana setelah ditambahkan
         $data_sarana_prasarana = DB::table($sarana_prasarana)
-                                    ->select("$sarana_prasarana.id_sarana_prasarana_perumahan", "$sarana_prasarana.nama_sarana_prasarana_perumahan")
-                                    ->where('id_perumahan', $id_perumahan)
-                                    ->orderBy('id_sarana_prasarana_perumahan', 'DESC')
-                                    ->get();
+            ->select("$sarana_prasarana.id_sarana_prasarana_perumahan", "$sarana_prasarana.nama_sarana_prasarana_perumahan")
+            ->where('id_perumahan', $id_perumahan)
+            ->orderBy('id_sarana_prasarana_perumahan', 'DESC')
+            ->get();
 
         // Gabungkan semua hasil proses ke dalam 1 variabel
         $data = [
@@ -1147,15 +1134,15 @@ class Perumahan extends Model
         $data_perumahan = DB::table($perumahan)->where('id_perumahan', $id_perumahan)->first();
 
         // Cek apakah ada data perumahan
-        if(!$data_perumahan)
+        if (!$data_perumahan)
             return 'NOT_FOUND';
 
         // Get all data sarana prasarana by id perumahan
         $data_sarana_prasarana = DB::table($sarana_prasarana)
-                                    ->select("$sarana_prasarana.id_sarana_prasarana_perumahan", "$sarana_prasarana.nama_sarana_prasarana_perumahan")
-                                    ->where('id_perumahan', $id_perumahan)
-                                    ->orderBy('id_sarana_prasarana_perumahan', 'desc')
-                                    ->get();
+            ->select("$sarana_prasarana.id_sarana_prasarana_perumahan", "$sarana_prasarana.nama_sarana_prasarana_perumahan")
+            ->where('id_perumahan', $id_perumahan)
+            ->orderBy('id_sarana_prasarana_perumahan', 'desc')
+            ->get();
 
         // Gabungkan semua hasil proses ke dalam 1 variabel
         $data = [
@@ -1176,37 +1163,35 @@ class Perumahan extends Model
         // Get data perumahan dan sarana prasarana
         $data_perumahan = DB::table($perumahan)->where('id_perumahan', $id_perumahan)->first();
         $data_sarana_prasarana = DB::table($sarana_prasarana)
-                                    ->where([
-                                            "id_perumahan" => $id_perumahan,
-                                            "id_sarana_prasarana_perumahan" => $id_sarana_prasarana
-                                    ])
-                                    ->first();
+            ->where([
+                "id_perumahan" => $id_perumahan,
+                "id_sarana_prasarana_perumahan" => $id_sarana_prasarana
+            ])
+            ->first();
 
         // Cek apakah ada data perumahan dan sarana prasarana ditemukan
-        if(!$data_perumahan || !$data_sarana_prasarana)
+        if (!$data_perumahan || !$data_sarana_prasarana)
             return 'NOT_FOUND';
 
         // Proses delete
         $delete = DB::table($sarana_prasarana)
-                    ->where([
-                            "id_perumahan" => $id_perumahan,
-                            "id_sarana_prasarana_perumahan" => $id_sarana_prasarana
-                        ])
-                    ->delete();
-       
-        if($delete)
-        {
+            ->where([
+                "id_perumahan" => $id_perumahan,
+                "id_sarana_prasarana_perumahan" => $id_sarana_prasarana
+            ])
+            ->delete();
+
+        if ($delete) {
             $data = [
                 "id_sarana_prasarana_perumahan" => $data_sarana_prasarana->id_sarana_prasarana_perumahan
             ];
-    
+
             return $data;
-        }
-        else 
+        } else
             return null;
     }
 
-     // GROUP PERUMAHAN / FASILITAS
+    // GROUP PERUMAHAN / FASILITAS
 
     // Add Fasilitas By ID Perumahan
     public static function addFasilitas($req, $id_perumahan)
@@ -1219,30 +1204,29 @@ class Perumahan extends Model
         $data_perumahan = DB::table($perumahan)->where('id_perumahan', $id_perumahan)->first();
 
         // Cek apakah ada data perumahan
-        if(!$data_perumahan)
+        if (!$data_perumahan)
             return 'NOT_FOUND';
 
         $data_fasilitas = $req->fasilitas_perumahan;
 
         // Dilakukan perulangan FOREACH dikarenakan request bertipe Array
-        foreach($data_fasilitas as $data)
-        {
+        foreach ($data_fasilitas as $data) {
             // Proses update
             $tambah = DB::table($fasilitas)->insert([
                 "id_perumahan" => $id_perumahan,
                 "nama_fasilitas_perumahan" => $data
             ]);
 
-            if(!$tambah)
+            if (!$tambah)
                 return null;
         }
-        
+
         // Get data fasilitas setelah ditambahkan
         $data_fasilitas = DB::table($fasilitas)
-                                    ->select("$fasilitas.id_fasilitas_perumahan", "$fasilitas.nama_fasilitas_perumahan")
-                                    ->where('id_perumahan', $id_perumahan)
-                                    ->orderBy('id_fasilitas_perumahan', 'DESC')
-                                    ->get();
+            ->select("$fasilitas.id_fasilitas_perumahan", "$fasilitas.nama_fasilitas_perumahan")
+            ->where('id_perumahan', $id_perumahan)
+            ->orderBy('id_fasilitas_perumahan', 'DESC')
+            ->get();
 
         // Gabungkan semua hasil proses ke dalam 1 variabel
         $data = [
@@ -1264,15 +1248,15 @@ class Perumahan extends Model
         $data_perumahan = DB::table($perumahan)->where('id_perumahan', $id_perumahan)->first();
 
         // Cek apakah ada data perumahan
-        if(!$data_perumahan)
+        if (!$data_perumahan)
             return 'NOT_FOUND';
 
         // Get all data fasilitas by id perumahan
         $data_fasilitas = DB::table($fasilitas)
-                                    ->select("$fasilitas.id_fasilitas_perumahan", "$fasilitas.nama_fasilitas_perumahan")
-                                    ->where('id_perumahan', $id_perumahan)
-                                    ->orderBy('id_fasilitas_perumahan', 'desc')
-                                    ->get();
+            ->select("$fasilitas.id_fasilitas_perumahan", "$fasilitas.nama_fasilitas_perumahan")
+            ->where('id_perumahan', $id_perumahan)
+            ->orderBy('id_fasilitas_perumahan', 'desc')
+            ->get();
 
         // Gabungkan semua hasil proses ke dalam 1 variabel
         $data = [
@@ -1293,33 +1277,31 @@ class Perumahan extends Model
         // Get data perumahan dan fasilitas
         $data_perumahan = DB::table($perumahan)->where('id_perumahan', $id_perumahan)->first();
         $data_fasilitas = DB::table($fasilitas)
-                                    ->where([
-                                            "id_perumahan" => $id_perumahan,
-                                            "id_fasilitas_perumahan" => $id_fasilitas
-                                    ])
-                                    ->first();
+            ->where([
+                "id_perumahan" => $id_perumahan,
+                "id_fasilitas_perumahan" => $id_fasilitas
+            ])
+            ->first();
 
         // Cek apakah ada data perumahan dan fasilitas ditemukan
-        if(!$data_perumahan || !$data_fasilitas)
+        if (!$data_perumahan || !$data_fasilitas)
             return 'NOT_FOUND';
 
         // Proses delete
         $delete = DB::table($fasilitas)
-                    ->where([
-                            "id_perumahan" => $id_perumahan,
-                            "id_fasilitas_perumahan" => $id_fasilitas
-                        ])
-                    ->delete();
-       
-        if($delete)
-        {
+            ->where([
+                "id_perumahan" => $id_perumahan,
+                "id_fasilitas_perumahan" => $id_fasilitas
+            ])
+            ->delete();
+
+        if ($delete) {
             $data = [
                 "id_fasilitas_perumahan" => $data_fasilitas->id_fasilitas_perumahan
             ];
-    
+
             return $data;
-        }
-        else 
+        } else
             return null;
     }
 }
