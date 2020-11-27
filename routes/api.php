@@ -52,7 +52,7 @@ Route::prefix('v1/admin/')->group(function () {
             // Update Status User
             Route::put('user/{id_user}/status', [UserController::class, 'updateStatusUser']);
 
-            // Logout User
+            // Logout User Admin
             Route::post('user/logout', [AuthController::class, 'logout']);
 
             // END GROUP USER
@@ -121,6 +121,9 @@ Route::prefix('v1/pengembang/')->group(function () {
 
         // All secure URL's
         Route::group(['middleware' => "is_pengembang"], function(){
+
+            // Logout User Pengembang
+            Route::post('user/logout', [AuthController::class, 'logout']);
 
             // GROUP USER
 
@@ -225,11 +228,24 @@ Route::prefix('v1/pengembang/')->group(function () {
             Route::post('perumahan/{id_perumahan}/properti/{id_bangunan}/spesifikasi', [PerumahanController::class, 'addSpesifikasiProperti']);
 
             // Get All Spesifikasi By ID Bangunan
-            Route::get('perumahan/{id_perumahan}/properti/{id_bangunan}/spesifikasi', [PerumahanController::class, 'getSpesifikasiProperti']);
+            Route::get('properti/{id_bangunan}/spesifikasi', [PerumahanController::class, 'getSpesifikasiProperti']);
 
             // Delete Spesifikasi Bangunan By ID
-            Route::delete('perumahan/{id_perumahan}/properti/{id_bangunan}/spesifikasi/{id_spesifikasi_rumah}', [PerumahanController::class, 'deleteSpesifikasiProperti']);
-            
+            Route::delete('properti/{id_bangunan}/spesifikasi/{id_spesifikasi_rumah}', [PerumahanController::class, 'deleteSpesifikasiProperti']);
+
+            // GROUP PERUMAHAN / PROPERTI / FOTO
+
+            // Get All Foto Bangunan
+            Route::get('properti/{id_bangunan}/foto', [PerumahanController::class, 'getFotoBangunan']);
+
+            // Add Foto Bangunan
+            Route::post('properti/{id_bangunan}/foto', [PerumahanController::class, 'addFotoBangunan']);
+
+            // Update Status Utama Foto Bangunan
+            Route::put('properti/{id_bangunan}/foto/{id_foto}/status', [PerumahanController::class, 'updateStatusFotoBangunan']);
+
+            // Delete Foto Bangunan
+            Route::delete('properti/{id_bangunan}/foto/{id_foto}', [PerumahanController::class, 'deleteFotoBangunan']);
         });
     });
 });

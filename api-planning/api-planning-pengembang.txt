@@ -1171,13 +1171,13 @@ GROUP PROPERTI / FOTO => http://perumahan/v1/pengembang/perumahan/{id_perumahan}
                     foto_bangunan: [
                         {
                             id_bangunan: 2,
-                            id_spesifikasi_rumah: 22,
-                            nama_spesifikasi_rumah: "Spesifikasi Rumah 1"
+                            id_foto_bangunan: 22,
+                            foto_bangunan: "Foto Bangunan Rumah 1"
                         },
                         {
                             id_bangunan: 2,
-                            id_spesifikasi_rumah: 23,
-                            nama_spesifikasi_rumah: "Spesifikasi Rumah 2"
+                            id_foto_bangunan: 23,
+                            foto_bangunan: "Foto Bangunan Rumah 2"
                         },
                     ]
                 }

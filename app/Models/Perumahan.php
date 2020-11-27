@@ -304,6 +304,7 @@ class Perumahan extends Model
         // Cek apakah ada file foto
         if($req->hasFile('foto_bangunan'))
         {
+            $path_foto = [];
             foreach($req->foto_bangunan as $foto)
             {   
                 $ext_allowed = $req->ext_allowed;
@@ -672,23 +673,22 @@ class Perumahan extends Model
         return $data;
     }
 
-    // Get All Spesifikasi Rumah by ID Bangunan
-    public static function getSpesifikasiProperti($id_perumahan, $id_bangunan)
+    // Get All Spesifikasi Properti by ID Bangunan
+    public static function getSpesifikasiProperti($id_bangunan)
     {
         // Tabel - Tabel
         $spesifikasi = 'spesifikasi_rumah';
-        $perumahan = 'perumahan';
         $bangunan = 'bangunan';
-
-        // Get data perumahan
-        $data_perumahan = DB::table($perumahan)->where('id_perumahan', $id_perumahan)->first();
 
         // Get data bangunan
         $data_bangunan = DB::table($bangunan)->where('id_bangunan', $id_bangunan)->first();
-
+        
         // Cek apakah ada data perumahan atau data bangunan
-        if(!$data_perumahan || !$data_bangunan)
-            return 'NOT_FOUND';
+        if(!$data_bangunan)
+        return 'NOT_FOUND';
+        
+        // Get id perumahan
+        $id_perumahan = $data_bangunan->id_perumahan;
 
         // Get all data fasilitas by id bangunan
         $data_bangunan = DB::table($spesifikasi)
@@ -705,6 +705,234 @@ class Perumahan extends Model
         ];
 
         return $data;
+    }
+
+    // Delete Spesifikasi Properti
+    public static function deleteSpesifikasiProperti($id_bangunan, $id_spesifikasi)
+    {
+        // Tabel - Tabel
+        $spesifikasi = 'spesifikasi_rumah';
+        $bangunan = 'bangunan';
+
+        // Get data bangunan dan spesifikasi properti
+        $data_bangunan = DB::table($bangunan)->where('id_bangunan', $id_bangunan)->first();
+        $data_spesifikasi = DB::table($spesifikasi)
+                                ->where([
+                                    'id_spesifikasi_rumah' => $id_spesifikasi,
+                                    'id_bangunan' => $id_bangunan
+                                ])
+                                ->first();
+
+        if(!$data_bangunan || !$data_spesifikasi)
+            return 'NOT_FOUND';
+
+        // Proses delete
+        $delete = DB::table($spesifikasi)
+                    ->where([
+                            "id_spesifikasi_rumah" => $id_spesifikasi,
+                            "id_bangunan" => $id_bangunan
+                    ])
+                    ->delete();
+       
+        if($delete)
+        {
+            $data = [
+                "id_spesifikasi_properti" => $data_spesifikasi->id_spesifikasi_rumah
+            ];
+    
+            return $data;
+        }
+        else 
+            return null;
+    }
+
+    // GROUP PERUMAHAN / PROPERTI / FOTO
+    public static function getAllFotoBangunan($id_bangunan)
+    {
+        // Tabel - Tabel
+        $foto = 'foto_bangunan';
+        $bangunan = 'bangunan';
+
+        // Get Data Perumahan By ID
+        $data_bangunan = DB::table($bangunan)->where('id_bangunan', $id_bangunan)->first();
+        
+        // Cek apakah ada data Perumahan
+        if(!$data_bangunan)
+            return 'NOT_FOUND';
+
+        // Get All Foto
+        $data_foto = DB::table($foto)->where('id_bangunan', $id_bangunan)->orderBy('id_foto_bangunan', 'DESC')->get();
+
+
+        // Cek apakah ada data Foto
+        if($data_foto)
+        {
+            $data = [
+                "id_perumahan" => $data_bangunan->id_perumahan,
+                "id_bangunan" => $data_bangunan->id_bangunan,
+                "id_pengembang" => $data_bangunan->id_pengembang,
+                "total_foto"    => $data_foto->count(),
+                "foto_bangunan" => $data_foto
+            ];
+            
+            return $data;
+        }
+        else
+            return null;
+    }
+
+    // Add Foto Bangunan
+    public static function addFotoBangunan($req, $id_bangunan)
+    {
+        // Tabel - Tabel
+        $foto_bangunan = 'foto_bangunan';
+        $bangunan = 'bangunan';
+
+        // Get Bangunan
+        $data_bangunan = DB::table($bangunan)->where('id_bangunan', $id_bangunan)->first();
+
+        // Cek apakah ada data bangunan
+        if(!$data_bangunan)
+            return 'NOT_FOUND';
+
+        // Cek Apakah ada file foto
+        if($req->hasFile('foto_bangunan'))
+        {
+            $data_foto = [];
+            $status = 0;
+            $i = 0;
+            $images = $req->file('foto_bangunan');
+            foreach($images as $image)
+            {
+                $ext_allowed = $req->ext_allowed;
+                $ext_file = $image->extension();
+                if(!in_array($ext_file, $ext_allowed))
+                {
+                    return 'WRONG_EXTENSION';
+                }
+                else
+                {
+                    $data_foto[] = $image->storeAs('bangunan/foto', rand(0,9999) . '-' . date('Ymd') . '-' . $image->getClientOriginalName());
+                }
+            }
+        }
+
+        // Proses tambah foto bangunan
+        foreach($data_foto as $foto)
+        {
+            $data = [
+                'id_bangunan' => $data_bangunan->id_bangunan,
+                'foto_bangunan' => $foto,
+                'level_foto' => 0
+            ];
+            // Insert foto to database
+            DB::table($foto_bangunan)->insert($data);
+        }
+
+        // Tampilkan foto hasil proses tambah
+        $data_foto = DB::table($foto_bangunan)
+            ->where('id_bangunan', $id_bangunan)
+            ->orderBy('id_foto_bangunan', 'DESC')->get();
+
+        return $data_foto;
+    }
+
+    // Update Status Utama Foto Bangunan
+    public static function updateStatusFotoBangunan($status, $id_bangunan, $id_foto)
+    {
+         // Tabel - Tabel
+         $foto = 'foto_bangunan';
+         $bangunan = 'bangunan';
+
+        // Get data bangunan
+        $data_bangunan = DB::table($bangunan)->where('id_bangunan', $id_bangunan)->first();
+        
+        // Get foto hasil sebelum update status utama
+        $data_foto = DB::table($foto)
+        ->where([
+            'id_bangunan' => $id_bangunan,
+            'id_foto_bangunan' => $id_foto
+        ])
+        ->first();
+
+        // Cek apakah terdapat data bangunan dan foto
+        if(!$data_bangunan || !$data_foto)
+            return null;
+             
+        // Untuk mengatasi error jika status bernilai null
+        $status = ($status !== null) ? $status : $data_foto->level_foto;
+
+        // Proses update status foto utama
+        DB::table($foto)->where(
+            [
+                'id_bangunan'      => $id_bangunan,
+                'id_foto_bangunan' => $id_foto
+            ])
+            ->update(['level_foto' => $status]);
+
+        // Setelah update status utama foto dengan id yang bersangkutan
+        // Maka perlu mengupdate semua status foto menjadi 0 karena status utama tidak boleh lebih dari 2 foto
+        if($status == 1)
+        {
+            DB::table($foto)->where([
+                ['id_bangunan', '=', $id_bangunan],
+                ['id_foto_bangunan', '<>', $id_foto]
+            ]
+            )
+            ->update(['level_foto' => 0]);
+        }
+        
+        // Get foto hasil setelah update status utama
+        $data_foto = DB::table($foto)
+                        ->where([
+                            'id_bangunan' => $id_bangunan,
+                            'id_foto_bangunan' => $id_foto
+                        ])
+                        ->first();  
+        
+        // Cek apakah ada foto yang ditemukan
+        if($data_foto)
+            return $data_foto;
+        else
+            return null;
+    }
+
+    // Delete Foto Bangunan
+    public static function deleteFotoBangunan($id_bangunan, $id_foto)
+    {
+        // Tabel - Tabel
+        $foto = 'foto_bangunan';
+
+        // Get data yang akan dihapus
+        $data_foto = DB::table($foto)
+                        ->where([
+                            "id_bangunan"      => $id_bangunan,
+                            "id_foto_bangunan" => $id_foto
+                        ])
+                        ->first();
+        
+        // Cek apakah ada data foto yang ditemukan
+        if(!$data_foto)
+        {
+            // Jika tidak ada, kembalikan nilai null
+            return 'NOT_FOUND';
+        }
+        // Jika ada, lanjutkan proses dibawah
+
+        // Proses Delete
+        DB::table($foto)
+            ->where([
+                "id_bangunan"      => $id_bangunan,
+                "id_foto_bangunan" => $id_foto
+            ])
+            ->delete();
+        
+        // Get path foto untuk keperluan menghapus file foto di storage
+        $path_foto = $data_foto->foto_bangunan;
+
+        Storage::delete("$path_foto");
+
+        return true;
     }
 
     // GROUP PERUMAHAN / FOTO
@@ -727,6 +955,7 @@ class Perumahan extends Model
             $images = $req->file('foto_perumahan');
             foreach($images as $image)
             {
+                
                 $data_foto[] = $image->storeAs('perumahan/foto', rand(0,9999) . '-' . date('Ymd') . '-' . $image->getClientOriginalName());
 
                 // Persiapan Data Foto

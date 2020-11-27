@@ -227,6 +227,7 @@ class PerumahanController extends Controller
             "harga_bangunan"     => "required|numeric",
             "luas_bangunan"      => "required|numeric",
             "dimensi_bangunan"   => "required",
+            'foto_perumahan'     => 'max:5048|required',
             "luas_tanah"         => "required|numeric",
             "dimensi_tanah"      => "required",
             "jumlah_lantai"      => "required",
@@ -515,10 +516,10 @@ class PerumahanController extends Controller
     }
 
     // Get All Spesifikasi Properti by ID Bangunan
-    public function getSpesifikasiProperti($id_perumahan, $id_bangunan)
+    public function getSpesifikasiProperti($id_bangunan)
     {
          // Get All Spesifikasi
-         $spesifikasi = Perumahan::getSpesifikasiProperti($id_perumahan, $id_bangunan);
+         $spesifikasi = Perumahan::getSpesifikasiProperti($id_bangunan);
 
          // Cek proses
          if($spesifikasi !== 'NOT_FOUND')
@@ -546,12 +547,193 @@ class PerumahanController extends Controller
     }
 
     // Delete Spesifikasi Properti By ID
-    public function deleteSpesifikasiProperti($id_perumahan, $id_bangunan, $id_spesifikasi_rumah)
+    public function deleteSpesifikasiProperti($id_bangunan, $id_spesifikasi_rumah)
     {
+        // Delete Spesifikasi Properti
+        $spesifikasi = Perumahan::deleteSpesifikasiProperti($id_bangunan, $id_spesifikasi_rumah);
+
+        // Cek proses
+        if($spesifikasi !== 'NOT_FOUND')
+        {
+            // Jika berhasil, tampilkan response 200 OK
+            return response()->json([
+                "message" => "Delete spesifikasi rumah dengan id: $id_spesifikasi_rumah dari bangunan: $id_bangunan, Berhasil",
+                "data_deleted"    => $spesifikasi
+            ], 201);
+        }
+        else if ($spesifikasi === 'NOT_FOUND'){
+            // Jika perumahan, properti, atau spesifikasi tidak ditemukan, tampilkan response 404 NOT FOUND
+            return response()->json([
+                "message" => "Data Tidak Ditemukan, id bangunan: $id_bangunan, id spesifikasi: $id_spesifikasi_rumah",
+                "data"    => $spesifikasi
+            ], 404);
+        }
+        else {
+            // Jika ada terjadi kesalahan dalam proses delete, tampilkan response 500 INTERNAL SERVER ERROR
+            return response()->json([
+                "message" => "Delete spesifikasi rumah dengan id: $id_spesifikasi_rumah dari bangunan: $id_bangunan, Gagal"
+            ], 500);
+        }
+
         return response()->json([
             "message" => "Delete spesifikasi rumah dengan id bangunan: $id_bangunan, Berhasil",
             
         ], 201);
+    }
+
+    // GROUP PERUMAHAN / PROPERTI / FOTO
+
+    // Get Foto Bangunan by ID Bangunan
+    public static function getFotoBangunan($id_bangunan)
+    {
+        // Proses get all
+        $foto = Perumahan::getAllFotoBangunan($id_bangunan);
+
+        // Cek apakah ada data foto
+        if($foto !== 'NOT_FOUND')
+        {
+            // Jika ada, tampilkan response 200 OK
+            return response()->json([
+                "message" => "Get All Foto Bangunan dengan id: $id_bangunan, Berhasil",
+                "data"    => $foto
+            ], 200);
+        }
+        // Cek apakah data foto perumahan ditemukan
+        else if($foto === 'NOT_FOUND')
+        {
+            // Jika tidak, tampilkan response 404 NOT FOUND
+            return response()->json([
+                "message" => "Bangunan dengan id: $id_bangunan, Tidak Ditemukan"
+            ], 404);
+        }
+        else {
+             // Jika tidak, tampilkan response 200 OK karena bukan error hanya belum memiliki foto
+             return response()->json([
+                "message" => "Bangunan dengan id: $id_bangunan, Belum Memiliki Foto",
+                "data"    => $foto
+            ], 200);
+        }
+    }
+
+    // Add Foto Bangunan
+    public static function addFotoBangunan(Request $request,  $id_bangunan)
+    {
+        // Validation 
+        $message = [
+            "required" => ":attribute belum ada file!"
+        ];
+
+        $validator = Validator::make(
+            $request->all(),
+            [
+                'foto_bangunan' => 'max:5048|required',
+            ],
+            $message
+        );
+
+         // Set ekstensi yang diizinkan untuk upload foto bangunan
+         $request->ext_allowed = ['jpg', 'jpeg', 'png'];
+
+        // Cek Validation
+        if($validator->fails())
+        {
+            // Jika validasi gagal, tampilkan response 400 BAD REQUEST
+            return response()->json([
+                "errors" => $validator->errors()
+            ], 400);
+        }
+        // Jika validasi berhasil, lanjutkan proses di bawah ini
+
+        // Tambah Foto
+        $tambahFoto = Perumahan::addFotoBangunan($request, $id_bangunan);
+
+        // Cek apakah proses tambah berhasil
+        if($tambahFoto === 'WRONG_EXTENSION')
+        {
+            // Jika ekstensi file yang dimasukkan tidak diizinkan, tampilkan response 400 BAD REQUEST
+            return response()->json([
+                "message" => "Ekstensi file foto / gambar harus bertipe jpg, jpeg, atau png!",
+                "status_response" => "400 BAD REQUEST"
+            ], 400);
+        }
+        else if($tambahFoto !== 'NOT_FOUND')
+        {
+            // Jika berhasil, tampilkan response 201 CREATED
+            return response()->json([
+                "message" => "Tambah foto dengan id bangunan: $id_bangunan, Berhasil",
+                "data"    => $tambahFoto
+            ], 201);
+        }
+        else if($tambahFoto === 'NOT_FOUND')
+        {
+            // Jika data bangunan tidak ditemukan, tampilkan response 404 NOT FOUND
+            return response()->json([
+                "message" => "Data properti tidak ditemukan!"
+            ], 404);
+        }
+        else
+        {
+            // Jika gagal, tampilkan response 500 INTERNAL SERVER ERROR
+            return response()->json([
+                "message" => "Tambah foto dengan id bangunan: $id_bangunan, Gagal",
+                "data"    => $tambahFoto
+            ], 500);
+        }
+    }
+
+    // Update Status Utama Foto Bangunan
+    public static function updateStatusFotoBangunan(Request $request, $id_bangunan, $id_foto)
+    {
+        $status = $request->status_foto;
+
+        // Proses Update Status Utama
+        $foto = Perumahan::updateStatusFotoBangunan($status, $id_bangunan, $id_foto);
+
+        // Cek Apakah hasil update status foto ditemukan
+        if($foto)
+        {
+            // Jika iya, tampilkan response 201 CREATED
+            return response()->json([
+                "message" => "Update status utama foto bangunan: $id_bangunan dengan id foto: $id_foto, Berhasil",
+                "data"    => $foto
+            ], 201);
+        }
+        else
+        {
+            // Jika tidak, tampilkan response 404 NOT FOUND
+            return response()->json([
+                "message" => "Update status utama foto bangunan Gagal, Data Tidak Ditemukan"
+            ], 404);
+        }
+    }
+
+    // Delete Foto Bangunan by ID Foto
+    public static function deleteFotoBangunan($id_bangunan, $id_foto)
+    {
+        // Proses delete
+        $deleteFoto = Perumahan::deleteFotoBangunan($id_bangunan, $id_foto);
+
+        // Cek apakah proses delete berhasil
+        if($deleteFoto !== 'NOT_FOUND')
+        {
+            // Jika berhasil, tampilkan response 201 CREATED
+            return response()->json([
+                "message" => "Delete data foto bangunan: $id_bangunan dengan id foto: $id_foto, Berhasil"
+            ], 201);
+        }
+        else if($deleteFoto === 'NOT_FOUND'){
+            // Jika bangunan atau foto tidak ditemukan, tampilkan response 404 NOT FOUND
+            return response()->json([
+                "message" => "Delete data foto bangunan Gagal. Data Tidak Ditemukan"
+            ], 404);
+        }
+        else
+        {
+            // Jika gagal, tampilkan response 500 INTERNAL SERVER ERROR
+            return response()->json([
+                "message" => "Delete data foto bangunan Gagal. Terjadi kesalahan server"
+            ], 500);
+        }
     }
 
     // GROUP PERUMAHAN / FOTO
@@ -628,7 +810,6 @@ class PerumahanController extends Controller
                 "message" => "Update status utama foto perumahan Gagal, Data Tidak Ditemukan"
             ], 404);
         }
-
     }
 
     // Delete Foto Perumahan By ID Foto
@@ -653,7 +834,6 @@ class PerumahanController extends Controller
                 "message" => "Delete data foto perumahan Gagal. Data Tidak Ditemukan"
             ], 404);
         }
-
     }
 
     // Get All Foto Perumahan by ID Perumahan
@@ -687,7 +867,6 @@ class PerumahanController extends Controller
                 "data"    => $foto
             ], 200);
         }
-
     }
 
     // GROUP PERUMAHAN / SARANA DAN PRASARANA
@@ -797,7 +976,7 @@ class PerumahanController extends Controller
             ], 404);
         }
         else {
-            // Jika perumahan belum memiliki sarana dan prasarana, tetap tampilkan response 500 INTERNAL SERVER ERROR
+            // Jika ada terjadi kesalahan dalam proses delete, maka tampilkan response 500 INTERNAL SERVER ERROR
             return response()->json([
                 "message" => "Delete sarana dan prasarana dengan id: $id_sarana_prasarana_perumahan dari perumahan: $id_perumahan, Gagal"
             ], 500);
