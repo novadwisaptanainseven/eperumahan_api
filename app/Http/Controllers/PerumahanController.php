@@ -724,6 +724,10 @@ class PerumahanController extends Controller
             ],
             $message
         );
+
+        // Set ekstensi yang diizinkan untuk upload file
+        $request->ext_allowed = ['jpg', 'jpeg', 'png'];
+
         // Cek Validation
         if ($validator->fails()) {
             // Jika validasi gagal, tampilkan response 400 BAD REQUEST
@@ -737,18 +741,30 @@ class PerumahanController extends Controller
         $tambahFoto = Perumahan::addFotoPerumahan($request, $id_perumahan);
 
         // Cek apakah proses tambah berhasil
-        if ($tambahFoto) {
+        if ($tambahFoto === 'WRONG_EXTENSION') {
+            // Jika ekstensi file yang dimasukkan tidak diizinkan, tampilkan response 400 BAD REQUEST
+            return response()->json([
+                "message" => "Ekstensi file foto / gambar harus bertipe jpg, jpeg, atau png!",
+                "status_response" => "400 BAD REQUEST"
+            ], 400);
+        } else if ($tambahFoto !== 'NOT_FOUND') {
             // Jika berhasil, tampilkan response 201 CREATED
             return response()->json([
                 "message" => "Tambah foto dengan id perumahan: $id_perumahan, Berhasil",
                 "data"    => $tambahFoto
             ], 201);
+        } else if ($tambahFoto === 'NOT_FOUND') {
+            // Jika data perumahan tidak ditemukan, tampilkan response 404 NOT FOUND
+            return response()->json([
+                "message" => "Data perumahan dengan id perumahan: $id_perumahan, Tidak Ditemukan",
+                "data"    => $tambahFoto
+            ], 404);
         } else {
-            // Jika gagal, tampilkan response 400 BAD REQUEST
+            // Jika gagal, tampilkan response 500 INTERNAL SERVER ERROR
             return response()->json([
                 "message" => "Tambah foto dengan id perumahan: $id_perumahan, Gagal",
                 "data"    => $tambahFoto
-            ], 400);
+            ], 500);
         }
     }
 

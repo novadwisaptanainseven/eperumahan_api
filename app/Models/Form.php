@@ -10,18 +10,17 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
 
-class Brosur extends Model
+class Form extends Model
 {
     use HasApiTokens, HasFactory;
+    protected $table = 'form_data_perumahan';
+    protected $primaryKey = 'id_form_data_perumahan';
 
-    protected $table = 'brosur_pengembang';
-    protected $primaryKey = 'id_brosur_pengembang';
-
-    // Get All Brosur
-    public static function getAllBrosur()
+    // Get All Form Data Perumahan
+    public static function getAllForm()
     {
         // Tabel - Tabel
-        $brosur = 'brosur_pengembang';
+        $form = 'form_data_perumahan';
         $pengembang = 'pengembang';
 
         // Get current user untuk mendapatkan data pengembang sekarang
@@ -32,26 +31,26 @@ class Brosur extends Model
             ->where('id_user', $user->id)
             ->first();
 
-        // Get all brosur by id pengembang
+        // Get all form by id pengembang
         $id_pengembang = $data_pengembang->id_pengembang;
-        $data_brosur = DB::table($brosur)
+        $data_form = DB::table($form)
             ->where('id_pengembang', $id_pengembang)
-            ->orderBy('id_brosur_pengembang', 'DESC')
+            ->orderBy('id_form_data_perumahan', 'DESC')
             ->get();
 
-        // Cek apakah ada data brosur
-        if ($data_brosur)
-            return $data_brosur;
+        // Cek apakah ada data form
+        if ($data_form)
+            return $data_form;
         else
             return null;
     }
 
-    // Get Brosur By ID
-    public static function getBrosurById($id_brosur)
+    // Get Form Data Perumahan By ID
+    public static function getForm($id_form)
     {
         // Tabel - Tabel
         $pengembang = 'pengembang';
-        $brosur = 'brosur_pengembang';
+        $form = 'form_data_perumahan';
 
         // Get current user untuk mencari akun pengembang sekarang
         $user = Auth::user();
@@ -62,25 +61,25 @@ class Brosur extends Model
             ->first();
 
         // Get data brosur by id
-        $data_brosur = DB::table($brosur)
+        $data_form = DB::table($form)
             ->where([
                 ['id_pengembang', '=', $data_pengembang->id_pengembang],
-                ['id_brosur_pengembang', '=', $id_brosur]
+                ['id_form_data_perumahan', '=', $id_form]
             ])
             ->first();
 
         // Cek apakah ada data brosur ditemukan
-        if ($data_brosur)
-            return $data_brosur;
+        if ($data_form)
+            return $data_form;
         else
             return null;
     }
 
-    // Add Brosur
-    public static function addBrosur($req)
+    // Add Form Data Perumahan
+    public static function addForm($req)
     {
         // Tabel - Tabel
-        $brosur = 'brosur_pengembang';
+        $form = 'form_data_perumahan';
         $pengembang = 'pengembang';
 
         // Get current user untuk mendapatkan akun pengembang sekarang
@@ -91,10 +90,10 @@ class Brosur extends Model
             ->where('id_user', $user->id)
             ->first();
 
-        // Cek Apakah ada file brosur / Validasi ekstensi file apakah sesuai dengan ext_allowed
-        if ($req->hasFile('brosur_pengembang')) {
+        // Cek Apakah ada file form / Validasi ekstensi file apakah sesuai dengan ext_allowed
+        if ($req->hasFile('form_data_perumahan')) {
             $ext_allowed = $req->ext_allowed;
-            foreach ($req->brosur_pengembang as $b) {
+            foreach ($req->form_data_perumahan as $b) {
                 $ext_file = $b->extension();
                 if (!in_array($ext_file, $ext_allowed)) {
                     return 'WRONG_EXTENSION';
@@ -103,41 +102,46 @@ class Brosur extends Model
         }
         // Akhir validasi
 
-        // Proses tambah data brosur
-        foreach ($req->brosur_pengembang as $b) {
+        // Proses tambah data form
+        foreach ($req->form_data_perumahan as $f) {
 
             // Sanitize nama file
-            $file_name = pathinfo($b->getClientOriginalName(), PATHINFO_FILENAME);
-            $file_ext = pathinfo($b->getClientOriginalName(), PATHINFO_EXTENSION);
+            $file_name = pathinfo($f->getClientOriginalName(), PATHINFO_FILENAME);
+            $file_ext = pathinfo($f->getClientOriginalName(), PATHINFO_EXTENSION);
             $sanitize = Str::of($file_name)->slug('-');
             $sanitize = $sanitize . '.' . $file_ext;
 
             // Simpan file ke storage
-            $bb = $b->storeAs("pengembang/brosur", rand(0, 9999) . '-' . date('Ymd') . '-' . $sanitize);
+            $ff = $f->storeAs("pengembang/form", rand(0, 9999) . '-' . date('Ymd') . '-' . $sanitize);
 
-            $data_brosur = [
+            $data_form = [
                 "id_pengembang" => $data_pengembang->id_pengembang,
-                "brosur_pengembang" => $bb
+                "file" => $ff
             ];
 
-            // Insert Data Brosur ke Database
-            DB::table($brosur)->insert($data_brosur);
+            // Insert Data form ke Database
+            DB::table($form)->insert($data_form);
         }
 
-        // Tampilkan brosur hasil proses tambah
-        $data_brosur = DB::table($brosur)
+        // Tampilkan form hasil proses tambah
+        $data_form = DB::table($form)
             ->where('id_pengembang', $data_pengembang->id_pengembang)
-            ->orderBy('id_brosur_pengembang', 'DESC')
+            ->orderBy('id_form_data_perumahan', 'DESC')
             ->get();
 
-        return $data_brosur;
+        return $data_form;
     }
 
-    // Delete Brosur
-    public static function deleteBrosur($id_brosur)
+    // Update Form Data Perumahan By ID
+    public static function updateForm($req, $id_form)
+    {
+    }
+
+    // Delete Form Data Perumahan By ID
+    public static function deleteForm($id_form)
     {
         // Tabel - Tabel
-        $brosur = 'brosur_pengembang';
+        $form = 'form_data_perumahan';
         $pengembang = 'pengembang';
 
         // Get current user untuk mendapatkan data pengembang sekarang
@@ -148,31 +152,31 @@ class Brosur extends Model
             ->where('id_user', $user->id)
             ->first();
 
-        // Get data brosur
-        $data_brosur = DB::table($brosur)
-            ->where('id_brosur_pengembang', $id_brosur)
+        // Get data form
+        $data_form = DB::table($form)
+            ->where('id_form_data_perumahan', $id_form)
             ->first();
 
-        // Cek apakah data brosur ditemukan
-        if (!$data_brosur)
+        // Cek apakah data form ditemukan
+        if (!$data_form)
             return 'NOT_FOUND';
 
         // Proses delete
         $id_pengembang = $data_pengembang->id_pengembang;
-        $delete = DB::table($brosur)
+        $delete = DB::table($form)
             ->where([
-                ['id_brosur_pengembang', '=', $id_brosur],
+                ['id_form_data_perumahan', '=', $id_form],
                 ['id_pengembang', '=', $id_pengembang]
             ])
             ->delete();
 
         // Cek apakah proses delete berhasil
         if ($delete) {
-            // Hapus file brosur yang ada di storage
-            $path = $data_brosur->brosur_pengembang;
+            // Hapus file form yang ada di storage
+            $path = $data_form->file;
             Storage::delete($path);
 
-            return $data_brosur;
+            return $data_form;
         } else
             return null;
     }

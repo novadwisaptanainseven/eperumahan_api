@@ -9,6 +9,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PengembangController;
 use App\Http\Controllers\PerumahanController;
 use App\Http\Controllers\BrosurController;
+use App\Http\Controllers\FormController;
 use App\Models\Pengembang;
 
 /*
@@ -266,6 +267,26 @@ Route::prefix('v1/pengembang/')->group(function () {
 
             // Delete Brosur By ID
             Route::delete('brosur/{id_brosur}', [BrosurController::class, 'deleteBrosur']);
+
+            // END GROUP BROSUR PENGEMBANG
+
+            // ===========================================================================================
+            // GROUP FORM DATA PERUMAHAN
+
+            // Get All Form Data Perumahan
+            Route::get('form', [FormController::class, 'getAllForm']);
+
+            // Get Form Data Perumahan By ID
+            Route::get('form/{id_form}', [FormController::class, 'getForm']);
+
+            // Add Form Data Perumahan
+            Route::post('form', [FormController::class, 'addForm']);
+
+            // Update Form Data Perumahan
+            Route::post('form/{id_form}', [FormController::class, 'updateForm']);
+
+            // Delete Form Data Perumahan By ID
+            Route::delete('form/{id_form}', [FormController::class, 'deleteForm']);
         });
     });
 });

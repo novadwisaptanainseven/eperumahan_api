@@ -54,8 +54,16 @@ class Perumahan extends Model
         if (!$req->hasFile('legalitas'))
             $legalitas = '';
         else {
+
             $file = $req->file('legalitas');
-            $legalitas = $file->storeAs("perumahan/file", rand(0, 9999) . '-' . date('Ymd') . '-' . $file->getClientOriginalName());
+
+            // Sanitize nama file
+            $file_name = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+            $file_ext = pathinfo($file->getClientOriginalName(), PATHINFO_EXTENSION);
+            $sanitize = Str::of($file_name)->slug('-');
+            $sanitize = $sanitize . '.' . $file_ext;
+
+            $legalitas = $file->storeAs("perumahan/file", rand(0, 9999) . '-' . date('Ymd') . '-' . $sanitize);
         }
 
         // Lakukan Proses Tambah Data
@@ -87,7 +95,14 @@ class Perumahan extends Model
         $i = 0;
         $status = 0;
         foreach ($req->foto_perumahan as $foto) {
-            $f = $foto->storeAs("perumahan/foto", rand(0, 9999) . '-' . date('Ymd') . '-' . $image->getClientOriginalName());
+
+            // Sanitize nama file
+            $file_name = pathinfo($foto->getClientOriginalName(), PATHINFO_FILENAME);
+            $file_ext = pathinfo($foto->getClientOriginalName(), PATHINFO_EXTENSION);
+            $sanitize = Str::of($file_name)->slug('-');
+            $sanitize = $sanitize . '-' . $file_ext;
+
+            $f = $foto->storeAs("perumahan/foto", rand(0, 9999) . '-' . date('Ymd') . '-' . $sanitize);
 
             // Request foto pertama akan menjadi status utama
             if ($i == 0)
@@ -173,7 +188,14 @@ class Perumahan extends Model
                 $legalitas = $data_perumahan->legalitas;
             } else {
                 $file = $req->file('legalitas');
-                $legalitas = $file->storeAs("perumahan/file", $user->username . rand(0, 9999) . time() . '-' .     $file->getClientOriginalName());
+
+                // Sanitize nama file
+                $file_name = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+                $file_ext = pathinfo($file->getClientOriginalName(), PATHINFO_EXTENSION);
+                $sanitize = Str::of($file_name)->slug('-');
+                $sanitize = $sanitize . '.' . $file_ext;
+
+                $legalitas = $file->storeAs("perumahan/file", $user->username . rand(0, 9999) . time() . '-' .     $sanitize);
             }
 
             $data = [
@@ -310,8 +332,6 @@ class Perumahan extends Model
                 $ext_file = $foto->extension();
                 if (!in_array($ext_file, $ext_allowed)) {
                     return 'WRONG_EXTENSION';
-                } else {
-                    $path_foto[] = $foto->storeAs("bangunan/foto", rand(0, 9999) . '-' . date('Ymd') . '-' . $foto->getClientOriginalName());
                 }
             }
         }
@@ -362,11 +382,21 @@ class Perumahan extends Model
             // Foto Bangunan
             $i = 0;
             $status = 0;
-            foreach ($path_foto as $path) {
+            $path_foto = [];
+            foreach ($req->foto_bangunan as $foto) {
                 if ($i == 0)
                     $status = 1;
                 else
                     $status = 0;
+
+                // Sanitize nama file
+                $file_name = pathinfo($foto->getClientOriginalName(), PATHINFO_FILENAME);
+                $file_ext = pathinfo($foto->getClientOriginalName(), PATHINFO_EXTENSION);
+                $sanitize = Str::of($file_name)->slug('-');
+                $sanitize = $sanitize . '.' . $file_ext;
+
+                $path = $foto->storeAs("bangunan/foto", rand(0, 9999) . '-' . date('Ymd') . '-' . $sanitize);
+                $path_foto[] = $path;
 
                 $data_foto = [
                     "id_bangunan" => $id_bangunan,
@@ -780,7 +810,7 @@ class Perumahan extends Model
         if (!$data_bangunan)
             return 'NOT_FOUND';
 
-        // Cek Apakah ada file foto
+        // Cek Apakah ada file foto / Validasi apakah sudah sesuai dengan ekstensi yang diizinkan
         if ($req->hasFile('foto_bangunan')) {
             $data_foto = [];
             $status = 0;
@@ -791,17 +821,26 @@ class Perumahan extends Model
                 $ext_file = $image->extension();
                 if (!in_array($ext_file, $ext_allowed)) {
                     return 'WRONG_EXTENSION';
-                } else {
-                    $data_foto[] = $image->storeAs('bangunan/foto', rand(0, 9999) . '-' . date('Ymd') . '-' . $image->getClientOriginalName());
                 }
             }
         }
 
         // Proses tambah foto bangunan
-        foreach ($data_foto as $foto) {
+        $path = [];
+        foreach ($req->foto_bangunan as $foto) {
+            // Sanitize nama file
+            $file_name = pathinfo($foto->getClientOriginalName(), PATHINFO_FILENAME);
+            $file_ext = pathinfo($foto->getClientOriginalName(), PATHINFO_EXTENSION);
+            $sanitize = Str::of($file_name)->slug('-');
+            $sanitize = $sanitize . '.' . $file_ext;
+
+            // Simpan file ke storage
+            $f = $foto->storeAs('bangunan/foto', rand(0, 9999) . '-' . date('Ymd') . '-' . $sanitize);
+            $path[] = $f;
+
             $data = [
                 'id_bangunan' => $data_bangunan->id_bangunan,
-                'foto_bangunan' => $foto,
+                'foto_bangunan' => $f,
                 'level_foto' => 0
             ];
             // Insert foto to database
@@ -919,32 +958,56 @@ class Perumahan extends Model
     {
         // Tabel - Tabel
         $foto = 'foto_perumahan';
+        $perumahan = 'perumahan';
 
         // Get Current User
         $user = Auth::user();
 
-        // Cek Apakah ada file foto
+        // Get data perumahan
+        $data_perumahan = DB::table($perumahan)
+            ->where('id_perumahan', $id_perumahan)
+            ->first();
+
+        // Cek apakah data perumahan ditemukan
+        if (!$data_perumahan)
+            return 'NOT_FOUND';
+
+        // Cek Apakah ada file foto / Validasi apakah sudah sesuai dengan ekstensi yang diizinkan
         if ($req->hasFile('foto_perumahan')) {
             $data_foto = [];
             $status = 0;
             $i = 0;
-            $images = $req->file('foto_perumahan');
+            $images = $req->file('foto_bangunan');
             foreach ($images as $image) {
-
-                $data_foto[] = $image->storeAs('perumahan/foto', rand(0, 9999) . '-' . date('Ymd') . '-' . $image->getClientOriginalName());
-
-                // Persiapan Data Foto
-                $data = [
-                    "id_perumahan"   => $id_perumahan,
-                    "foto_perumahan" => $data_foto[$i++],
-                    "status_foto"    => $status
-                ];
-                // Insert foto to database
-                DB::table($foto)->insert($data);
+                $ext_allowed = $req->ext_allowed;
+                $ext_file = $image->extension();
+                if (!in_array($ext_file, $ext_allowed)) {
+                    return 'WRONG_EXTENSION';
+                }
             }
-        } else {
-            return null;
         }
+
+        $status = 0;
+        foreach ($req->foto_perumahan as $foto) {
+
+            // Sanitize nama file
+            $file_name = pathinfo($foto->getClientOriginalName(), PATHINFO_FILENAME);
+            $file_ext = pathinfo($foto->getClientOriginalName(), PATHINFO_EXTENSION);
+            $sanitize = Str::of($file_name)->slug('-');
+            $sanitize = $sanitize . '.' . $file_ext;
+
+            $f = $foto->storeAs('perumahan/foto', rand(0, 9999) . '-' . date('Ymd') . '-' . $sanitize);
+
+            // Persiapan Data Foto
+            $data = [
+                "id_perumahan"   => $id_perumahan,
+                "foto_perumahan" => $f,
+                "status_foto"    => $status
+            ];
+            // Insert foto to database
+            DB::table($foto)->insert($data);
+        }
+
 
         // Tampilkan foto hasil proses tambah
         $data_foto = DB::table($foto)
