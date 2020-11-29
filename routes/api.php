@@ -10,6 +10,7 @@ use App\Http\Controllers\PengembangController;
 use App\Http\Controllers\PerumahanController;
 use App\Http\Controllers\BrosurController;
 use App\Http\Controllers\FormController;
+use App\Http\Controllers\FileController;
 use App\Models\Pengembang;
 
 /*
@@ -293,3 +294,9 @@ Route::prefix('v1/pengembang/')->group(function () {
 
 // Login User
 Route::post('/login', [AuthController::class, 'login']);
+
+// Download File
+Route::get('/image/{path}/{filename}', [FileController::class, 'image']);
+Route::get('/brosur/{path}/{filename}', [FileController::class, 'brosur']);
+Route::get('/document/{path}/{filename}', [FileController::class, 'document']);
+Route::get('/form/{path}/{filename}', [FileController::class, 'form']);
