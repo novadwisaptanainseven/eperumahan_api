@@ -263,9 +263,15 @@ class PengembangController extends Controller
     }
 
     // Get All Pengembang
-    public function getAllPengembang()
+    public function getAllPengembang(Request $req)
     {
-        $pengembang = Pengembang::getAll();
+        // Pagination
+        $req->page = ($req->page) ? $req->page : '1';
+        $req->per_page = ($req->per_page) ? $req->per_page : '8';
+        $req->order = ($req->order) ? $req->order : 'desc';
+        // End Pagination
+
+        $pengembang = Pengembang::getAll($req);
 
         return response()->json([
             "message" => "Get All Data Pengembang Berhasil",

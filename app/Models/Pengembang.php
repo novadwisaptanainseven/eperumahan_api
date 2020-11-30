@@ -15,16 +15,48 @@ class Pengembang extends Model
     protected $primaryKey = 'id_pengembang';
 
     // Get All Pengembang
-    public static function getAll()
+    public static function getAll($req)
     {
-        $pengembang = DB::table('pengembang')
+        // Tabel - Tabel 
+        $pengembang = 'pengembang';
+
+        $page = intval($req->page);
+        $per_page = intval($req->per_page);
+        $order = $req->order;
+
+        $total = DB::table($pengembang)
             ->where([
                 'status_deleted' => 0
             ])
             ->orderBy('id_pengembang', 'DESC')
-            ->get();
+            ->get()
+            ->count();
+        
+        // Pagination
+        $offset = ($page - 1) * $per_page;
+        $last_page = ceil($total / $per_page);
+        
+        $data_pengembang = DB::table($pengembang)
+                              ->where('status_deleted', 0)
+                              ->offset($offset)
+                              ->limit($per_page)
+                              ->orderBy('id_pengembang', $order)
+                              ->get();
+        // End Pagination
 
-        return $pengembang;
+        if(count($data_pengembang) == 0)
+            $data_pengembang = "Data Tidak Tersedia";
+        
+        $data = [
+            "total_data"   => $total,
+            "per_page"     => $per_page,
+            "current_page" => $page,
+            "last_page"    => $last_page,
+            "order"        => $order,
+            "data"         => $data_pengembang  
+        ];
+
+        return $data;
     }
 
     // Get Pengembang By ID

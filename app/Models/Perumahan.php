@@ -223,8 +223,8 @@ class Perumahan extends Model
         }
     }
 
-    // Get All Data Perumahan
-    public static function getAll()
+    // Get All Perumahan Level Admin
+    public static function getAll($req)
     {
         // Tabel - Tabel
         $perumahan = 'perumahan';
@@ -232,24 +232,126 @@ class Perumahan extends Model
         $kelurahan = 'kelurahan';
         $kecamatan = 'kecamatan';
 
-        // Get data perumahan
-        $data_perumahan = DB::table($perumahan)
+        // Inisialisasi Pagination
+        $page = intval($req->page);
+        $per_page = intval($req->per_page);
+        $order = $req->order;
+
+        // Get total data
+        $total = DB::table($perumahan)
             ->leftJoin($pengembang, "$perumahan.id_pengembang", '=', "$pengembang.id_pengembang")
             ->leftJoin($kelurahan, "$kelurahan.id_kelurahan", "=", "$perumahan.id_kelurahan")
             ->leftJoin($kecamatan, "$kecamatan.id_kecamatan", "=", "$perumahan.id_kecamatan")
-            ->get();
-
-        //  Get data belum konfirmasi
-        $belum_konfirmasi = DB::table($perumahan)
-            ->where(["status_perumahan" => 0])
+            ->get()
             ->count();
 
-        //  Gabungkan data perumahan, belum konfirmasi, dan sudah konfirmasi
-        $data_perumahan->total = $data_perumahan->count();
-        $data_perumahan->total_sudah_konfirmasi = $data_perumahan->total - $belum_konfirmasi;
-        $data_perumahan->total_belum_konfirmasi = $belum_konfirmasi;
+        // Pagination
+        $offset = ($page - 1) * $per_page;
+        $last_page = ceil($total / $per_page);
+        
+        $data_perumahan = DB::table($perumahan)
+                              ->where("$perumahan.status_deleted", 0)
+                              ->leftJoin($pengembang, "$perumahan.id_pengembang", '=', "$pengembang.id_pengembang")
+                              ->leftJoin($kelurahan, "$kelurahan.id_kelurahan", "=", "$perumahan.id_kelurahan")
+                              ->leftJoin($kecamatan, "$kecamatan.id_kecamatan", "=", "$perumahan.id_kecamatan")
+                              ->offset($offset)
+                              ->limit($per_page)
+                              ->orderBy("$perumahan.id_perumahan", $order)
+                              ->get();
+        // End Pagination
 
-        return $data_perumahan;
+        // Cek apakah data perumahan ada isinya
+        if(count($data_perumahan) == 0)
+            $data_perumahan = "Data Tidak Tersedia";
+        
+            
+        //  Get data belum konfirmasi
+        $belum_konfirmasi = DB::table($perumahan)
+                                ->where(["status_perumahan" => 0])
+                                ->count();
+        
+        $data = [
+            "total_data"   => $total,
+            "total_sudah_konfirmasi" => $total - $belum_konfirmasi,
+            "total_belum_konfirmasi" => $belum_konfirmasi,
+            "per_page"     => $per_page,
+            "current_page" => $page,
+            "last_page"    => $last_page,
+            "order"        => $order,
+            "data"         => $data_perumahan  
+        ];
+        
+        return $data;
+    }
+
+    // Get All Perumahan Level Pengembang
+    public static function getAllPerumahan($req)
+    {
+        // Tabel - Tabel
+        $perumahan = 'perumahan';
+        $pengembang = 'pengembang';
+        $kelurahan = 'kelurahan';
+        $kecamatan = 'kecamatan';
+
+        // Get data pengembang sekarang berdasarkan current user
+        $user = Auth::user();
+        $data_pengembang = DB::table($pengembang)
+                              ->where('id_user', $user->id)
+                              ->first();
+
+        // Inisialisasi Pagination
+        $page = intval($req->page);
+        $per_page = intval($req->per_page);
+        $order = $req->order;
+
+        // Get total data
+        $total = DB::table($perumahan)
+                    ->where("$perumahan.id_pengembang", $data_pengembang->id_pengembang)
+                    ->get()
+                    ->count();
+
+        // Pagination
+        $offset = ($page - 1) * $per_page;
+        $last_page = ceil($total / $per_page);
+        
+        $data_perumahan = DB::table($perumahan)
+                            ->where("$perumahan.id_pengembang", $data_pengembang->id_pengembang)
+                            ->leftJoin($kelurahan, "$kelurahan.id_kelurahan", "=", "$perumahan.id_kelurahan")
+                            ->leftJoin($kecamatan, "$kecamatan.id_kecamatan", "=", "$perumahan.id_kecamatan")
+                            ->offset($offset)
+                            ->limit($per_page)
+                            ->orderBy("$perumahan.id_perumahan", $order)
+                            ->get();
+        // End Pagination
+
+        // Cek apakah data perumahan ada isinya
+        if(count($data_perumahan) == 0)
+            $data_perumahan = "Data Tidak Tersedia";
+        
+            
+        //  Get data belum konfirmasi
+        $belum_konfirmasi = DB::table($perumahan)
+                                ->where([
+                                    ['id_pengembang', '=', $data_pengembang->id_pengembang],
+                                    ['status_perumahan', '=', 0],
+                                    ['status_deleted', '=', 0]
+                                ])
+                                ->count();
+        
+        $data = [
+            "id_pengembang"          => $data_pengembang->id_pengembang,
+            "nama_pengembang"        => $data_pengembang->nama_pengembang,
+            "total_data"             => $total,
+            "total_sudah_konfirmasi" => $total - $belum_konfirmasi,
+            "total_belum_konfirmasi" => $belum_konfirmasi,
+            "per_page"               => $per_page,
+            "current_page"           => $page,
+            "last_page"              => $last_page,
+            "order"                  => $order,
+            "data"                   => $data_perumahan  
+        ];
+        
+        return $data; 
     }
 
     // Get Data Perumahan By ID
@@ -442,7 +544,7 @@ class Perumahan extends Model
     }
 
     // Get All Properti
-    public static function getAllProperti()
+    public static function getAllProperti($req)
     {
         // Tabel - Tabel
         $bangunan   = 'bangunan';
@@ -450,35 +552,101 @@ class Perumahan extends Model
         $kelurahan  = 'kelurahan';
         $kecamatan  = 'kecamatan';
 
-        // Mengambil Semua Data Properti
-        $properti = DB::table($bangunan)
-            ->leftJoin($pengembang, "$bangunan.id_pengembang", "=", "$pengembang.id_pengembang")
-            ->leftJoin($kelurahan, "$bangunan.id_kelurahan", "=", "$kelurahan.id_kelurahan")
-            ->leftJoin($kecamatan, "$bangunan.id_kecamatan", "=", "$kecamatan.id_kecamatan")
-            ->get();
+        // Inisialisasi Pagination
+        $page = intval($req->page);
+        $per_page = intval($req->per_page);
+        $order = $req->order;
+
+        // Get total data
+        $total = DB::table($bangunan)
+                    ->leftJoin($pengembang, "$bangunan.id_pengembang", "=", "$pengembang.id_pengembang")
+                    ->leftJoin($kelurahan, "$bangunan.id_kelurahan", "=", "$kelurahan.id_kelurahan")
+                    ->leftJoin($kecamatan, "$bangunan.id_kecamatan", "=", "$kecamatan.id_kecamatan")
+                    ->get()
+                    ->count();
+
+        // Pagination
+        $offset = ($page - 1) * $per_page;
+        $last_page = ceil($total / $per_page);
+        
+        $data_bangunan = DB::table($bangunan)
+                            ->where("$bangunan.status_deleted", 0)
+                            ->leftJoin($pengembang, "$bangunan.id_pengembang", "=", "$pengembang.id_pengembang")
+                            ->leftJoin($kelurahan, "$bangunan.id_kelurahan", "=", "$kelurahan.id_kelurahan")
+                            ->leftJoin($kecamatan, "$bangunan.id_kecamatan", "=", "$kecamatan.id_kecamatan")
+                            ->offset($offset)
+                            ->limit($per_page)
+                            ->orderBy("$bangunan.id_bangunan", $order)
+                            ->get();
+        // End Pagination
+
+        // Cek apakah data perumahan ada isinya
+        if(count($data_bangunan) == 0)
+            $data_bangunan = "Data Tidak Tersedia";
 
         $properti_belum_konfirmasi = DB::table($bangunan)
             ->where(["status_publish" => 0])
             ->count();
 
-        $properti->total = $properti->count();
-        $properti->total_sudah_konfirmasi = $properti->total - $properti_belum_konfirmasi;
-        $properti->total_belum_konfirmasi = $properti_belum_konfirmasi;
+        $data = [
+            "total_data"   => $total,
+            "total_sudah_konfirmasi" => $total - $properti_belum_konfirmasi,
+            "total_belum_konfirmasi" => $properti_belum_konfirmasi,
+            "per_page"     => $per_page,
+            "current_page" => $page,
+            "last_page"    => $last_page,
+            "order"        => $order,
+            "data"         => $data_bangunan  
+        ];
 
         // Cek Apakah properti ada isinya
-        if ($properti)
-            return $properti;
-        else
-            return null;
+        return $data;
     }
 
     // Get All Properti By ID Perumahan
-    public static function getAllPropertiById($id_perumahan)
+    public static function getAllPropertiById($req, $id_perumahan)
     {
         // Tabel - Tabel
         $bangunan   = 'bangunan';
         $perumahan  = 'perumahan';
         $pengembang = 'pengembang';
+
+        // Inisialisasi Pagination
+        $page = intval($req->page);
+        $per_page = intval($req->per_page);
+        $order = $req->order;
+
+        // Get data perumahan
+        $data_perumahan = DB::table($perumahan)
+                             ->where('id_perumahan', $id_perumahan)
+                             ->first();
+        // Cek apakah ada data perumahan
+        if(!$data_perumahan)
+            return 'NOT_FOUND';
+        
+
+        // Get total data
+        $total = DB::table($bangunan)
+                    ->where("id_perumahan", $id_perumahan)
+                    ->get()
+                    ->count();
+
+        // Pagination
+        $offset = ($page - 1) * $per_page;
+        $last_page = ceil($total / $per_page);
+        
+        // Mengambil data properti berdasarkan ID Perumahan
+        $data_bangunan = DB::table($bangunan)
+                        ->where(['id_perumahan' => $id_perumahan])
+                        ->offset($offset)
+                        ->limit($per_page)
+                        ->orderBy('id_bangunan', $order)
+                        ->get();
+        // End Pagination
+
+        // Cek apakah data perumahan ada isinya
+        if(count($data_bangunan) == 0)
+            $data_bangunan = "Data Tidak Tersedia";
 
         // Mengambil Data Perumahan berdasarkan ID Perumahan
         $data_perumahan = DB::table($perumahan)
@@ -486,13 +654,17 @@ class Perumahan extends Model
             ->leftJoin("$pengembang", "$perumahan.id_pengembang", '=', "$pengembang.id_pengembang")
             ->first();
 
-        // Mengambil data properti berdasarkan ID Perumahan
-        $properti = DB::table($bangunan)
-            ->where(['id_perumahan' => $id_perumahan])
-            ->get();
+        $data = [
+            "total_data"   => $total,
+            "per_page"     => $per_page,
+            "current_page" => $page,
+            "last_page"    => $last_page,
+            "order"        => $order,
+            "data"         => $data_bangunan  
+        ];
 
         // Gabungkan hasil pencarian data
-        $data_perumahan->properti = $properti;
+        $data_perumahan->bangunan = $data;
 
         return $data_perumahan;
     }
@@ -1114,30 +1286,55 @@ class Perumahan extends Model
     }
 
     // Get All Foto By ID Perumahan
-    public static function getAllFoto($id_perumahan)
+    public static function getAllFoto($req, $id_perumahan)
     {
         // Tabel - Tabel
         $foto = 'foto_perumahan';
         $perumahan = 'perumahan';
 
+        // Inisialisasi Pagination
+        $page = intval($req->page);
+        $per_page = intval($req->per_page);
+        $order = $req->order;
+
         // Get Data Perumahan By ID
         $data_perumahan = DB::table($perumahan)->where('id_perumahan', $id_perumahan)->first();
-
-        // Get All Foto
-        $data_foto = DB::table($foto)->where('id_perumahan', $id_perumahan)->get();
 
         // Cek apakah ada data Perumahan
         if (!$data_perumahan) {
             return 'NOT_FOUND';
         }
 
-        // Cek apakah ada data Foto
-        if ($data_foto) {
-            $data_foto->total = $data_foto->count();
+        // Get total data
+        $total = DB::table($foto)->where('id_perumahan', $id_perumahan)->get()->count();
 
-            return $data_foto;
-        } else
-            return null;
+        // Pagination
+        $offset = ($page - 1) * $per_page;
+        $last_page = ceil($total / $per_page);
+
+        // Get All Foto
+        $data_foto = DB::table($foto)
+                        ->where('id_perumahan', $id_perumahan)
+                        ->offset($offset)
+                        ->limit($per_page)
+                        ->orderBy('id_foto_perumahan', $order)
+                        ->get();
+        // End Pagination
+
+        // Cek apakah ada data Foto Perumahan
+        if(count($data_foto) == 0)
+            $data_foto = 'Data Tidak Tersedia';
+
+        $data = [
+            "total_data"   => $total,
+            "per_page"     => $per_page,
+            "current_page" => $page,
+            "last_page"    => $last_page,
+            "order"        => $order,
+            "data"         => $data_foto
+        ];
+
+        return $data;
     }
 
     // GROUP PERUMAHAN / SARANA DAN PRASARANA

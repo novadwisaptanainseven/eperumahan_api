@@ -12,9 +12,15 @@ use Illuminate\Support\Facades\Auth;
 class UserController extends Controller
 {
     // Get All Users
-    public function getAllUsers()
+    public function getAllUsers(Request $request)
     {
-        $users = User::all();
+        // Pagination
+        $request->page = ($request->page) ? $request->page : '1';
+        $request->per_page = ($request->per_page) ? $request->per_page : '8';
+        $request->order = ($request->order) ? $request->order : 'desc';
+        // End Pagination
+
+        $users = User::getAllUsers($request);
 
         return response()->json([
             'message' => "Get All Users Succcess",

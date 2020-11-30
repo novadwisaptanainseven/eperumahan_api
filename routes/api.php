@@ -189,13 +189,13 @@ Route::prefix('v1/pengembang/')->group(function () {
 
             // GROUP PERUMAHAN / FASILITAS
 
-            // Add Sarana dan Prasarana
+            // Add Fasilitas
             Route::post('/perumahan/{id_perumahan}/fasilitas', [PerumahanController::class, 'addFasilitas']);
 
-            // Get All Sarana dan Prasarana By ID Perumahan
+            // Get All Fasilitas By ID Perumahan
             Route::get('/perumahan/{id_perumahan}/fasilitas', [PerumahanController::class, 'getFasilitas']);
 
-            // Delete Sarana dan Prasarana By ID
+            // Delete Fasilitas By ID
             Route::delete('/perumahan/{id_perumahan}/fasilitas/{id_fasilitas_perumahan}', [PerumahanController::class, 'deleteFasilitas']);
 
             // GROUP PERUMAHAN / PROPERTI
@@ -288,6 +288,7 @@ Route::prefix('v1/pengembang/')->group(function () {
 
             // Delete Form Data Perumahan By ID
             Route::delete('form/{id_form}', [FormController::class, 'deleteForm']);
+            
         });
     });
 });

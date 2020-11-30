@@ -66,6 +66,7 @@ class PerumahanController extends Controller
             ], 400);
         }
         // Jika Validasi Berhasil, lakukan proses dibawah ini
+
         // Proses Tambah Data
         $tambah = Perumahan::addPerumahan($request);
 
@@ -140,43 +141,37 @@ class PerumahanController extends Controller
     }
 
     // Get All Data Perumahan
-    public function getAll()
+    public function getAll(Request $request)
     {
-        $perumahan = Perumahan::getAll();
+        // Pagination
+        $request->page = ($request->page) ? $request->page : '1';
+        $request->per_page = ($request->per_page) ? $request->per_page : '8';
+        $request->order = ($request->order) ? $request->order : 'desc';
+        // End Pagination
+
+        $perumahan = Perumahan::getAll($request);
 
         return response()->json([
             "message" => "Get All Perumahan Berhasil",
-            "total_data"   => $perumahan->total,
-            "total_sudah_konfirmasi" => $perumahan->total_sudah_konfirmasi,
-            "total_belum_konfirmasi" => $perumahan->total_belum_konfirmasi,
             "data"    => $perumahan
         ]);
     }
 
     // Get All Perumahan By Pengembang
-    public function getAllPerumahan()
+    public function getAllPerumahan(Request $request)
     {
-        // Get Current User untuk mendapatkan id pengembang
-        $user = Auth::user();
-        $pengembang = Pengembang::where('id_user', $user->id)->first();
+        // Pagination
+        $request->page = ($request->page) ? $request->page : '1';
+        $request->per_page = ($request->per_page) ? $request->per_page : '8';
+        $request->order = ($request->order) ? $request->order : 'desc';
+        // End Pagination
 
-        // Get Perumahan By ID Pengembang
-        $perumahan = Perumahan::where('id_pengembang', $pengembang->id_pengembang)->get();
+        $perumahan = Perumahan::getAllPerumahan($request);
 
-        // Cek apakah pengembang sudah memiliki perumahan
-        if ($perumahan) {
-            // Jika sudah, tampilkan response 200 OK
-            return response()->json([
-                "message" => "Get All Perumahan dari Pengembang: $pengembang->nama_pengembang",
-                "data"    => $perumahan
-            ], 200);
-        } else {
-            // Jika belum, tetap tampilkan response 200 OK dengan alasan
-            return response()->json([
-                "message" => "Pengembang: $pengembang->nama_pengembang, belum memiliki perumahan",
-                "data"    => $perumahan
-            ], 200);
-        }
+        return response()->json([
+            "message" => "Get All Perumahan Berhasil",
+            "data"    => $perumahan
+        ], 200);
     }
 
     // Get Data Perumahan By ID
@@ -302,36 +297,49 @@ class PerumahanController extends Controller
     }
 
     // Get All Data Properti
-    public function getAllProperti()
+    public function getAllProperti(Request $request)
     {
-        $properti = Perumahan::getAllProperti();
+         // Pagination
+         $request->page = ($request->page) ? $request->page : '1';
+         $request->per_page = ($request->per_page) ? $request->per_page : '8';
+         $request->order = ($request->order) ? $request->order : 'desc';
+         // End Pagination
+
+        $properti = Perumahan::getAllProperti($request);
 
         // Cek Apakah properti ada isinya
-        if ($properti) {
-            return response()->json([
+        return response()->json([
                 "message"    => "Get All Properti Berhasil",
-                "total_data" => $properti->total,
-                "total_sudah_konfirmasi" => $properti->total_sudah_konfirmasi,
-                "total_belum_konfirmasi" => $properti->total_belum_konfirmasi,
                 "data"       => $properti
             ], 200);
-        } else {
-            return response()->json([
-                "message" => "Properti Belum Memiliki Data",
-                "data"    => $properti
-            ], 200);
-        }
+
     }
 
     // Get All Data Properti By ID Perumahan
-    public function getAllPropertiById($id_perumahan)
+    public function getAllPropertiById(Request $request, $id_perumahan)
     {
-        $properti = Perumahan::getAllPropertiById($id_perumahan);
+        // Pagination
+        $request->page = ($request->page) ? $request->page : '1';
+        $request->per_page = ($request->per_page) ? $request->per_page : '8';
+        $request->order = ($request->order) ? $request->order : 'desc';
+        // End Pagination
 
-        return response()->json([
-            "message" => "Get All Properti dengan id perumahan: $id_perumahan Berhasil",
-            "data"    => $properti
-        ], 200);
+        $properti = Perumahan::getAllPropertiById($request, $id_perumahan);
+
+        if($properti !== 'NOT_FOUND')
+        {
+            return response()->json([
+                "message" => "Get All Properti dengan id perumahan: $id_perumahan Berhasil",
+                "data"    => $properti
+            ], 200);
+        }
+        else
+        {
+            return response()->json([
+                "message" => "Data perumahan tidak ditemukan",
+                "data"    => $properti
+            ], 404);
+        }
     }
 
     public function getPropertiById2($id_bangunan)
@@ -818,17 +826,22 @@ class PerumahanController extends Controller
     }
 
     // Get All Foto Perumahan by ID Perumahan
-    public function getAllFoto($id_perumahan)
+    public function getAllFoto(Request $request, $id_perumahan)
     {
+        // Pagination
+        $request->page = ($request->page) ? $request->page : '1';
+        $request->per_page = ($request->per_page) ? $request->per_page : '8';
+        $request->order = ($request->order) ? $request->order : 'desc';
+        // End Pagination
+
         // Proses get all
-        $foto = Perumahan::getAllFoto($id_perumahan);
+        $foto = Perumahan::getAllFoto($request, $id_perumahan);
 
         // Cek apakah ada data foto
         if ($foto !== 'NOT_FOUND') {
             // Jika ada, tampilkan response 200 OK
             return response()->json([
                 "message" => "Get All Foto Perumahan dengan id: $id_perumahan, Berhasil",
-                "total"   => $foto->total,
                 "data"    => $foto
             ], 200);
         }
@@ -838,12 +851,6 @@ class PerumahanController extends Controller
             return response()->json([
                 "message" => "Perumahan dengan id: $id_perumahan, Tidak Ditemukan"
             ], 404);
-        } else {
-            // Jika tidak, tampilkan response 200 OK karena bukan error hanya belum memiliki foto
-            return response()->json([
-                "message" => "Perumahan dengan id: $id_perumahan, Belum Memiliki Foto",
-                "data"    => $foto
-            ], 200);
         }
     }
 
