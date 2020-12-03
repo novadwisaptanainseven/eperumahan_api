@@ -248,28 +248,28 @@ class Perumahan extends Model
         // Pagination
         $offset = ($page - 1) * $per_page;
         $last_page = ceil($total / $per_page);
-        
+
         $data_perumahan = DB::table($perumahan)
-                              ->where("$perumahan.status_deleted", 0)
-                              ->leftJoin($pengembang, "$perumahan.id_pengembang", '=', "$pengembang.id_pengembang")
-                              ->leftJoin($kelurahan, "$kelurahan.id_kelurahan", "=", "$perumahan.id_kelurahan")
-                              ->leftJoin($kecamatan, "$kecamatan.id_kecamatan", "=", "$perumahan.id_kecamatan")
-                              ->offset($offset)
-                              ->limit($per_page)
-                              ->orderBy("$perumahan.id_perumahan", $order)
-                              ->get();
+            ->where("$perumahan.status_deleted", 0)
+            ->leftJoin($pengembang, "$perumahan.id_pengembang", '=', "$pengembang.id_pengembang")
+            ->leftJoin($kelurahan, "$kelurahan.id_kelurahan", "=", "$perumahan.id_kelurahan")
+            ->leftJoin($kecamatan, "$kecamatan.id_kecamatan", "=", "$perumahan.id_kecamatan")
+            ->offset($offset)
+            ->limit($per_page)
+            ->orderBy("$perumahan.id_perumahan", $order)
+            ->get();
         // End Pagination
 
         // Cek apakah data perumahan ada isinya
-        if(count($data_perumahan) == 0)
+        if (count($data_perumahan) <= 0)
             $data_perumahan = "Data Tidak Tersedia";
-        
-            
+
+
         //  Get data belum konfirmasi
         $belum_konfirmasi = DB::table($perumahan)
-                                ->where(["status_perumahan" => 0])
-                                ->count();
-        
+            ->where(["status_perumahan" => 0])
+            ->count();
+
         $data = [
             "total_data"   => $total,
             "total_sudah_konfirmasi" => $total - $belum_konfirmasi,
@@ -278,9 +278,9 @@ class Perumahan extends Model
             "current_page" => $page,
             "last_page"    => $last_page,
             "order"        => $order,
-            "data"         => $data_perumahan  
+            "data"         => $data_perumahan
         ];
-        
+
         return $data;
     }
 
@@ -296,8 +296,8 @@ class Perumahan extends Model
         // Get data pengembang sekarang berdasarkan current user
         $user = Auth::user();
         $data_pengembang = DB::table($pengembang)
-                              ->where('id_user', $user->id)
-                              ->first();
+            ->where('id_user', $user->id)
+            ->first();
 
         // Inisialisasi Pagination
         $page = intval($req->page);
@@ -306,38 +306,38 @@ class Perumahan extends Model
 
         // Get total data
         $total = DB::table($perumahan)
-                    ->where("$perumahan.id_pengembang", $data_pengembang->id_pengembang)
-                    ->get()
-                    ->count();
+            ->where("$perumahan.id_pengembang", $data_pengembang->id_pengembang)
+            ->get()
+            ->count();
 
         // Pagination
         $offset = ($page - 1) * $per_page;
         $last_page = ceil($total / $per_page);
-        
+
         $data_perumahan = DB::table($perumahan)
-                            ->where("$perumahan.id_pengembang", $data_pengembang->id_pengembang)
-                            ->leftJoin($kelurahan, "$kelurahan.id_kelurahan", "=", "$perumahan.id_kelurahan")
-                            ->leftJoin($kecamatan, "$kecamatan.id_kecamatan", "=", "$perumahan.id_kecamatan")
-                            ->offset($offset)
-                            ->limit($per_page)
-                            ->orderBy("$perumahan.id_perumahan", $order)
-                            ->get();
+            ->where("$perumahan.id_pengembang", $data_pengembang->id_pengembang)
+            ->leftJoin($kelurahan, "$kelurahan.id_kelurahan", "=", "$perumahan.id_kelurahan")
+            ->leftJoin($kecamatan, "$kecamatan.id_kecamatan", "=", "$perumahan.id_kecamatan")
+            ->offset($offset)
+            ->limit($per_page)
+            ->orderBy("$perumahan.id_perumahan", $order)
+            ->get();
         // End Pagination
 
         // Cek apakah data perumahan ada isinya
-        if(count($data_perumahan) == 0)
+        if (count($data_perumahan) == 0)
             $data_perumahan = "Data Tidak Tersedia";
-        
-            
+
+
         //  Get data belum konfirmasi
         $belum_konfirmasi = DB::table($perumahan)
-                                ->where([
-                                    ['id_pengembang', '=', $data_pengembang->id_pengembang],
-                                    ['status_perumahan', '=', 0],
-                                    ['status_deleted', '=', 0]
-                                ])
-                                ->count();
-        
+            ->where([
+                ['id_pengembang', '=', $data_pengembang->id_pengembang],
+                ['status_perumahan', '=', 0],
+                ['status_deleted', '=', 0]
+            ])
+            ->count();
+
         $data = [
             "id_pengembang"          => $data_pengembang->id_pengembang,
             "nama_pengembang"        => $data_pengembang->nama_pengembang,
@@ -348,10 +348,10 @@ class Perumahan extends Model
             "current_page"           => $page,
             "last_page"              => $last_page,
             "order"                  => $order,
-            "data"                   => $data_perumahan  
+            "data"                   => $data_perumahan
         ];
-        
-        return $data; 
+
+        return $data;
     }
 
     // Get Data Perumahan By ID
@@ -559,29 +559,29 @@ class Perumahan extends Model
 
         // Get total data
         $total = DB::table($bangunan)
-                    ->leftJoin($pengembang, "$bangunan.id_pengembang", "=", "$pengembang.id_pengembang")
-                    ->leftJoin($kelurahan, "$bangunan.id_kelurahan", "=", "$kelurahan.id_kelurahan")
-                    ->leftJoin($kecamatan, "$bangunan.id_kecamatan", "=", "$kecamatan.id_kecamatan")
-                    ->get()
-                    ->count();
+            ->leftJoin($pengembang, "$bangunan.id_pengembang", "=", "$pengembang.id_pengembang")
+            ->leftJoin($kelurahan, "$bangunan.id_kelurahan", "=", "$kelurahan.id_kelurahan")
+            ->leftJoin($kecamatan, "$bangunan.id_kecamatan", "=", "$kecamatan.id_kecamatan")
+            ->get()
+            ->count();
 
         // Pagination
         $offset = ($page - 1) * $per_page;
         $last_page = ceil($total / $per_page);
-        
+
         $data_bangunan = DB::table($bangunan)
-                            ->where("$bangunan.status_deleted", 0)
-                            ->leftJoin($pengembang, "$bangunan.id_pengembang", "=", "$pengembang.id_pengembang")
-                            ->leftJoin($kelurahan, "$bangunan.id_kelurahan", "=", "$kelurahan.id_kelurahan")
-                            ->leftJoin($kecamatan, "$bangunan.id_kecamatan", "=", "$kecamatan.id_kecamatan")
-                            ->offset($offset)
-                            ->limit($per_page)
-                            ->orderBy("$bangunan.id_bangunan", $order)
-                            ->get();
+            ->where("$bangunan.status_deleted", 0)
+            ->leftJoin($pengembang, "$bangunan.id_pengembang", "=", "$pengembang.id_pengembang")
+            ->leftJoin($kelurahan, "$bangunan.id_kelurahan", "=", "$kelurahan.id_kelurahan")
+            ->leftJoin($kecamatan, "$bangunan.id_kecamatan", "=", "$kecamatan.id_kecamatan")
+            ->offset($offset)
+            ->limit($per_page)
+            ->orderBy("$bangunan.id_bangunan", $order)
+            ->get();
         // End Pagination
 
         // Cek apakah data perumahan ada isinya
-        if(count($data_bangunan) == 0)
+        if (count($data_bangunan) == 0)
             $data_bangunan = "Data Tidak Tersedia";
 
         $properti_belum_konfirmasi = DB::table($bangunan)
@@ -596,7 +596,7 @@ class Perumahan extends Model
             "current_page" => $page,
             "last_page"    => $last_page,
             "order"        => $order,
-            "data"         => $data_bangunan  
+            "data"         => $data_bangunan
         ];
 
         // Cek Apakah properti ada isinya
@@ -618,34 +618,34 @@ class Perumahan extends Model
 
         // Get data perumahan
         $data_perumahan = DB::table($perumahan)
-                             ->where('id_perumahan', $id_perumahan)
-                             ->first();
+            ->where('id_perumahan', $id_perumahan)
+            ->first();
         // Cek apakah ada data perumahan
-        if(!$data_perumahan)
+        if (!$data_perumahan)
             return 'NOT_FOUND';
-        
+
 
         // Get total data
         $total = DB::table($bangunan)
-                    ->where("id_perumahan", $id_perumahan)
-                    ->get()
-                    ->count();
+            ->where("id_perumahan", $id_perumahan)
+            ->get()
+            ->count();
 
         // Pagination
         $offset = ($page - 1) * $per_page;
         $last_page = ceil($total / $per_page);
-        
+
         // Mengambil data properti berdasarkan ID Perumahan
         $data_bangunan = DB::table($bangunan)
-                        ->where(['id_perumahan' => $id_perumahan])
-                        ->offset($offset)
-                        ->limit($per_page)
-                        ->orderBy('id_bangunan', $order)
-                        ->get();
+            ->where(['id_perumahan' => $id_perumahan])
+            ->offset($offset)
+            ->limit($per_page)
+            ->orderBy('id_bangunan', $order)
+            ->get();
         // End Pagination
 
         // Cek apakah data perumahan ada isinya
-        if(count($data_bangunan) == 0)
+        if (count($data_bangunan) == 0)
             $data_bangunan = "Data Tidak Tersedia";
 
         // Mengambil Data Perumahan berdasarkan ID Perumahan
@@ -660,7 +660,7 @@ class Perumahan extends Model
             "current_page" => $page,
             "last_page"    => $last_page,
             "order"        => $order,
-            "data"         => $data_bangunan  
+            "data"         => $data_bangunan
         ];
 
         // Gabungkan hasil pencarian data
@@ -796,6 +796,9 @@ class Perumahan extends Model
         $data = DB::table($bangunan)
             ->where('id_bangunan', $id_bangunan)
             ->first();
+        // Cek apakah data bangunan ditemukan
+        if (!$data)
+            return null;
 
         // Untuk mengatasi error jika status bernilai null
         $status = ($status !== null) ? $status : $data->status_publish;
@@ -1314,15 +1317,15 @@ class Perumahan extends Model
 
         // Get All Foto
         $data_foto = DB::table($foto)
-                        ->where('id_perumahan', $id_perumahan)
-                        ->offset($offset)
-                        ->limit($per_page)
-                        ->orderBy('id_foto_perumahan', $order)
-                        ->get();
+            ->where('id_perumahan', $id_perumahan)
+            ->offset($offset)
+            ->limit($per_page)
+            ->orderBy('id_foto_perumahan', $order)
+            ->get();
         // End Pagination
 
         // Cek apakah ada data Foto Perumahan
-        if(count($data_foto) == 0)
+        if (count($data_foto) == 0)
             $data_foto = 'Data Tidak Tersedia';
 
         $data = [

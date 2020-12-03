@@ -13,8 +13,8 @@ use Illuminate\Support\Facades\Auth;
 class Form extends Model
 {
     use HasApiTokens, HasFactory;
-    protected $table = 'form_data_perumahan';
-    protected $primaryKey = 'id_form_data_perumahan';
+    protected $table = 'form_master';
+    protected $primaryKey = 'id_form_master';
 
     // Get All Form Data Perumahan
     public static function getAllForm()
@@ -43,6 +43,147 @@ class Form extends Model
             return $data_form;
         else
             return null;
+    }
+
+    // Add Form Master
+    public static function addFormMaster($req)
+    {
+        // Tabel - Tabel
+        $form = 'form_master';
+
+        // Proses tambah data form
+        // Sanitize nama file
+        if (!$req->hasFile('formulir'))
+            return null;
+
+        $f = $req->file('formulir');
+        $file_name = pathinfo($f->getClientOriginalName(), PATHINFO_FILENAME);
+        $file_ext = pathinfo($f->getClientOriginalName(), PATHINFO_EXTENSION);
+        $sanitize = Str::of($file_name)->slug('-');
+        $sanitize = $sanitize . '.' . $file_ext;
+
+        // Simpan file ke storage
+        $ff = $f->storeAs("admin/form", rand(0, 9999) . '-' . date('Ymd') . '-' . $sanitize);
+
+        $data_form = [
+            "file" => $ff
+        ];
+
+        // Insert Data form ke Database
+        DB::table($form)->insert($data_form);
+        // Tampilkan form hasil proses tambah
+        $data_form = DB::table($form)
+            ->orderBy('id_form_master', 'DESC')
+            ->get();
+
+        return $data_form;
+    }
+
+    // Update Status Aktive Form Master
+    public static function updateStatusActive($status, $id_form)
+    {
+        // Tabel - Tabel
+        $form = 'form_master';
+
+        // Get data hasil sebelum update status publish
+        $data = DB::table($form)
+            ->where('id_form_master', $id_form)
+            ->first();
+        // Cek apakah data form master ditemukan
+        if (!$data)
+            return null;
+
+        // Untuk mengatasi error jika status bernilai null
+        $status = ($status !== null) ? $status : $data->status_active;
+
+        // Proses Update
+        DB::table($form)
+            ->where(['id_form_master' => $id_form])
+            ->update(['status_active' => $status]);
+
+        // Get data hasil setelah update status active
+        $data = DB::table($form)
+            ->where('id_form_master', $id_form)
+            ->first();
+
+        return $data;
+    }
+
+    // Delete Form Master By ID
+    public static function deleteFormMaster($id_form)
+    {
+        // Tabel - Tabel
+        $form = 'form_master';
+
+        // Get data form
+        $data_form = DB::table($form)
+            ->where('id_form_master', $id_form)
+            ->first();
+
+        // Cek apakah data form ditemukan
+        if (!$data_form)
+            return 'NOT_FOUND';
+
+        // Proses delete
+        $delete = DB::table($form)
+            ->where([
+                ['id_form_master', '=', $id_form],
+            ])
+            ->delete();
+
+        // Cek apakah proses delete berhasil
+        if ($delete) {
+            // Hapus file form yang ada di storage
+            $path = $data_form->file;
+            Storage::delete($path);
+
+            return $data_form;
+        } else
+            return null;
+    }
+
+    // Get All Form Pengembang
+    public static function getAllFormPengembang($req)
+    {
+        // Tabel - Tabel
+        $form = 'form_data_perumahan';
+        $pengembang = 'pengembang';
+
+        // Inisialisasi Pagination
+        $page = intval($req->page);
+        $per_page = intval($req->per_page);
+        $order = $req->order;
+
+        // Get total data
+        $total = DB::table($form)->get()->count();
+
+        // Pagination
+        $offset = ($page - 1) * $per_page;
+        $last_page = ceil($total / $per_page);
+
+        $data_form = DB::table($form)
+            ->select("$form.*", "$pengembang.nama_pengembang")
+            ->leftJoin($pengembang, "$pengembang.id_pengembang", "=", "$form.id_pengembang")
+            ->offset($offset)
+            ->limit($per_page)
+            ->orderBy("$form.id_form_data_perumahan", $order)
+            ->get();
+        // End Pagination
+
+        // Cek apakah form data perumahan ada isinya
+        if (count($data_form) <= 0)
+            $data_form = "Data Tidak Tersedia";
+
+        $data = [
+            "total_data"   => $total,
+            "per_page"     => $per_page,
+            "current_page" => $page,
+            "last_page"    => $last_page,
+            "order"        => $order,
+            "data"         => $data_form
+        ];
+
+        return $data;
     }
 
     // Get Form Data Perumahan By ID

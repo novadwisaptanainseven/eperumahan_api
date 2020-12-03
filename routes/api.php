@@ -112,6 +112,25 @@ Route::prefix('v1/admin/')->group(function () {
 
             // Update Status Publish Properti By ID Perumahan & ID Bangunan
             Route::put('perumahan/{id_perumahan}/properti/{id_bangunan}/status', [PerumahanController::class, 'updateStatusProperti']);
+
+            // GROUP FORMULIR MATSER
+
+            // Get All Formulir Master
+            Route::get("formulir", [FormController::class, 'getAllFormMaster']);
+
+            // Add Formulir Master
+            Route::post("formulir", [FormController::class, 'addFormMaster']);
+
+            // Update Status Active Form Master By ID
+            Route::put("formulir/{id_form}/status_active", [FormController::class, 'updateStatusActive']);
+
+            // Delete Form Master By ID
+            Route::delete("formulir/{id_form}", [FormController::class, 'deleteFormMaster']);
+
+            // GROUP FORMULIR PENGEMBANG
+
+            // Get All Formulir Pengembang
+            Route::get("formulir_pengembang", [FormController::class, 'getAllFormPengembang']);
         });
     });
 });
@@ -288,7 +307,6 @@ Route::prefix('v1/pengembang/')->group(function () {
 
             // Delete Form Data Perumahan By ID
             Route::delete('form/{id_form}', [FormController::class, 'deleteForm']);
-            
         });
     });
 });

@@ -299,20 +299,19 @@ class PerumahanController extends Controller
     // Get All Data Properti
     public function getAllProperti(Request $request)
     {
-         // Pagination
-         $request->page = ($request->page) ? $request->page : '1';
-         $request->per_page = ($request->per_page) ? $request->per_page : '8';
-         $request->order = ($request->order) ? $request->order : 'desc';
-         // End Pagination
+        // Pagination
+        $request->page = ($request->page) ? $request->page : '1';
+        $request->per_page = ($request->per_page) ? $request->per_page : '8';
+        $request->order = ($request->order) ? $request->order : 'desc';
+        // End Pagination
 
         $properti = Perumahan::getAllProperti($request);
 
         // Cek Apakah properti ada isinya
         return response()->json([
-                "message"    => "Get All Properti Berhasil",
-                "data"       => $properti
-            ], 200);
-
+            "message"    => "Get All Properti Berhasil",
+            "data"       => $properti
+        ], 200);
     }
 
     // Get All Data Properti By ID Perumahan
@@ -326,15 +325,12 @@ class PerumahanController extends Controller
 
         $properti = Perumahan::getAllPropertiById($request, $id_perumahan);
 
-        if($properti !== 'NOT_FOUND')
-        {
+        if ($properti !== 'NOT_FOUND') {
             return response()->json([
                 "message" => "Get All Properti dengan id perumahan: $id_perumahan Berhasil",
                 "data"    => $properti
             ], 200);
-        }
-        else
-        {
+        } else {
             return response()->json([
                 "message" => "Data perumahan tidak ditemukan",
                 "data"    => $properti
@@ -445,7 +441,7 @@ class PerumahanController extends Controller
             // Jika tidak, tampilkan response 404 NOT FOUND
             return response()->json([
                 "message" => "Gagal Update, Data Tidak Ditemukan"
-            ], 201);
+            ], 404);
         }
     }
 
