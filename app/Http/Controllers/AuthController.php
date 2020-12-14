@@ -13,7 +13,7 @@ class AuthController extends Controller
     // Login
     public function login(Request $request)
     {
-       
+
         // Request Validation
         $messages = [
             'required' => ':attribute harus diisi!',
@@ -31,7 +31,7 @@ class AuthController extends Controller
             // Jika Validasi Gagal
             return response()->json([
                 'errors' => $validator->errors()
-            ]);
+            ], 400);
         }
 
         // Jika Validasi Berhasil

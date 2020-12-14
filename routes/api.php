@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Auth\Middleware\Authenticate;
 use App\Http\Middleware\CheckStatus;
 use App\Http\Controllers\UserController;
@@ -319,3 +320,5 @@ Route::get('/image/{path}/{filename}', [FileController::class, 'image']);
 Route::get('/brosur/{path}/{filename}', [FileController::class, 'brosur']);
 Route::get('/document/{path}/{filename}', [FileController::class, 'document']);
 Route::get('/form/{path}/{filename}', [FileController::class, 'form']);
+
+

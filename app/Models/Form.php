@@ -13,8 +13,8 @@ use Illuminate\Support\Facades\Auth;
 class Form extends Model
 {
     use HasApiTokens, HasFactory;
-    protected $table = 'form_master';
-    protected $primaryKey = 'id_form_master';
+    protected $table = 'file_form_data_perumahan';
+    protected $primaryKey = 'id_file_form_data_perumahan';
 
     // Get All Form Data Perumahan
     public static function getAllForm()
@@ -49,7 +49,7 @@ class Form extends Model
     public static function addFormMaster($req)
     {
         // Tabel - Tabel
-        $form = 'form_master';
+        $form = 'file_form_data_perumahan';
 
         // Proses tambah data form
         // Sanitize nama file
@@ -73,7 +73,7 @@ class Form extends Model
         DB::table($form)->insert($data_form);
         // Tampilkan form hasil proses tambah
         $data_form = DB::table($form)
-            ->orderBy('id_form_master', 'DESC')
+            ->orderBy('id_file_form_data_perumahan', 'DESC')
             ->get();
 
         return $data_form;
@@ -83,11 +83,11 @@ class Form extends Model
     public static function updateStatusActive($status, $id_form)
     {
         // Tabel - Tabel
-        $form = 'form_master';
+        $form = 'file_form_data_perumahan';
 
         // Get data hasil sebelum update status publish
         $data = DB::table($form)
-            ->where('id_form_master', $id_form)
+            ->where('id_file_form_data_perumahan', $id_form)
             ->first();
         // Cek apakah data form master ditemukan
         if (!$data)
@@ -98,12 +98,12 @@ class Form extends Model
 
         // Proses Update
         DB::table($form)
-            ->where(['id_form_master' => $id_form])
+            ->where(['id_file_form_data_perumahan' => $id_form])
             ->update(['status_active' => $status]);
 
         // Get data hasil setelah update status active
         $data = DB::table($form)
-            ->where('id_form_master', $id_form)
+            ->where('id_file_form_data_perumahan', $id_form)
             ->first();
 
         return $data;
@@ -113,11 +113,11 @@ class Form extends Model
     public static function deleteFormMaster($id_form)
     {
         // Tabel - Tabel
-        $form = 'form_master';
+        $form = 'file_form_data_perumahan';
 
         // Get data form
         $data_form = DB::table($form)
-            ->where('id_form_master', $id_form)
+            ->where('id_file_form_data_perumahan', $id_form)
             ->first();
 
         // Cek apakah data form ditemukan
@@ -127,7 +127,7 @@ class Form extends Model
         // Proses delete
         $delete = DB::table($form)
             ->where([
-                ['id_form_master', '=', $id_form],
+                ['id_file_form_data_perumahan', '=', $id_form],
             ])
             ->delete();
 
@@ -201,7 +201,7 @@ class Form extends Model
             ->where('id_user', $user->id)
             ->first();
 
-        // Get data brosur by id
+        // Get data form by id
         $data_form = DB::table($form)
             ->where([
                 ['id_pengembang', '=', $data_pengembang->id_pengembang],
@@ -209,7 +209,7 @@ class Form extends Model
             ])
             ->first();
 
-        // Cek apakah ada data brosur ditemukan
+        // Cek apakah ada data form ditemukan
         if ($data_form)
             return $data_form;
         else

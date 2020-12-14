@@ -334,7 +334,7 @@ class Perumahan extends Model
             ->where([
                 ['id_pengembang', '=', $data_pengembang->id_pengembang],
                 ['status_perumahan', '=', 0],
-                ['status_deleted', '=', 0]
+                // ['status_deleted', '=', 0]
             ])
             ->count();
 
