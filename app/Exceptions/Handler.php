@@ -50,7 +50,7 @@ class Handler extends ExceptionHandler
     {
         return response()->json([
             "message" => "Invalid API Token"
-        ]);
+        ], 403);
         // return $request->expectsJson()
         //     ? response()->json(['message' => 'Unauthenticated.'], 401)
         //     : redirect()->guest(route('authentication.index'));

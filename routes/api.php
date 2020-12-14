@@ -35,6 +35,8 @@ Route::prefix('v1/admin/')->group(function () {
     Route::group(['middleware' => 'auth:sanctum'], function () {
         //All secure URL's
 
+
+
         Route::group(['middleware' => 'check_status'], function () {
             // GROUP USER
 
@@ -315,10 +317,13 @@ Route::prefix('v1/pengembang/')->group(function () {
 // Login User
 Route::post('/login', [AuthController::class, 'login']);
 
+Route::group(['middleware' => 'auth:sanctum'], function () {
+    // For Checking User
+    Route::get('/cek_auth', [AuthController::class, 'me']);
+});
+
 // Download File
 Route::get('/image/{path}/{filename}', [FileController::class, 'image']);
 Route::get('/brosur/{path}/{filename}', [FileController::class, 'brosur']);
 Route::get('/document/{path}/{filename}', [FileController::class, 'document']);
 Route::get('/form/{path}/{filename}', [FileController::class, 'form']);
-
-
