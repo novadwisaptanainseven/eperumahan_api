@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 19, 2020 at 08:57 AM
+-- Generation Time: Dec 14, 2020 at 02:37 AM
 -- Server version: 10.4.14-MariaDB
 -- PHP Version: 7.4.11
 
@@ -53,27 +53,32 @@ CREATE TABLE `bangunan` (
   `latitude` varchar(200) NOT NULL,
   `sertifikat` text NOT NULL,
   `status_publish` varchar(10) NOT NULL,
-  `bangunan_slug` varchar(200) NOT NULL
+  `bangunan_slug` varchar(200) NOT NULL,
+  `status_deleted` int(1) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `bangunan`
 --
 
-INSERT INTO `bangunan` (`id_bangunan`, `id_perumahan`, `id_pengembang`, `id_kecamatan`, `id_kelurahan`, `kategori_bangunan`, `tipe_bangunan`, `nama_bangunan`, `deskripsi_bangunan`, `harga_bangunan`, `lokasi_bangunan`, `jumlah_tersedia`, `luas_bangunan`, `luas_tanah`, `dimensi_bangunan`, `dimensi_tanah`, `jumlah_lantai`, `jumlah_kamar`, `jumlah_kamar_mandi`, `jumlah_garasi`, `listrik`, `longitude`, `latitude`, `sertifikat`, `status_publish`, `bangunan_slug`) VALUES
-(9, 6, 7, 3, 21, 'MBR', '36', 'Rumah MBR murah', 'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod\r\ntempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,\r\nquis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo\r\nconsequat. Duis aute irure dolor in reprehenderit in voluptate velit esse\r\ncillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non\r\nproident, sunt in culpa qui officia deserunt mollit anim id est laborum.', 120000000, 'Jalan Dama', '200', 120, 130, '10 x 12', '10 x 12', '1', '2', '2', '1', '900', '', '', '', '1', 'rumah-mbr-murah-19050285'),
-(10, 6, 7, 3, 21, 'NON MBR', '45', 'Rumah hunian sederhana', '-', 250000000, 'Jalan Dama', '100', 200, 210, '20 x 10', '21 x 10', '2', '3', '2', '1', '4400', '', '', '', '1', 'rumah-hunian-sederhana-190422945'),
-(11, 6, 7, 3, 21, 'NON MBR', '45', 'Rumah Siap Huni', '-', 250000000, 'Jalan Dama', '100', 200, 210, '20 x 10', '20 x 10', '2', '3', '2', '1', '4400', '', '', '', '1', 'rumah-siap-huni-190820160'),
-(12, 9, 7, 5, 6, 'MBR', '45', 'Rumah MBR keren', '-', 50000000, 'Jalan Keledang', '5', 200, 220, '20 x 10', '20 x 11', '1', '1', '1', '3', '4400', '', '', '', '1', 'rumah-mbr-keren-190502395'),
-(13, 6, 7, 3, 21, 'MBR', '45', 'Rumah Siap Huni', '-', 123, 'Jalan Dama', '234', 200, 220, '22 x 11', '11 x 22', '1', '8', '6', '2', '10000', '', '', '', '1', 'rumah-siap-huni-190912213'),
-(14, 6, 7, 3, 21, 'MBR', '36', 'Rumah MBR 2020', 'Ayo beli rumah MBR tahun 2020 di perumahan baru, bebas banjir dan akses mudah dengan pusat kota', 90000000, 'Jalan Dama', '5', 180, 200, '12 x 10', '10 x 20', '1', '3', '2', '1', '1300', '', '', '', '0', 'rumah-mbr-2020-200804964'),
-(15, 15, 7, 10, 49, 'NON MBR', '36', 'Rumah tipe 36', 'dijual rumah tipe 36', 150000000, 'Jalan Panjaitan', '100', 80, 150, '10 x 8', '10 x 15', '2', '4', '2', '1', '2200', '', '', '', '1', 'rumah-tipe-36-201012747'),
-(16, 16, 7, 6, 16, 'MBR', '36', 'Rumah tipe 36A', 'Rumah murah tipe 36 2020', 100000000, 'Jalan Kadrie Oneng', '100', 80, 150, '8 x 10', '10 x 15', '2', '4', '2', '1', '2200', '', '', '', '1', 'rumah-tipe-36a-201014558'),
-(17, 6, 7, 3, 21, 'MBR', '45', 'tes', '1', 1, 'Jalan Dama', '1', 1, 1, '1 x 1', '1 x 1', '1', '1', '1', '1', '450', '', '', '', '2', 'tes-201015386'),
-(18, 18, 23, 1, 61, 'NON MBR', '54/120', 'Cluster Kakaban', 'Rumah Unit Tipe 54/120', 802000000, 'Jl. H.A.M.M Riffadin Ruko E2-11, Harapan Baru, Kec. Loa Janan Ilir Kota Samarinda Kalimantan Timur 75131', '3', 54, 120, '8 x 7', '8 x 15', '1', '2', '1', '1', '1300', '', '', '', '1', 'cluster-kakaban-201015525'),
-(19, 18, 23, 1, 61, 'NON MBR', '48/105', 'Cluster Kakaban', 'Rumah Unit  Tipe 48/105', 727000000, 'Jl. H.A.M.M Riffadin Ruko E2-11, Harapan Baru, Kec. Loa Janan Ilir Kota Samarinda Kalimantan Timur 75131', '5', 48, 105, '8 x 6', '7 x 15', '1', '2', '1', '1', '1300', '', '', '', '1', 'cluster-kakaban-201015875'),
-(20, 18, 23, 1, 61, 'NON MBR', '96', 'Cluster Maya', 'Rumah Unit Tipe 96/200', 1381000000, 'Jl. H.A.M.M Riffadin Ruko E2-11, Harapan Baru, Kec. Loa Janan Ilir Kota Samarinda Kalimantan Timur 75131', '5', 96, 200, '8 x 6', '8 x 16', '2', '4', '3', '1', '1300', '', '', '', '1', 'cluster-maya-201015837'),
-(21, 19, 7, 6, 16, 'MBR', '36', 'Rumah murah baru 2020', 'deksripsi', 140000000, 'lokasi perumahan', '100', 100, 150, '10 x 10', '10 x 15', '2', '3', '2', '1', '1300', '', '', '', '1', 'rumah-murah-baru-2020-201021153');
+INSERT INTO `bangunan` (`id_bangunan`, `id_perumahan`, `id_pengembang`, `id_kecamatan`, `id_kelurahan`, `kategori_bangunan`, `tipe_bangunan`, `nama_bangunan`, `deskripsi_bangunan`, `harga_bangunan`, `lokasi_bangunan`, `jumlah_tersedia`, `luas_bangunan`, `luas_tanah`, `dimensi_bangunan`, `dimensi_tanah`, `jumlah_lantai`, `jumlah_kamar`, `jumlah_kamar_mandi`, `jumlah_garasi`, `listrik`, `longitude`, `latitude`, `sertifikat`, `status_publish`, `bangunan_slug`, `status_deleted`) VALUES
+(9, 6, 7, 3, 21, 'MBR', '36', 'Rumah MBR murah', 'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod\r\ntempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,\r\nquis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo\r\nconsequat. Duis aute irure dolor in reprehenderit in voluptate velit esse\r\ncillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non\r\nproident, sunt in culpa qui officia deserunt mollit anim id est laborum.', 120000000, 'Jalan Dama', '200', 120, 130, '10 x 12', '10 x 12', '1', '2', '2', '1', '900', '', '', '', '1', 'rumah-mbr-murah-19050285', 0),
+(10, 6, 7, 3, 21, 'NON MBR', '45', 'Rumah hunian sederhana', '-', 250000000, 'Jalan Dama', '100', 200, 210, '20 x 10', '21 x 10', '2', '3', '2', '1', '4400', '', '', '', '1', 'rumah-hunian-sederhana-190422945', 0),
+(11, 6, 7, 3, 21, 'NON MBR', '45', 'Rumah Siap Huni', '-', 250000000, 'Jalan Dama', '100', 200, 210, '20 x 10', '20 x 10', '2', '3', '2', '1', '4400', '', '', '', '1', 'rumah-siap-huni-190820160', 0),
+(12, 9, 7, 5, 6, 'MBR', '45', 'Rumah MBR keren', '-', 50000000, 'Jalan Keledang', '5', 200, 220, '20 x 10', '20 x 11', '1', '1', '1', '3', '4400', '', '', '', '1', 'rumah-mbr-keren-190502395', 0),
+(13, 6, 7, 3, 21, 'MBR', '45', 'Rumah Siap Huni', '-', 123, 'Jalan Dama', '234', 200, 220, '22 x 11', '11 x 22', '1', '8', '6', '2', '10000', '', '', '', '1', 'rumah-siap-huni-190912213', 0),
+(14, 6, 7, 3, 21, 'MBR', '36', 'Rumah MBR 2020', 'Ayo beli rumah MBR tahun 2020 di perumahan baru, bebas banjir dan akses mudah dengan pusat kota', 90000000, 'Jalan Dama', '5', 180, 200, '12 x 10', '10 x 20', '1', '3', '2', '1', '1300', '', '', '', '0', 'rumah-mbr-2020-200804964', 0),
+(15, 15, 7, 10, 49, 'NON MBR', '36', 'Rumah tipe 36', 'dijual rumah tipe 36', 150000000, 'Jalan Panjaitan', '100', 80, 150, '10 x 8', '10 x 15', '2', '4', '2', '1', '2200', '', '', '', '1', 'rumah-tipe-36-201012747', 0),
+(16, 16, 7, 6, 16, 'MBR', '36', 'Rumah tipe 36A', 'Rumah murah tipe 36 2020', 100000000, 'Jalan Kadrie Oneng', '100', 80, 150, '8 x 10', '10 x 15', '2', '4', '2', '1', '2200', '', '', '', '1', 'rumah-tipe-36a-201014558', 0),
+(17, 6, 7, 3, 21, 'MBR', '45', 'tes', '1', 1, 'Jalan Dama', '1', 1, 1, '1 x 1', '1 x 1', '1', '1', '1', '1', '450', '', '', '', '2', 'tes-201015386', 0),
+(18, 18, 23, 1, 61, 'NON MBR', '54/120', 'Cluster Kakaban', 'Rumah Unit Tipe 54/120', 802000000, 'Jl. H.A.M.M Riffadin Ruko E2-11, Harapan Baru, Kec. Loa Janan Ilir Kota Samarinda Kalimantan Timur 75131', '3', 54, 120, '8 x 7', '8 x 15', '1', '2', '1', '1', '1300', '', '', '', '1', 'cluster-kakaban-201015525', 0),
+(19, 18, 23, 1, 61, 'NON MBR', '48/105', 'Cluster Kakaban', 'Rumah Unit  Tipe 48/105', 727000000, 'Jl. H.A.M.M Riffadin Ruko E2-11, Harapan Baru, Kec. Loa Janan Ilir Kota Samarinda Kalimantan Timur 75131', '5', 48, 105, '8 x 6', '7 x 15', '1', '2', '1', '1', '1300', '', '', '', '1', 'cluster-kakaban-201015875', 0),
+(20, 18, 23, 1, 61, 'NON MBR', '96', 'Cluster Maya', 'Rumah Unit Tipe 96/200', 1381000000, 'Jl. H.A.M.M Riffadin Ruko E2-11, Harapan Baru, Kec. Loa Janan Ilir Kota Samarinda Kalimantan Timur 75131', '5', 96, 200, '8 x 6', '8 x 16', '2', '4', '3', '1', '1300', '', '', '', '1', 'cluster-maya-201015837', 0),
+(21, 19, 7, 6, 16, 'MBR', '36', 'Rumah murah baru 2020', 'deksripsi', 140000000, 'lokasi perumahan', '100', 100, 150, '10 x 10', '10 x 15', '2', '3', '2', '1', '1300', '', '', '', '1', 'rumah-murah-baru-2020-201021153', 0),
+(23, 47, 32, 1, 1, 'kategori', 'MBR', '123', 'deskripsi', 20000, 'Jalan Slamet Riyadi', '10', 10, 10, '10 x 10', '10 x 10', '10', '20', '30', '5', '200', 'Ini Longitude', 'Ini Latitude', '', '0', '20-123', 0),
+(24, 47, 32, 1, 1, 'kategori', 'MBR', '123', 'deskripsi', 20000, 'Jalan Slamet Riyadi', '10', 10, 10, '10 x 10', '10 x 10', '10', '20', '30', '5', '200', 'Ini Longitude', 'Ini Latitude', '', '0', '48-123', 0),
+(25, 47, 32, 1, 1, 'kategori', 'MBR', '123', 'deskripsi', 20000, 'Jalan Slamet Riyadi', '10', 10, 10, '10 x 10', '10 x 10', '10', '20', '30', '5', '200', 'Ini Longitude', 'Ini Latitude', '', '0', '48-123', 0),
+(26, 47, 32, 1, 1, 'kategori', 'MBR', 'Rumah Islamic', 'lorem ipsum dolor sit amet', 20000, 'Jalan Slamet Riyadi', '10', 10, 10, '10 x 10', '10 x 10', '10', '20', '30', '5', '200', 'Ini Longitude', 'Ini Latitude', '', '0', '26-rumah-islamic', 0);
 
 -- --------------------------------------------------------
 
@@ -160,7 +165,26 @@ INSERT INTO `fasilitas_perumahan` (`id_fasilitas_perumahan`, `id_perumahan`, `na
 (34, 20, 'Mesin ATM'),
 (35, 20, 'Joging Track'),
 (36, 21, 'tes'),
-(37, 1, 'Kolam Renang');
+(46, 46, 'Kamar Mandi'),
+(47, 46, 'Kamera CCTV'),
+(48, 47, 'Kamar Mandi'),
+(49, 47, 'Kamera CCTV'),
+(50, 46, 'Lampu Taman 1');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `file_form_data_perumahan`
+--
+
+CREATE TABLE `file_form_data_perumahan` (
+  `id_file_form` int(11) NOT NULL,
+  `file` varchar(255) NOT NULL,
+  `status_active` int(1) NOT NULL DEFAULT 0,
+  `status_deleted` int(1) NOT NULL DEFAULT 0,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
 
@@ -170,8 +194,12 @@ INSERT INTO `fasilitas_perumahan` (`id_fasilitas_perumahan`, `id_perumahan`, `na
 
 CREATE TABLE `form_data_perumahan` (
   `id_form_data_perumahan` int(11) NOT NULL,
+  `id_file_form` int(11) NOT NULL,
   `id_pengembang` int(11) NOT NULL,
-  `file` varchar(255) NOT NULL
+  `file` varchar(255) NOT NULL,
+  `status_deleted` int(1) NOT NULL DEFAULT 0,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -192,13 +220,13 @@ CREATE TABLE `foto_bangunan` (
 --
 
 INSERT INTO `foto_bangunan` (`id_foto_bangunan`, `id_bangunan`, `foto_bangunan`, `level_foto`) VALUES
-(9, 9, 'november_2017.jpg', '1'),
+(9, 9, 'november_2017.jpg', '0'),
 (12, 11, 'rumah21.jpg', '0'),
 (14, 9, 'rumah3.jpg', '0'),
 (15, 10, 'home_slider_1.jpg', '0'),
 (16, 10, 'november_20171.jpg', '1'),
 (17, 11, 'rumah.jpg', '1'),
-(18, 9, 'Top-60-Employee-Engagement-image24-1024x511.png', '0'),
+(18, 9, 'Top-60-Employee-Engagement-image24-1024x511.png', '1'),
 (19, 12, 'Screenshot_(6).png', '1'),
 (20, 12, 'Screenshot_(5).png', '0'),
 (22, 13, 'november_20172.jpg', '1'),
@@ -212,7 +240,18 @@ INSERT INTO `foto_bangunan` (`id_foto_bangunan`, `id_bangunan`, `foto_bangunan`,
 (30, 19, 'tipe_48.jpg', '1'),
 (31, 20, 'PHOTO_20200527_095931.jpg', '1'),
 (32, 20, 'PHOTO_20200527_100127.jpg', '0'),
-(33, 21, 'download2.jpg', '1');
+(33, 21, 'download2.jpg', '1'),
+(36, 23, 'bangunan/foto/5644-20201126-Capture.PNG', '1'),
+(37, 23, 'bangunan/foto/7423-20201126-Laravel-Featured-Image - Copy.png', '0'),
+(38, 24, 'bangunan/foto/9743-20201126-Laravel-Featured-Image - Copy.png', '1'),
+(39, 25, 'bangunan/foto/9326-20201126-Laravel-Featured-Image - Copy.png', '1'),
+(40, 26, 'bangunan/foto/2429-20201126-Laravel-Featured-Image - Copy.png', '0'),
+(41, 26, 'bangunan/foto/8787-20201127-Capture.PNG', '0'),
+(42, 26, 'bangunan/foto/5478-20201127-Capture.PNG', '0'),
+(43, 26, 'bangunan/foto/4889-20201127-react.png', '0'),
+(44, 26, 'bangunan/foto/4938-20201127-Laravel-Featured-Image - Copy.png', '0'),
+(45, 26, 'bangunan/foto/3130-20201127-react.png', '0'),
+(46, 26, 'bangunan/foto/1383-20201127-react.png', '1');
 
 -- --------------------------------------------------------
 
@@ -224,38 +263,47 @@ CREATE TABLE `foto_perumahan` (
   `id_foto_perumahan` int(11) NOT NULL,
   `id_perumahan` int(11) NOT NULL,
   `foto_perumahan` varchar(200) NOT NULL,
-  `status_foto` varchar(20) NOT NULL
+  `status_foto` varchar(20) NOT NULL,
+  `status_deleted` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `foto_perumahan`
 --
 
-INSERT INTO `foto_perumahan` (`id_foto_perumahan`, `id_perumahan`, `foto_perumahan`, `status_foto`) VALUES
-(16, 7, 'Screenshot_(1).png', '0'),
-(19, 1, 'sports-time-woman-run-running-track-against-city-background-modern-vector-illustration-concept-woman-run-running-track-131162438.jpg', '1'),
-(20, 1, 'home_slider_1.jpg', '0'),
-(21, 6, 'rumah2.jpg', '0'),
-(22, 7, 'rumah21.jpg', '1'),
-(24, 6, 'november_20171.jpg', '1'),
-(25, 9, 'Screenshot_(11).png', '0'),
-(26, 9, 'Screenshot_(9).png', '1'),
-(27, 10, 'Screenshot_(28).png', '0'),
-(28, 10, 'Screenshot_(29).png', '1'),
-(29, 11, 'Screenshot_(25).png', '0'),
-(30, 11, 'Screenshot_(32).png', '1'),
-(31, 12, 'Screenshot_(2).png', '1'),
-(32, 12, 'Screenshot_(6)1.png', '0'),
-(33, 13, 'Screenshot_(25)1.png', '1'),
-(34, 14, 'image-upload.png', '1'),
-(37, 16, 'download_(1)1.jpg', '1'),
-(38, 17, 'citraland.jpg', '1'),
-(39, 18, 'WhatsApp_Image_2020-10-05_at_12_25_33.jpeg', '1'),
-(40, 19, 'download1.jpg', '1'),
-(41, 20, 'Gerbang_cluster_damar_kembang_juni_2013_a_kirim.jpg', '1'),
-(42, 21, 'IMG_20200917_094518.jpg', '1'),
-(43, 15, 'bg-flat.png', '1'),
-(44, 15, 'rumahsehar.png', '0');
+INSERT INTO `foto_perumahan` (`id_foto_perumahan`, `id_perumahan`, `foto_perumahan`, `status_foto`, `status_deleted`) VALUES
+(16, 7, 'Screenshot_(1).png', '0', 0),
+(19, 1, 'sports-time-woman-run-running-track-against-city-background-modern-vector-illustration-concept-woman-run-running-track-131162438.jpg', '1', 0),
+(20, 1, 'home_slider_1.jpg', '0', 0),
+(21, 6, 'rumah2.jpg', '0', 0),
+(22, 7, 'rumah21.jpg', '1', 0),
+(24, 6, 'november_20171.jpg', '1', 0),
+(25, 9, 'Screenshot_(11).png', '0', 0),
+(26, 9, 'Screenshot_(9).png', '1', 0),
+(27, 10, 'Screenshot_(28).png', '0', 0),
+(28, 10, 'Screenshot_(29).png', '1', 0),
+(29, 11, 'Screenshot_(25).png', '0', 0),
+(30, 11, 'Screenshot_(32).png', '1', 0),
+(31, 12, 'Screenshot_(2).png', '1', 0),
+(32, 12, 'Screenshot_(6)1.png', '0', 0),
+(33, 13, 'Screenshot_(25)1.png', '1', 0),
+(34, 14, 'image-upload.png', '1', 0),
+(37, 16, 'download_(1)1.jpg', '1', 0),
+(38, 17, 'citraland.jpg', '1', 0),
+(39, 18, 'WhatsApp_Image_2020-10-05_at_12_25_33.jpeg', '1', 0),
+(40, 19, 'download1.jpg', '1', 0),
+(41, 20, 'Gerbang_cluster_damar_kembang_juni_2013_a_kirim.jpg', '1', 0),
+(42, 21, 'IMG_20200917_094518.jpg', '1', 0),
+(43, 15, 'bg-flat.png', '1', 0),
+(44, 15, 'rumahsehar.png', '0', 0),
+(86, 46, 'perumahan/foto/VnBKYCHyleK7MrZy6QSBpRL7VJFXdh53nntRVDrM.png', '1', 0),
+(87, 46, 'perumahan/foto/vJmgOAo7ev3LY0iF0IzF7aImRFwcvqytwv0G2nlL.png', '0', 0),
+(88, 47, 'perumahan/foto/V1HQ1Yf7oh4otcKxZC2E1HmNHNrNUVYYAoI4smNe.png', '1', 0),
+(89, 47, 'perumahan/foto/O5i777pRUoqjudwn2qtYT9nZ9SLaaFQIkJCkDzjE.png', '0', 0),
+(90, 47, 'perumahan/foto/0YA5d9MAvKI3JoGH1tk2M7sp7zajkW1gXrC6QBMu.png', '0', 0),
+(92, 46, 'perumahan/foto//pengembang5133-Laravel-Featured-Image - Copy.png', '0', 0),
+(93, 46, 'perumahan/foto//pengembang2732-Laravel-Featured-Image.png', '0', 0),
+(95, 46, 'perumahan/foto//pengembang754-Laravel-Featured-Image - Copy.png', '0', 0);
 
 -- --------------------------------------------------------
 
@@ -650,7 +698,16 @@ CREATE TABLE `personal_access_tokens` (
 --
 
 INSERT INTO `personal_access_tokens` (`id`, `tokenable_type`, `tokenable_id`, `name`, `token`, `abilities`, `last_used_at`, `created_at`, `updated_at`) VALUES
-(4, 'App\\Models\\User', 2, 'user-token', '9d93ecfd5ea94d24a6d1c6fb57a20f67d710bfb4f572ae12efbd3d3131dc5841', '[\"*\"]', '2020-11-18 23:35:40', '2020-11-18 18:15:48', '2020-11-18 23:35:40');
+(9, 'App\\Models\\User', 13, 'user-token', 'a7bdb52e59975e6c911c6f4288ad748a31774fdb528e072b62a78255afa7ec2e', '[\"*\"]', '2020-11-23 21:49:55', '2020-11-23 00:44:21', '2020-11-23 21:49:55'),
+(10, 'App\\Models\\User', 13, 'user-token', '7b81071a62d558080868e5bb885c763a2c8504ceceeaac060b232d50fd0de786', '[\"*\"]', '2020-11-29 22:28:44', '2020-11-23 18:02:04', '2020-11-29 22:28:44'),
+(11, 'App\\Models\\User', 13, 'user-token', '1cdb0d975829b740e678efaeb8496cad1d3d720ebf365f01531310b5462c8805', '[\"*\"]', '2020-11-29 22:30:00', '2020-11-24 17:52:25', '2020-11-29 22:30:00'),
+(12, 'App\\Models\\User', 13, 'user-token', '045de7f13a85ca420640918c4fc2ba94701a5a4839809c7befa52d61fc25ccc3', '[\"*\"]', '2020-11-25 23:58:55', '2020-11-25 17:25:06', '2020-11-25 23:58:55'),
+(16, 'App\\Models\\User', 13, 'user-token', '7d978542867b98db85c33dbeb616878e09790e302f4c758fd8ec36403897fe98', '[\"*\"]', '2020-11-30 00:12:26', '2020-11-29 21:32:09', '2020-11-30 00:12:26'),
+(18, 'App\\Models\\User', 13, 'user-token', '7895be4f1e160bc15e7157197158f69514cb3d3a1517974e5b9b65b532f82645', '[\"*\"]', '2020-12-02 20:29:17', '2020-12-02 20:24:44', '2020-12-02 20:29:17'),
+(19, 'App\\Models\\User', 2, 'user-token', '63cd313f612ad4198b44bfe1d04135a25429c4bfa9b5b348d46dce8257a37743', '[\"*\"]', '2020-12-02 20:31:44', '2020-12-02 20:31:12', '2020-12-02 20:31:44'),
+(20, 'App\\Models\\User', 2, 'user-token', '7bd275da0bc3488ea265f8b5b7204489cc62f9bc89d262e965f81bc199bcb98f', '[\"*\"]', NULL, '2020-12-13 17:32:53', '2020-12-13 17:32:53'),
+(21, 'App\\Models\\User', 2, 'user-token', 'd5730caac8293bb5a8ad151251bcf304e11b45faa76d5f402ac9240d6b60ff4a', '[\"*\"]', NULL, '2020-12-13 17:34:36', '2020-12-13 17:34:36'),
+(22, 'App\\Models\\User', 13, 'user-token', 'dd5cc203817dec78d1b925cb3e9c1e295c495eb2ce1c56c361193b4d8b6ad017', '[\"*\"]', NULL, '2020-12-13 17:35:14', '2020-12-13 17:35:14');
 
 -- --------------------------------------------------------
 
@@ -670,31 +727,34 @@ CREATE TABLE `perumahan` (
   `latitude` varchar(200) NOT NULL,
   `legalitas` varchar(200) NOT NULL,
   `slug` varchar(200) NOT NULL,
-  `status_perumahan` varchar(25) NOT NULL
+  `status_perumahan` varchar(25) NOT NULL,
+  `status_deleted` int(1) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `perumahan`
 --
 
-INSERT INTO `perumahan` (`id_perumahan`, `id_pengembang`, `id_kecamatan`, `id_kelurahan`, `nama_perumahan`, `deskripsi_perumahan`, `lokasi`, `longitude`, `latitude`, `legalitas`, `slug`, `status_perumahan`) VALUES
-(1, 7, 2, 2, 'Perumahan Sejahtera1', '-', 'Lokasi perumahan disini', '117.03207022926154', '-0.5507962787262386', '117.16033352731438', 'perumahan-sejahtera1-190430969', '1'),
-(6, 7, 3, 21, 'Perumahan Damai Sejahtera', 'opasdjkasopdasdoopasjdopjasdpjop', 'Jalan Dama', '117.11020840523383', '-0.5580592583990835', 'construction-worker.png', 'perumahan-damai-sejahtera-190513158', '2'),
-(7, 7, 6, 14, 'Perumahan Damai1', '', 'Jalan Graha Indah', '117.13757260482294', '-0.49870532421209646', 'automation.png', 'perumahan-damai1-190422649', '2'),
-(8, 7, 9, 37, 'Perumahan Hills', '', 'Jalan Graha Indaha', '117.29478281629076', '-0.5655634313352635', 'curve-24.png', 'perumahan-hills-190416579', '1'),
-(9, 7, 5, 6, 'Perumahan Keren', '', 'Jalan Keledang', '117.30434045124355', '-0.45543945164118327', '1556180793388.jpg', 'perumahan-keren-190502690', '0'),
-(10, 7, 9, 38, 'Perumahan Tes', '', 'Jalan Karang Asam', '117.03502072212723', '-0.4547231596136072', 'Screenshot_(21).png', 'perumahan-tes-190502770', '0'),
-(11, 7, 3, 21, 'Perumahan Damaix', '', 'Jalan Dama', '117.03055752632622', '-0.4729186692780587', 'Screenshot_(9).png', 'perumahan-damaix-190502184', '0'),
-(12, 7, 2, 2, 'Perumahan Hillsl', '', 'Jalan Graha Indah', '117.21457852242747', '-0.450260102997845', 'Screenshot_(23).png', 'perumahan-hillsl-190502625', '0'),
-(13, 7, 4, 54, 'Perumahan Vrindavan', 'deskripsi1', 'Jalan Keledang', '117.08789242622606', '-0.48115812977056294', 'Screenshot_(28).png', 'perumahan-vrindavan-190507826', '0'),
-(14, 7, 6, 16, 'Perumahan Baru', 'Perumahan modern dengan sistem cluster dan berlokasi strategis di Samarinda. Rumah Dengan Design Minimalis namun tetap Modern. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum', 'Jalan Lokasi Perumahan ', '117.06471814035172', '-0.5134292526477395', 'image-upload.png', 'perumahan-baru-200804368', '0'),
-(15, 7, 10, 49, 'Citraland Panjaitan', 'perumahan citraland, rumah menengah dan rumah mewah', 'Jalan Panjaitan', '117.20232197582618', '-0.4774445211906624', 'download_(1).jpg', 'citraland-panjaitan-201012235', '1'),
-(16, 7, 6, 16, 'Perumahan ABC', 'perumahan baru di samarinda', 'Jalan Kadrie Oneng', '117.12772210048843', '-0.483280160530569', 'download_(1)1.jpg', 'perumahan-abc-201014405', '1'),
-(17, 22, 10, 51, 'CitraLand Samarinda', 'CitraLand city Samarinda merupakan masterpiece persembahan ciputra Group, developer terkemuka dengan berbagai proyek properti di Indonesia dan mancanegara, seperti CitraLand Surabaya, CitraGarden City Jakarta, CitraGran Cibubur, Ciputra World Jakarta, Ciputra World Surabaya, CitraSun Garden Semarang, CitraLand Pekanbaru, CitraLand Celebes, Ciputra Hanoi International City, Grand Phnom Penh International City dan masih banyak lagi yang lain. Selamlebih dari 30 tahun, Ciputra Group telah membangun reputasi unggul dalam pengembangan propertiyang berkualitas dalam infrastruktur, bangunan dan pelayanan pelanggan.\r\n\r\nDr. HC. Ir. Ciputra, pendiri Ciputra Group yang telah berkarya lebih dari 30 tahun, dianggap sebagai Begawan dalam dunia property Indonesia, beliau juga merupakan pendiri dari grup developer raksasa lain seperti Metropolitan Group dan Jaya Group. Dr. HC. Ir. Ciputra adalah seorang tokoh entrepreneurship nasional yang berkomitmen menciptakan generasi entrepreneur melalui sekolah dan universitas yang didirikannya.\r\n\r\nSetelah sukses dengan penjualan tahp pertama seluas 33 hektar, kini CitraLand City Samarinda menghadirkan masterplan tahap II dengan konsep “A New Dimension of Living” seluas 60 hektare. Residential area di CitraLand City Samarinda didesain dengan konsep private cluster, one gate system, rumah tanpa pagar, dengan lingkungan dan landscape yang tertata asri. Privasi dan keamanan penghuni semakin sempurna dengan adanya jaringan utilitas bawah tanah, system keamanan 24 jam serta fasilitas penghuni berupa Electronic Access Card pribadi, Security System & Alarm System dan CCTV, yang menjamin keamanan rumah dan privasi keluarga Anda. Komitmen jangka panjang Ciputra Group akan memastikan pengembangan berjalan kontinu dalam skala yang lebih besar, sekaligus memberikan peningkatan kualitas gaya hidup dan investasi bagi Anda yang menjadi bagian di dalamnya.\r\n\r\nTemui The Symphony of Park, thematic park seluas 5 hektar yang membelah site CitraLand City Samarinda sepanjang 1 km dan menjadi jantung kawasan untuk menghadirkan A New Dimension of Happiness.  Konsep Symphony of Park menggabungkan dimensi Leisure, Healthy Living dan Lifestyle menjadi sebuah harmoni, bagaikan gubahan simfoni yang selaras. Untuk mewujudkan Inner Personal Happiness penghuni, taman didesain untuk mensinergikan aspek Mind, Body & Soul melalui 3 tema taman yang selaras : Garden of Love (Soul/Lifestyle), garden of Sound (Mind/Leisure) dan Garden of Vigor (Body/Health). Sebagai ending – dimensi celebration of life, hadir Garden of Bliss, terdiri atas CitraLand Waterpark, Ballerina Lake dan Promenade of Joy.\r\n\r\nSebagai komitmen Ciputra Group untuk menciptakan hunian prestisius yang lengkap dan hidup, CitraLand City Samarinda menghadirkan Sekolah Citra Kasih dan Sparkling Taste @ I-Walk. Kehadiran sekolah swasta terbaik dan konsep baru kuliner ini akan semakin menaikkan image kawasan, sekaligus nilai investasi property Anda.\r\n\r\nSekolah Citra Kasih menempati site seluas 8.000m2, menawarkan pendidikan nasional plus berkualitas dengan spirit 21st century education & entrepreneurship, mulai jenjang TK, SD, SMP dan SMA. Sekolah Citra Kasih ini merupakan sekolah yang dikelola langsung oleh Ciputra Group.\r\n\r\nCitraLand City Samarinda memiliki lokasi yang strategis di Jalan D.I. Panjaitan, slah satu jalur utama kota Samarinda. Lokasi bisa dicapai hanya 10 menit dari pusat kota dan 25 menit dari bandara baru Samarinda.', 'Jl. DI Panjaitan, Mugirejo, Kec. Sungai Pinang, Kota Samarinda, Kalimantan Timur 75243', '117.18634159314058', '-0.4588224986897558', 'citraland.jpg', 'citraland-samarinda-201014795', '1'),
-(18, 23, 1, 61, 'Tamansari Grand Samarinda Residence', 'Beauty Nature Within Your Window', 'Jl. H.A.M.M Riffadin Ruko E2-11, Harapan Baru, Kec. Loa Janan Ilir Kota Samarinda Kalimantan Timur 75131', '117.11716077857034', '-0.561919207545003', 'siteplan_kakaban.pdf', 'tamansari-grand-samarinda-residence-201015886', '1'),
-(19, 7, 6, 16, 'Perumahan Sample', 'dekripsi perumahan', 'lokasi perumahan', '117.1294671839214', '-0.4977241180325649', 'download.jpg', 'perumahan-sample-201021553', '1'),
-(20, 27, 10, 49, 'Alaya', 'Kawasan Hijau dengan Fasilitas Terlengkap di Samarinda dan Hunian Bebas Banjir', 'Jl.Bukit Alaya', '117.17545620611969', '-0.466335461147267', '05_brosur_ALAYA_copy_siteplan.jpg', 'alaya-201021479', '1'),
-(21, 7, 2, 2, 'tes', 'tes', 'lokasi', '117.06832302925909', '-0.5148024883757074', 'Tugas_ke-2_Metode_Numerik.pdf', 'tes-201027657', '0');
+INSERT INTO `perumahan` (`id_perumahan`, `id_pengembang`, `id_kecamatan`, `id_kelurahan`, `nama_perumahan`, `deskripsi_perumahan`, `lokasi`, `longitude`, `latitude`, `legalitas`, `slug`, `status_perumahan`, `status_deleted`) VALUES
+(1, 7, 2, 2, 'Perumahan Sejahtera1', '-', 'Lokasi perumahan disini', '117.03207022926154', '-0.5507962787262386', '117.16033352731438', 'perumahan-sejahtera1-190430969', '1', 0),
+(6, 7, 3, 21, 'Perumahan Damai Sejahtera', 'opasdjkasopdasdoopasjdopjasdpjop', 'Jalan Dama', '117.11020840523383', '-0.5580592583990835', 'construction-worker.png', 'perumahan-damai-sejahtera-190513158', '2', 0),
+(7, 7, 6, 14, 'Perumahan Damai1', '', 'Jalan Graha Indah', '117.13757260482294', '-0.49870532421209646', 'automation.png', 'perumahan-damai1-190422649', '2', 0),
+(8, 7, 9, 37, 'Perumahan Hills', '', 'Jalan Graha Indaha', '117.29478281629076', '-0.5655634313352635', 'curve-24.png', 'perumahan-hills-190416579', '1', 0),
+(9, 7, 5, 6, 'Perumahan Keren', '', 'Jalan Keledang', '117.30434045124355', '-0.45543945164118327', '1556180793388.jpg', 'perumahan-keren-190502690', '0', 0),
+(10, 7, 9, 38, 'Perumahan Tes', '', 'Jalan Karang Asam', '117.03502072212723', '-0.4547231596136072', 'Screenshot_(21).png', 'perumahan-tes-190502770', '0', 0),
+(11, 7, 3, 21, 'Perumahan Damaix', '', 'Jalan Dama', '117.03055752632622', '-0.4729186692780587', 'Screenshot_(9).png', 'perumahan-damaix-190502184', '0', 0),
+(12, 7, 2, 2, 'Perumahan Hillsl', '', 'Jalan Graha Indah', '117.21457852242747', '-0.450260102997845', 'Screenshot_(23).png', 'perumahan-hillsl-190502625', '0', 0),
+(13, 7, 4, 54, 'Perumahan Vrindavan', 'deskripsi1', 'Jalan Keledang', '117.08789242622606', '-0.48115812977056294', 'Screenshot_(28).png', 'perumahan-vrindavan-190507826', '0', 0),
+(14, 7, 6, 16, 'Perumahan Baru', 'Perumahan modern dengan sistem cluster dan berlokasi strategis di Samarinda. Rumah Dengan Design Minimalis namun tetap Modern. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum', 'Jalan Lokasi Perumahan ', '117.06471814035172', '-0.5134292526477395', 'image-upload.png', 'perumahan-baru-200804368', '0', 0),
+(15, 7, 10, 49, 'Citraland Panjaitan', 'perumahan citraland, rumah menengah dan rumah mewah', 'Jalan Panjaitan', '117.20232197582618', '-0.4774445211906624', 'download_(1).jpg', 'citraland-panjaitan-201012235', '1', 0),
+(16, 7, 6, 16, 'Perumahan ABC', 'perumahan baru di samarinda', 'Jalan Kadrie Oneng', '117.12772210048843', '-0.483280160530569', 'download_(1)1.jpg', 'perumahan-abc-201014405', '1', 0),
+(17, 22, 10, 51, 'CitraLand Samarinda', 'CitraLand city Samarinda merupakan masterpiece persembahan ciputra Group, developer terkemuka dengan berbagai proyek properti di Indonesia dan mancanegara, seperti CitraLand Surabaya, CitraGarden City Jakarta, CitraGran Cibubur, Ciputra World Jakarta, Ciputra World Surabaya, CitraSun Garden Semarang, CitraLand Pekanbaru, CitraLand Celebes, Ciputra Hanoi International City, Grand Phnom Penh International City dan masih banyak lagi yang lain. Selamlebih dari 30 tahun, Ciputra Group telah membangun reputasi unggul dalam pengembangan propertiyang berkualitas dalam infrastruktur, bangunan dan pelayanan pelanggan.\r\n\r\nDr. HC. Ir. Ciputra, pendiri Ciputra Group yang telah berkarya lebih dari 30 tahun, dianggap sebagai Begawan dalam dunia property Indonesia, beliau juga merupakan pendiri dari grup developer raksasa lain seperti Metropolitan Group dan Jaya Group. Dr. HC. Ir. Ciputra adalah seorang tokoh entrepreneurship nasional yang berkomitmen menciptakan generasi entrepreneur melalui sekolah dan universitas yang didirikannya.\r\n\r\nSetelah sukses dengan penjualan tahp pertama seluas 33 hektar, kini CitraLand City Samarinda menghadirkan masterplan tahap II dengan konsep “A New Dimension of Living” seluas 60 hektare. Residential area di CitraLand City Samarinda didesain dengan konsep private cluster, one gate system, rumah tanpa pagar, dengan lingkungan dan landscape yang tertata asri. Privasi dan keamanan penghuni semakin sempurna dengan adanya jaringan utilitas bawah tanah, system keamanan 24 jam serta fasilitas penghuni berupa Electronic Access Card pribadi, Security System & Alarm System dan CCTV, yang menjamin keamanan rumah dan privasi keluarga Anda. Komitmen jangka panjang Ciputra Group akan memastikan pengembangan berjalan kontinu dalam skala yang lebih besar, sekaligus memberikan peningkatan kualitas gaya hidup dan investasi bagi Anda yang menjadi bagian di dalamnya.\r\n\r\nTemui The Symphony of Park, thematic park seluas 5 hektar yang membelah site CitraLand City Samarinda sepanjang 1 km dan menjadi jantung kawasan untuk menghadirkan A New Dimension of Happiness.  Konsep Symphony of Park menggabungkan dimensi Leisure, Healthy Living dan Lifestyle menjadi sebuah harmoni, bagaikan gubahan simfoni yang selaras. Untuk mewujudkan Inner Personal Happiness penghuni, taman didesain untuk mensinergikan aspek Mind, Body & Soul melalui 3 tema taman yang selaras : Garden of Love (Soul/Lifestyle), garden of Sound (Mind/Leisure) dan Garden of Vigor (Body/Health). Sebagai ending – dimensi celebration of life, hadir Garden of Bliss, terdiri atas CitraLand Waterpark, Ballerina Lake dan Promenade of Joy.\r\n\r\nSebagai komitmen Ciputra Group untuk menciptakan hunian prestisius yang lengkap dan hidup, CitraLand City Samarinda menghadirkan Sekolah Citra Kasih dan Sparkling Taste @ I-Walk. Kehadiran sekolah swasta terbaik dan konsep baru kuliner ini akan semakin menaikkan image kawasan, sekaligus nilai investasi property Anda.\r\n\r\nSekolah Citra Kasih menempati site seluas 8.000m2, menawarkan pendidikan nasional plus berkualitas dengan spirit 21st century education & entrepreneurship, mulai jenjang TK, SD, SMP dan SMA. Sekolah Citra Kasih ini merupakan sekolah yang dikelola langsung oleh Ciputra Group.\r\n\r\nCitraLand City Samarinda memiliki lokasi yang strategis di Jalan D.I. Panjaitan, slah satu jalur utama kota Samarinda. Lokasi bisa dicapai hanya 10 menit dari pusat kota dan 25 menit dari bandara baru Samarinda.', 'Jl. DI Panjaitan, Mugirejo, Kec. Sungai Pinang, Kota Samarinda, Kalimantan Timur 75243', '117.18634159314058', '-0.4588224986897558', 'citraland.jpg', 'citraland-samarinda-201014795', '1', 0),
+(18, 23, 1, 61, 'Tamansari Grand Samarinda Residence', 'Beauty Nature Within Your Window', 'Jl. H.A.M.M Riffadin Ruko E2-11, Harapan Baru, Kec. Loa Janan Ilir Kota Samarinda Kalimantan Timur 75131', '117.11716077857034', '-0.561919207545003', 'siteplan_kakaban.pdf', 'tamansari-grand-samarinda-residence-201015886', '1', 0),
+(19, 7, 6, 16, 'Perumahan Sample', 'dekripsi perumahan', 'lokasi perumahan', '117.1294671839214', '-0.4977241180325649', 'download.jpg', 'perumahan-sample-201021553', '1', 0),
+(20, 27, 10, 49, 'Alaya', 'Kawasan Hijau dengan Fasilitas Terlengkap di Samarinda dan Hunian Bebas Banjir', 'Jl.Bukit Alaya', '117.17545620611969', '-0.466335461147267', '05_brosur_ALAYA_copy_siteplan.jpg', 'alaya-201021479', '1', 0),
+(21, 7, 2, 2, 'tes', 'tes', 'lokasi', '117.06832302925909', '-0.5148024883757074', 'Tugas_ke-2_Metode_Numerik.pdf', 'tes-201027657', '0', 0),
+(46, 32, 1, 1, 'Rumah Karang Asam 2', 'Lorem Ipsum Dolor Sit Amet', 'Jalan Slamet Riyadi', '123', '123', 'perumahan/file/Ve8WypElU1XNfEM21FCjMqFsWKSHEfLjWnwk5kqd.xlsx', '22-rumah-karang-asam-2', '0', 0),
+(47, 32, 1, 1, 'Rumah Berau', 'Lorem Ipsum Dolor Sit Amet', 'Jalan Slamet Riyadi', 'Ini Longitude', 'Ini Latitude', 'perumahan/file/pengembang7903-Book1.xlsx', '47-rumah-karang-asam-2', '0', 0);
 
 -- --------------------------------------------------------
 
@@ -759,7 +819,12 @@ INSERT INTO `sarana_prasarana_perumahan` (`id_sarana_prasarana_perumahan`, `id_p
 (41, 20, 'Security 24 Jam'),
 (42, 20, 'Pengelolaan Lingkungan'),
 (43, 20, 'Ruang Terbuka Hijau ( RTH)'),
-(44, 21, 'tes');
+(44, 21, 'tes'),
+(55, 46, 'Taman Bermain'),
+(56, 46, 'Lapangan Tenis'),
+(57, 47, 'Taman Bermain'),
+(58, 47, 'Lapangan Tenis'),
+(59, 46, 'Water Park');
 
 -- --------------------------------------------------------
 
@@ -846,7 +911,11 @@ INSERT INTO `spesifikasi_rumah` (`id_spesifikasi_rumah`, `id_bangunan`, `nama_sp
 (55, 20, 'Listrik 1300 Watt'),
 (56, 20, 'PDAM'),
 (57, 21, 'Dinding plester'),
-(58, 21, 'Lantai Keramik');
+(58, 21, 'Lantai Keramik'),
+(59, 25, 'Warna merah'),
+(60, 25, 'Remang - remang'),
+(61, 26, 'Warna merah'),
+(62, 26, 'Remang - remang');
 
 -- --------------------------------------------------------
 
@@ -918,9 +987,9 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `username`, `level`, `status`, `email_verified_at`, `password`, `remember_token`, `created_at`, `updated_at`) VALUES
-(2, 'novadwisapta', 'admin', 1, NULL, '$2y$10$AateYE38SbdmwcGimblKJuAzQ.SWOueG.1f57WTRDYFfH.8SB7khG', NULL, '2020-11-18 17:47:56', '2020-11-18 18:32:45'),
-(3, 'iqbalwahyudi', 'pengembang', 1, NULL, '$2y$10$USga3K138rprIA/TT6g5e./LvxtFDEFjRZmBZd8CJNN7Y3Q5UnqDm', NULL, '2020-11-18 17:54:11', '2020-11-18 18:32:12'),
-(13, 'pengembang', '2', 0, NULL, '$2y$10$VX0jePxC3wzarh1WpkeyTOsafLrxJeqVdjY4nxDiVtJs9u/Ihr7K.', NULL, '2020-11-18 23:31:49', '2020-11-18 23:31:49'),
+(2, 'novadwisapta', '1', 1, NULL, '$2y$10$AateYE38SbdmwcGimblKJuAzQ.SWOueG.1f57WTRDYFfH.8SB7khG', NULL, '2020-11-18 17:47:56', '2020-11-18 18:32:45'),
+(3, 'iqbalwahyudi', '2', 1, NULL, '$2y$10$gOBe3XsWRGuy6ix1nnv5E.3qdXHovm10Qs97iv131ELzB.rXaxw/.', NULL, '2020-11-18 17:54:11', '2020-11-22 18:17:35'),
+(13, 'pengembang', '2', 1, NULL, '$2y$10$VX0jePxC3wzarh1WpkeyTOsafLrxJeqVdjY4nxDiVtJs9u/Ihr7K.', NULL, '2020-11-18 23:31:49', '2020-11-18 23:31:49'),
 (14, 'pengembang2', '2', 0, NULL, '$2y$10$Z20B8ggY5RnuMzh1H1BLGun5z9S/ReFmaUVLaFbPDQ8MC53FGDmim', NULL, '2020-11-18 23:35:41', '2020-11-18 23:35:41');
 
 -- --------------------------------------------------------
@@ -978,10 +1047,18 @@ ALTER TABLE `fasilitas_perumahan`
   ADD KEY `id_perumahan` (`id_perumahan`);
 
 --
+-- Indexes for table `file_form_data_perumahan`
+--
+ALTER TABLE `file_form_data_perumahan`
+  ADD PRIMARY KEY (`id_file_form`);
+
+--
 -- Indexes for table `form_data_perumahan`
 --
 ALTER TABLE `form_data_perumahan`
-  ADD PRIMARY KEY (`id_form_data_perumahan`);
+  ADD PRIMARY KEY (`id_form_data_perumahan`),
+  ADD KEY `id_pengembang` (`id_pengembang`),
+  ADD KEY `id_file_form` (`id_file_form`);
 
 --
 -- Indexes for table `foto_bangunan`
@@ -1155,7 +1232,7 @@ ALTER TABLE `wishlist`
 -- AUTO_INCREMENT for table `bangunan`
 --
 ALTER TABLE `bangunan`
-  MODIFY `id_bangunan` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
+  MODIFY `id_bangunan` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
 
 --
 -- AUTO_INCREMENT for table `brosur_pengembang`
@@ -1179,25 +1256,31 @@ ALTER TABLE `fasilitas`
 -- AUTO_INCREMENT for table `fasilitas_perumahan`
 --
 ALTER TABLE `fasilitas_perumahan`
-  MODIFY `id_fasilitas_perumahan` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=38;
+  MODIFY `id_fasilitas_perumahan` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=53;
+
+--
+-- AUTO_INCREMENT for table `file_form_data_perumahan`
+--
+ALTER TABLE `file_form_data_perumahan`
+  MODIFY `id_file_form` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `form_data_perumahan`
 --
 ALTER TABLE `form_data_perumahan`
-  MODIFY `id_form_data_perumahan` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_form_data_perumahan` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `foto_bangunan`
 --
 ALTER TABLE `foto_bangunan`
-  MODIFY `id_foto_bangunan` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=34;
+  MODIFY `id_foto_bangunan` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=49;
 
 --
 -- AUTO_INCREMENT for table `foto_perumahan`
 --
 ALTER TABLE `foto_perumahan`
-  MODIFY `id_foto_perumahan` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=45;
+  MODIFY `id_foto_perumahan` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=101;
 
 --
 -- AUTO_INCREMENT for table `kecamatan`
@@ -1275,13 +1358,13 @@ ALTER TABLE `pengembang`
 -- AUTO_INCREMENT for table `personal_access_tokens`
 --
 ALTER TABLE `personal_access_tokens`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 
 --
 -- AUTO_INCREMENT for table `perumahan`
 --
 ALTER TABLE `perumahan`
-  MODIFY `id_perumahan` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
+  MODIFY `id_perumahan` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=48;
 
 --
 -- AUTO_INCREMENT for table `sarana_prasarana`
@@ -1293,7 +1376,7 @@ ALTER TABLE `sarana_prasarana`
 -- AUTO_INCREMENT for table `sarana_prasarana_perumahan`
 --
 ALTER TABLE `sarana_prasarana_perumahan`
-  MODIFY `id_sarana_prasarana_perumahan` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=45;
+  MODIFY `id_sarana_prasarana_perumahan` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=68;
 
 --
 -- AUTO_INCREMENT for table `setting`
@@ -1305,7 +1388,7 @@ ALTER TABLE `setting`
 -- AUTO_INCREMENT for table `spesifikasi_rumah`
 --
 ALTER TABLE `spesifikasi_rumah`
-  MODIFY `id_spesifikasi_rumah` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=59;
+  MODIFY `id_spesifikasi_rumah` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=65;
 
 --
 -- AUTO_INCREMENT for table `user`
@@ -1355,6 +1438,13 @@ ALTER TABLE `fasilitas`
 --
 ALTER TABLE `fasilitas_perumahan`
   ADD CONSTRAINT `fasilitas_perumahan_ibfk_1` FOREIGN KEY (`id_perumahan`) REFERENCES `perumahan` (`id_perumahan`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints for table `form_data_perumahan`
+--
+ALTER TABLE `form_data_perumahan`
+  ADD CONSTRAINT `form_data_perumahan_ibfk_2` FOREIGN KEY (`id_pengembang`) REFERENCES `pengembang` (`id_pengembang`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `form_data_perumahan_ibfk_3` FOREIGN KEY (`id_file_form`) REFERENCES `file_form_data_perumahan` (`id_file_form`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 --
 -- Constraints for table `foto_bangunan`
