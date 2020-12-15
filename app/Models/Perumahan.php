@@ -369,13 +369,23 @@ class Perumahan extends Model
     // Get Data Perumahan By ID
     public static function getById($id_perumahan)
     {
+        // Tabel - tabel
+        $sarana_prasarana_perumahan = "sarana_prasarana_perumahan";
+        $fasilitas_perumahan = "fasilitas_perumahan";
+        $foto_perumahan = "foto_perumahan";
+
+        // Get Data Fasilitas
+        $fasilitas = DB::table($fasilitas_perumahan)
+            ->where(['id_perumahan' => $id_perumahan])
+            ->get();
+
         // Get Data Sarana Prasarana
-        $sarana_prasarana = DB::table('sarana_prasarana_perumahan')
+        $sarana_prasarana = DB::table($sarana_prasarana_perumahan)
             ->where(['id_perumahan' => $id_perumahan])
             ->get();
 
         // Get Foto Perumahan
-        $foto = DB::table('foto_perumahan')
+        $foto = DB::table($foto_perumahan)
             ->where(['id_perumahan' => $id_perumahan])
             ->get();
 
@@ -389,6 +399,7 @@ class Perumahan extends Model
 
         if ($perumahan) {
             // Gabungkan semua hasil pencarian data dengan id yang sama
+            $perumahan->fasilitas_perumahan = $fasilitas;
             $perumahan->sarana_prasarana_perumahan = $sarana_prasarana;
             $perumahan->foto_perumahan = $foto;
             return $perumahan;
