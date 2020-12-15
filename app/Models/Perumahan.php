@@ -250,7 +250,7 @@ class Perumahan extends Model
         $last_page = ceil($total / $per_page);
 
         $data_perumahan = DB::table($perumahan)
-            ->where("$perumahan.status_deleted", 0)
+            // ->where("$perumahan.status_deleted", 0)
             ->leftJoin($pengembang, "$perumahan.id_pengembang", '=', "$pengembang.id_pengembang")
             ->leftJoin($kelurahan, "$kelurahan.id_kelurahan", "=", "$perumahan.id_kelurahan")
             ->leftJoin($kecamatan, "$kecamatan.id_kecamatan", "=", "$perumahan.id_kecamatan")
