@@ -228,6 +228,7 @@ class Perumahan extends Model
     {
         // Tabel - Tabel
         $perumahan = 'perumahan';
+        $bangunan = 'bangunan';
         $pengembang = 'pengembang';
         $kelurahan = 'kelurahan';
         $kecamatan = 'kecamatan';
@@ -264,6 +265,17 @@ class Perumahan extends Model
         if (count($data_perumahan) <= 0)
             $data_perumahan = "Data Tidak Tersedia";
 
+        // Get jumlah ban$bangunan by id perumahan
+        $i = 0;
+        foreach ($data_perumahan as $data) {
+            $jumlah_properti = DB::table($bangunan)
+                ->where('id_perumahan', $data->id_perumahan)
+                ->get()
+                ->count();
+            $data_perumahan[$i++]->jumlah_properti = $jumlah_properti;
+        }
+
+        $data_perumahan->jumlah_properti = $jumlah_properti;
 
         //  Get data belum konfirmasi
         $belum_konfirmasi = DB::table($perumahan)
