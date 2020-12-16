@@ -266,8 +266,8 @@ class Perumahan extends Model
             $data_perumahan = "Data Tidak Tersedia";
 
         // Get jumlah bangunan by id perumahan
-       
-        foreach ($data_perumahan as $i => $data ) {
+
+        foreach ($data_perumahan as $i => $data) {
             $jumlah_properti = DB::table($bangunan)
                 ->where('id_perumahan', $data->id_perumahan)
                 ->get()
@@ -593,7 +593,7 @@ class Perumahan extends Model
         $last_page = ceil($total / $per_page);
 
         $data_bangunan = DB::table($bangunan)
-            ->where("$bangunan.status_deleted", 0)
+            // ->where("$bangunan.status_deleted", 0)
             ->leftJoin($pengembang, "$bangunan.id_pengembang", "=", "$pengembang.id_pengembang")
             ->leftJoin($kelurahan, "$bangunan.id_kelurahan", "=", "$kelurahan.id_kelurahan")
             ->leftJoin($kecamatan, "$bangunan.id_kecamatan", "=", "$kecamatan.id_kecamatan")
@@ -709,39 +709,56 @@ class Perumahan extends Model
         if (!$data_perumahan)
             return "Data Tidak Tersedia, data perumahan dengan id: $id_perumahan, Tidak Ditemukan";
 
+
         $data_bangunan = DB::table($bangunan)
+            ->select(
+                "$bangunan.*",
+                "$pengembang.nama_pengembang",
+                "$kecamatan.nama_kecamatan",
+                "$kelurahan.nama_kelurahan"
+            )
+
             ->where([
-                ['id_perumahan', '=', $id_perumahan],
+                ["$perumahan.id_perumahan", '=', $id_perumahan],
                 ['nama_bangunan', 'like', "%$search_value%"]
             ])
             ->orWhere([
-                ['id_perumahan', '=', $id_perumahan],
+                ["$perumahan.id_perumahan", '=', $id_perumahan],
                 ['kategori_bangunan', 'like', "%$search_value%"]
             ])
             ->orWhere([
-                ['id_perumahan', '=', $id_perumahan],
+                ["$perumahan.id_perumahan", '=', $id_perumahan],
                 ['nama_pengembang', 'like', "%$search_value%"]
             ])
             ->orWhere([
-                ['id_perumahan', '=', $id_perumahan],
+                ["$perumahan.id_perumahan", '=', $id_perumahan],
                 ['harga_bangunan', 'like', "%$search_value%"]
             ])
             ->orWhere([
-                ['id_perumahan', '=', $id_perumahan],
+                ["$perumahan.id_perumahan", '=', $id_perumahan],
                 ['jumlah_tersedia', 'like', "%$search_value%"]
             ])
-
-            // ->orWhere('jumlah_tersedia', 'like', "%$search_value%")
             ->leftJoin($pengembang, "$pengembang.id_pengembang", "=", "$bangunan.id_pengembang")
             ->leftJoin($kelurahan, "$kelurahan.id_kelurahan", "=", "$bangunan.id_kelurahan")
             ->leftJoin($kecamatan, "$kecamatan.id_kecamatan", "=", "$bangunan.id_kecamatan")
+            ->leftJoin($perumahan, "$perumahan.id_perumahan", "=", "$bangunan.id_perumahan")
             ->get();
 
-        if (count($data_bangunan) > 0) {
-            return $data_bangunan;
+
+        if (count($data_bangunan) === 0) {
+            $total_data_pencarian = 0;
+            $data_bangunan = "Data Tidak Tersedia";
         } else {
-            return "Data Tidak Tersedia";
+            $total_data_pencarian = count($data_bangunan);
         }
+
+        $data = [
+            "total_data_pencarian" => ($total_data_pencarian !== 0) ? count($data_bangunan) : 0,
+            "nama_perumahan" => $data_perumahan->nama_perumahan,
+            "data" => $data_bangunan
+        ];
+
+        return $data;
     }
 
     // Get Properti By ID
