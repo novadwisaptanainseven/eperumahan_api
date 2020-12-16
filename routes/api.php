@@ -98,6 +98,8 @@ Route::prefix('v1/admin/')->group(function () {
 
             // GROUP PERUMAHAN / PROPERTI
 
+            Route::get('perumahan/{id_perumahan}/properti/search', [PerumahanController::class, 'searchProperti']);
+
             // Get All Properti
             Route::get('properti', [PerumahanController::class, 'getAllProperti']);
 

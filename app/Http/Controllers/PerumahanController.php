@@ -338,6 +338,31 @@ class PerumahanController extends Controller
         }
     }
 
+    // Search Properti
+    public function searchProperti(Request $request, $id_perumahan)
+    {
+        $search_value = ($request->value) ? $request->value : '';
+
+        if ($id_perumahan) {
+            $data_bangunan = Perumahan::searchPropertiByIdPerumahan($id_perumahan, $search_value);
+        }
+
+        // Cek apakah data bangunan ditemukan
+        if ($data_bangunan) {
+            // Jika ditemukan, tampilkan response 200 OK
+            return response()->json([
+                "message" => "Get Data Properti dengan data pencarian: $search_value, Berhasil",
+                "data"    => $data_bangunan
+            ], 200);
+        } else {
+            // Jika tidak, tetap tampilkan response 200 OK
+            return response()->json([
+                "message" => "Get Data Properti dengan data pencarian: $search_value, Gagal",
+                "data"    => $data_bangunan
+            ], 200);
+        }
+    }
+
     public function getPropertiById2($id_bangunan)
     {
         $data_bangunan = Perumahan::getPropertiById($id_bangunan);
@@ -460,7 +485,7 @@ class PerumahanController extends Controller
             // Jika tidak, tampilkan response 404 NOT FOUND
             return response()->json([
                 "message" => "Gagal Update, Data Tidak Ditemukan"
-            ], 201);
+            ], 404);
         }
     }
 
