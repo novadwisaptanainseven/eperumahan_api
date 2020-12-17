@@ -13,6 +13,29 @@ use Illuminate\Support\Str;
 
 class PengembangController extends Controller
 {
+    // Search Pengembang
+    public function searchPengembang(Request $request)
+    {
+        $search_value = ($request->value) ? $request->value : '';
+
+        $data_pengembang = Pengembang::searchPengembangByValue($search_value);
+
+        // Cek apakah data bangunan ditemukan
+        if ($data_pengembang) {
+            // Jika ditemukan, tampilkan response 200 OK
+            return response()->json([
+                "message" => "Get Data Pengembang dengan data pencarian: $search_value, Berhasil",
+                "data"    => $data_pengembang
+            ], 200);
+        } else {
+            // Jika tidak, tetap tampilkan response 200 OK
+            return response()->json([
+                "message" => "Get Data Pengembang dengan data pencarian: $search_value, Gagal",
+                "data"    => $data_pengembang
+            ], 200);
+        }
+    }
+
     // Add Pengembang
     public function addPengembang(Request $request)
     {
@@ -216,14 +239,14 @@ class PengembangController extends Controller
             $ijin = $request->ijin_perusahaan->store('pengembang/file');
 
         // Proses Update Password User
-        $table_user= 'users';
+        $table_user = 'users';
         $table_pengembang = 'pengembang';
 
         $user = Auth::user();
         $pengembang = Pengembang::where(["$table_pengembang.id_user" => $user->id])
-                    ->select("$table_pengembang.*", "$table_user.username")
-                    ->leftJoin($table_user, "$table_user.id", "=", "$table_pengembang.id_user")                
-                    ->first();
+            ->select("$table_pengembang.*", "$table_user.username")
+            ->leftJoin($table_user, "$table_user.id", "=", "$table_pengembang.id_user")
+            ->first();
         // $user = User::where(["id" => $pengembang->id_user])->first();
 
         if (!empty($request->password_lama)) {
@@ -248,13 +271,12 @@ class PengembangController extends Controller
                 ], 400);
             }
         }
-        
+
         // Update Data Pengembang
         $request->ijin = $ijin;
         $request->foto = $foto;
         $data = Pengembang::updatePengembang($request, $pengembang);
-        if($data)
-        {
+        if ($data) {
             return response()->json([
                 "message" => "Update Data Pengembang Berhasil",
                 "data"    => $data
@@ -299,24 +321,21 @@ class PengembangController extends Controller
     // Get Akun Pengembang
     public function getAkun()
     {
-        $table_user= 'users';
+        $table_user = 'users';
         $table_pengembang = 'pengembang';
         $user = Auth::user();
 
         $pengembang = Pengembang::where(["$table_pengembang.id_user" => $user->id])
-                    ->select("$table_pengembang.*", "$table_user.username")
-                    ->leftJoin($table_user, "$table_user.id", "=", "$table_pengembang.id_user")                
-                    ->first();
-        
-        if($pengembang)
-        {
+            ->select("$table_pengembang.*", "$table_user.username")
+            ->leftJoin($table_user, "$table_user.id", "=", "$table_pengembang.id_user")
+            ->first();
+
+        if ($pengembang) {
             return response()->json([
                 "message" => "Get Akun Pengembang Berhasil",
                 "data"    => $pengembang
             ], 200);
-        }
-        else
-        {
+        } else {
             return response()->json([
                 "message" => "Get Akun Pengembang Gagal, Data Tidak Ditemukan",
                 "data"    => $pengembang

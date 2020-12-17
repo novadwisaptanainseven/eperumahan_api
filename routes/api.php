@@ -66,6 +66,9 @@ Route::prefix('v1/admin/')->group(function () {
 
             // GROUP PENGEMBANG
 
+            // Search Pengembang
+            Route::get('/pengembang/search', [PengembangController::class, 'searchPengembang']);
+
             // Add Pengembang
             Route::post('/pengembang', [PengembangController::class, 'addPengembang']);
 
@@ -86,6 +89,9 @@ Route::prefix('v1/admin/')->group(function () {
 
             // GROUP PERUMAHAN
 
+            // Search Perumahan
+            Route::get('/perumahan/search', [PerumahanController::class, 'searchPerumahan']);
+
             // Get All Data Perumahan
             Route::get('/perumahan', [PerumahanController::class, 'getAll']);
 
@@ -98,7 +104,11 @@ Route::prefix('v1/admin/')->group(function () {
 
             // GROUP PERUMAHAN / PROPERTI
 
+            // Search Properti By ID Perumahan
             Route::get('perumahan/{id_perumahan}/properti/search', [PerumahanController::class, 'searchProperti']);
+
+            // Search Properti
+            Route::get('properti/search', [PerumahanController::class, 'searchProperti']);
 
             // Get All Properti
             Route::get('properti', [PerumahanController::class, 'getAllProperti']);
@@ -118,7 +128,7 @@ Route::prefix('v1/admin/')->group(function () {
             // Update Status Publish Properti By ID Perumahan & ID Bangunan
             Route::put('perumahan/{id_perumahan}/properti/{id_bangunan}/status', [PerumahanController::class, 'updateStatusProperti']);
 
-            // GROUP FORMULIR MATSER
+            // GROUP FORMULIR MASTER
 
             // Get All Formulir Master
             Route::get("formulir", [FormController::class, 'getAllFormMaster']);

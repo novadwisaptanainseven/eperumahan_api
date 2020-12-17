@@ -14,6 +14,34 @@ class Pengembang extends Model
     protected $table = 'pengembang';
     protected $primaryKey = 'id_pengembang';
 
+    // Search Perumahan By Value
+    public static function searchPengembangByValue($search_value)
+    {
+        // Tabel - tabel
+        $pengembang = 'pengembang';
+
+        $data_pengembang = DB::table($pengembang)
+            ->where('nama_pengembang', 'like', "%$search_value%")
+            ->orWhere('telepon_pengembang', 'like', "%$search_value%")
+            ->orWhere('email_pengembang', 'like', "%$search_value%")
+            ->orWhere('alamat_pengembang', 'like', "%$search_value%")
+            ->get();
+
+        if (count($data_pengembang) === 0) {
+            $total_data_pencarian = 0;
+            $data_pengembang = null;
+        } else {
+            $total_data_pencarian = count($data_pengembang);
+        }
+
+        $data = [
+            "total_data" => ($total_data_pencarian !== 0) ? count($data_pengembang) : 0,
+            "data" => $data_pengembang
+        ];
+
+        return $data;
+    }
+
     // Get All Pengembang
     public static function getAll($req)
     {
@@ -31,29 +59,29 @@ class Pengembang extends Model
             ->orderBy('id_pengembang', 'DESC')
             ->get()
             ->count();
-        
+
         // Pagination
         $offset = ($page - 1) * $per_page;
         $last_page = ceil($total / $per_page);
-        
+
         $data_pengembang = DB::table($pengembang)
-                              ->where('status_deleted', 0)
-                              ->offset($offset)
-                              ->limit($per_page)
-                              ->orderBy('id_pengembang', $order)
-                              ->get();
+            ->where('status_deleted', 0)
+            ->offset($offset)
+            ->limit($per_page)
+            ->orderBy('id_pengembang', $order)
+            ->get();
         // End Pagination
 
-        if(count($data_pengembang) == 0)
+        if (count($data_pengembang) == 0)
             $data_pengembang = "Data Tidak Tersedia";
-        
+
         $data = [
             "total_data"   => $total,
             "per_page"     => $per_page,
             "current_page" => $page,
             "last_page"    => $last_page,
             "order"        => $order,
-            "data"         => $data_pengembang  
+            "data"         => $data_pengembang
         ];
 
         return $data;

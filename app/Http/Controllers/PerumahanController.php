@@ -14,6 +14,29 @@ class PerumahanController extends Controller
 {
     // GROUP PERUMAHAN
 
+    // Search Perumahan
+    public function searchPerumahan(Request $request)
+    {
+        $search_value = ($request->value) ? $request->value : '';
+
+        $data_perumahan = Perumahan::searchPerumahanByValue($search_value);
+
+        // Cek apakah data bangunan ditemukan
+        if ($data_perumahan) {
+            // Jika ditemukan, tampilkan response 200 OK
+            return response()->json([
+                "message" => "Get Data Perumahan dengan data pencarian: $search_value, Berhasil",
+                "data"    => $data_perumahan
+            ], 200);
+        } else {
+            // Jika tidak, tetap tampilkan response 200 OK
+            return response()->json([
+                "message" => "Get Data Perumahan dengan data pencarian: $search_value, Gagal",
+                "data"    => $data_perumahan
+            ], 200);
+        }
+    }
+
     // Add Data Perumahan 
     public function addPerumahan(Request $request)
     {
@@ -339,12 +362,14 @@ class PerumahanController extends Controller
     }
 
     // Search Properti
-    public function searchProperti(Request $request, $id_perumahan)
+    public function searchProperti(Request $request, $id_perumahan = '')
     {
         $search_value = ($request->value) ? $request->value : '';
 
         if ($id_perumahan) {
             $data_bangunan = Perumahan::searchPropertiByIdPerumahan($id_perumahan, $search_value);
+        } else {
+            $data_bangunan = Perumahan::searchProperti($search_value);
         }
 
         // Cek apakah data bangunan ditemukan
