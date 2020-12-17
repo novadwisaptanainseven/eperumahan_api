@@ -66,6 +66,9 @@ Route::prefix('v1/admin/')->group(function () {
 
             // GROUP PENGEMBANG
 
+            // Update Status Aktif Pengembang
+            Route::put('/pengembang/{id_pengembang}/status', [PengembangController::class, 'updateStatusPengembang']);
+
             // Search Pengembang
             Route::get('/pengembang/search', [PengembangController::class, 'searchPengembang']);
 

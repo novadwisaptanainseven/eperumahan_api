@@ -21,10 +21,22 @@ class Pengembang extends Model
         $pengembang = 'pengembang';
 
         $data_pengembang = DB::table($pengembang)
-            ->where('nama_pengembang', 'like', "%$search_value%")
-            ->orWhere('telepon_pengembang', 'like', "%$search_value%")
-            ->orWhere('email_pengembang', 'like', "%$search_value%")
-            ->orWhere('alamat_pengembang', 'like', "%$search_value%")
+            ->where([
+                ['status_deleted', '=', 0],
+                ['nama_pengembang', 'like', "%$search_value%"]
+            ])
+            ->orWhere([
+                ['status_deleted', '=', 0],
+                ['telepon_pengembang', 'like', "%$search_value%"]
+            ])
+            ->orWhere([
+                ['status_deleted', '=', 0],
+                ['email_pengembang', 'like', "%$search_value%"]
+            ])
+            ->orWhere([
+                ['status_deleted', '=', 0],
+                ['alamat_pengembang', 'like', "%$search_value%"]
+            ])
             ->get();
 
         if (count($data_pengembang) === 0) {
@@ -96,7 +108,10 @@ class Pengembang extends Model
 
         $data_pengembang = DB::table($pengembang)
             ->select("$pengembang.*", "$user.username")
-            ->where(['id_pengembang' => $id_pengembang])
+            ->where([
+                ['status_deleted', '=', 0],
+                ['id_pengembang', '=', $id_pengembang]
+            ])
             ->leftJoin($user, "$user.id", "=", "$pengembang.id_user")
             ->first();
 
@@ -140,5 +155,35 @@ class Pengembang extends Model
             return true;
         else
             return null;
+    }
+
+    // Update status aktif pengemban
+    public static function updateStatusPengembang($id_pengembang, $status_aktif)
+    {
+        // Tabel - tabel
+        $pengembang = 'pengembang';
+
+        // Get data pengembang by id
+        $data = DB::table($pengembang)
+            ->where(['id_pengembang' => $id_pengembang])
+            ->first();
+
+        $status_aktif = $status_aktif !== null ? $status_aktif : $data->status_aktif;
+
+        // Cek apakah data pengembang ditemukan
+        if (!$data)
+            return null;
+
+        // Proses update status_aktif pengembang
+        DB::table($pengembang)
+            ->where(['id_pengembang' => $id_pengembang])
+            ->update(['status_aktif' => $status_aktif]);
+
+        // Tampilkan data hasil update
+        $data = DB::table($pengembang)
+            ->where(['id_pengembang' => $id_pengembang])
+            ->first();
+
+        return $data;
     }
 }

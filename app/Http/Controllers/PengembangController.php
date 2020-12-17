@@ -54,7 +54,7 @@ class PengembangController extends Controller
                 'username'           => 'required|unique:users',
                 // 'id_user'            => 'required',
                 'foto_pengembang'    => 'mimes:jpg,jpeg,png|max:5048',
-                'ijin_perusahaan'    => 'mimes:pdf,xls,xlsx|max:10048'
+                'ijin_perusahaan'    => 'mimes:pdf|max:10048'
             ],
             $messages
         );
@@ -118,8 +118,8 @@ class PengembangController extends Controller
         $pengembang->pengembang_slug    = $slug;
         // End Pembuatan Slug
 
-        $pengembang->ijin_perusahaan    = '/api/' . $ijin;
-        $pengembang->foto_pengembang    = '/api/' . $foto;
+        $pengembang->ijin_perusahaan    = $ijin;
+        $pengembang->foto_pengembang    = $foto;
         $pengembang->status_aktif       = 0;
         $pengembang->id_user            = $id_user;
         $pengembang->status_deleted     = 0;
@@ -355,6 +355,26 @@ class PengembangController extends Controller
         } else {
             return response()->json([
                 "message" => "Data Tidak Ditemukan atau Telah Terhapus"
+            ], 404);
+        }
+    }
+
+    // Update status pengemban
+    public function updateStatusPengembang(Request $request, $id_pengembang)
+    {
+        $pengembang = Pengembang::updateStatusPengembang($id_pengembang, $request->status_aktif);
+
+        // Cek Apakah update data berhasil
+        if ($pengembang) {
+            // Jika berhasil, tampilkan response 201 CREATED
+            return response()->json([
+                "message" => "Update Status pengembang dengan id: $id_pengembang Berhasil",
+                "data"    => $pengembang
+            ], 201);
+        } else {
+            // Jika gagal, tampilkan response 404 NOT FOUND
+            return response()->json([
+                "message" => "Data dengan id: $id_pengembang, Tidak Ditemukan",
             ], 404);
         }
     }
