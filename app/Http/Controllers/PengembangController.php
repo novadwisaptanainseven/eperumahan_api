@@ -41,7 +41,8 @@ class PengembangController extends Controller
     {
         // Validation
         $messages = [
-            "required" => ":attribute harus diisi!"
+            "required" => ":attribute harus diisi!",
+            "unique" => ":attribute sudah ada yang punya"
         ];
         $validator = Validator::make(
             $request->all(),
