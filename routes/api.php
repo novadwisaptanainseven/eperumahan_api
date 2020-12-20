@@ -40,6 +40,9 @@ Route::prefix('v1/admin/')->group(function () {
         Route::group(['middleware' => 'check_status'], function () {
             // GROUP USER
 
+            // Search User
+            Route::get('users/search', [UserController::class, 'searchUser']);
+
             // Add User
             Route::post('register', [UserController::class, 'register']);
 
@@ -141,6 +144,8 @@ Route::prefix('v1/admin/')->group(function () {
 
             // Update Status Active Form Master By ID
             Route::put("formulir/{id_form}/status_active", [FormController::class, 'updateStatusActive']);
+            // Get Form By ID
+            Route::get("formulir/{id_form}", [FormController::class, 'getFormAdminById']);
 
             // Delete Form Master By ID
             Route::delete("formulir/{id_form}", [FormController::class, 'deleteFormMaster']);

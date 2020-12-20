@@ -12,10 +12,17 @@ use Illuminate\Support\Facades\DB;
 class FormController extends Controller
 {
     // Get All Form Master
-    public function getAllFormMaster()
+    public function getAllFormMaster(Request $req)
     {
+        // Pagination
+        $req->page = ($req->page) ? $req->page : '1';
+        $req->per_page = ($req->per_page) ? $req->per_page : '8';
+        $req->order = ($req->order) ? $req->order : 'desc';
+        // End Pagination
 
-        $form = Form::all();
+        $form = Form::getAllFormMaster($req);
+
+        // $form = Form::all();
 
         if (count($form) > 0) {
             return response()->json([
@@ -38,7 +45,7 @@ class FormController extends Controller
         ];
 
         $validator = Validator::make($request->all(), [
-            'formulir' => "required|max:5048|mimes:pdf,docx,doc,xls,xlsx"
+            'formulir' => "required|max:5048|mimes:pdf"
         ], $message);
 
         if ($validator->fails()) {
@@ -174,7 +181,28 @@ class FormController extends Controller
         } else {
             // Jika tidak ada, tampilkan response 404 NOT FOUND
             return response()->json([
-                "message" => "form data perumahan dengan id form: $id_form, Tidak Ditemukan"
+                "message" => "Form data perumahan dengan id form: $id_form, Tidak Ditemukan"
+            ], 404);
+        }
+    }
+
+    // Get Form Admin By ID
+    public function getFormAdminById($id_form)
+    {
+        // Get form data perumahan
+        $form = Form::getFormAdminById($id_form);
+
+        // Cek apakah ada data form data perumahan
+        if ($form) {
+            // Jika ada, tampilkan response 200 OK
+            return response()->json([
+                "message" => "Get form data perumahan dengan id form: $id_form, Berhasil",
+                "data"    => $form
+            ], 200);
+        } else {
+            // Jika tidak ada, tampilkan response 404 NOT FOUND
+            return response()->json([
+                "message" => "Form data perumahan dengan id form: $id_form, Tidak Ditemukan"
             ], 404);
         }
     }

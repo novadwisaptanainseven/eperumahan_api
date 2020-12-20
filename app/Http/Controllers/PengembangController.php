@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class PengembangController extends Controller
@@ -186,9 +187,23 @@ class PengembangController extends Controller
             $pengembang->pengembang_slug    = $slug;
             // End Pembuatan Slug
 
-            $pengembang->ijin_perusahaan = ($ijin !== '') ? "/api/$ijin" : $pengembang->ijin_perusahaan;
-            $pengembang->foto_pengembang = ($foto !== '') ? "/api/$foto" : $pengembang->foto_pengembang;
+            // Hapus Foto lama jika user update foto
+            // Get path foto untuk keperluan menghapus file foto di storage
+            if ($foto !== '') {
+                $path_foto = $pengembang->foto_pengembang;
+                Storage::delete("$path_foto");
+            }
+            // Hapus File Ijin Perusahaan lama jika user update file ijin perusahaan
+            // Get path file ijin perusahaan untuk keperluan menghapus file di storage
+            if ($ijin !== '') {
+                $path_ijin = $pengembang->ijin_perusahaan;
+                Storage::delete("$path_ijin");
+            }
 
+            $pengembang->ijin_perusahaan = ($ijin !== '') ? $ijin : $pengembang->ijin_perusahaan;
+            $pengembang->foto_pengembang = ($foto !== '') ? $foto : $pengembang->foto_pengembang;
+
+            // Insert data to database
             $pengembang->save();
 
             return response()->json([
@@ -351,7 +366,7 @@ class PengembangController extends Controller
 
         if ($delete) {
             return response()->json([
-                "message" => "Delete Data Pengembang with id: $id_pengembang, Berhasil"
+                "message" => "Delete Data Pengembang beserta akun user with id: $id_pengembang, Berhasil"
             ], 201);
         } else {
             return response()->json([

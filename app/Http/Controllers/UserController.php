@@ -11,6 +11,30 @@ use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
+
+    // Search User
+    public function searchUser(Request $request)
+    {
+        $search_value = ($request->value) ? $request->value : '';
+
+        $data_user = User::searchUserByValue($search_value);
+
+        // Cek apakah data user ditemukan
+        if ($data_user) {
+            // Jika ditemukan, tampilkan response 200 OK
+            return response()->json([
+                "message" => "Get Data user dengan data pencarian: $search_value, Berhasil",
+                "data"    => $data_user
+            ], 200);
+        } else {
+            // Jika tidak, tetap tampilkan response 200 OK
+            return response()->json([
+                "message" => "Get Data user dengan data pencarian: $search_value, Gagal",
+                "data"    => $data_user
+            ], 200);
+        }
+    }
+
     // Get All Users
     public function getAllUsers(Request $request)
     {
@@ -44,7 +68,7 @@ class UserController extends Controller
         // Validation
         $messages = [
             'required'     => ':attribute is required!',
-            'unique'       => ':attribute already exist'
+            'unique'       => ':attribute sudah ada yang punya'
         ];
         $validator = Validator::make(
             $request->all(),
@@ -79,16 +103,30 @@ class UserController extends Controller
     // Update Data User
     public function updateUser(Request $request, $id_user)
     {
+        // Cek username
+        $user = User::where('id', $id_user)->first();
+        if ($user->username === $request->username) {
+            $username_rules = 'required';
+        } else {
+            $username_rules = 'unique:users|required';
+        }
+
         // Validation
         $message = [
-            "required" => ":attribute is required!",
-            "unique"   => ":attribute already exist"
+            "required" => ":attribute harus diisi",
+            "unique"   => ":attribute sudah ada yang punya"
         ];
         $validator = Validator::make(
             $request->all(),
             [
-                "username" => "unique:users",
-            ]
+                "username"      => $username_rules,
+                "password_lama" => 'required',
+                "password_baru" => 'required',
+                "konf_pass"     => 'required',
+                "status"        => 'required',
+                "level"         => 'required',
+            ],
+            $message
         );
         if ($validator->fails()) {
             // Jika Validasi Gagal
@@ -96,12 +134,28 @@ class UserController extends Controller
                 "errors" => $validator->errors()
             ]);
         }
+
+        // Cek password lama
+        if (!Hash::check($request->password_lama, $user->password)) {
+            return response([
+                'errors' => ['Password lama salah']
+            ], 400);
+        }
+
+        // Cek apakah konfirmasi password cocok
+        if ($request->password_baru === $request->konf_pass) {
+            // Hashing password
+            $password_baru = Hash::make($request->password_baru);
+        } else {
+            return response([
+                'errors' => ['Konfirmasi password tidak sesuai']
+            ], 400);
+        }
         // Jika Validasi Berhasil
         // Lakukan Update Data
-        $user = User::where('id', $id_user)->first();
 
         $user->username = ($request->username !== null) ? $request->username : $user->username;
-        $user->password = Hash::make(($request->password !== null) ? $request->password : $user->password);
+        $user->password = $password_baru;
         $user->level    = ($request->level !== null) ? $request->level : $user->level;
         $user->status   = ($request->status !== null) ? $request->status : $user->status;
         $user->save();

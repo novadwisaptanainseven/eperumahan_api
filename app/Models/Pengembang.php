@@ -14,7 +14,7 @@ class Pengembang extends Model
     protected $table = 'pengembang';
     protected $primaryKey = 'id_pengembang';
 
-    // Search Perumahan By Value
+    // Search Pengembang By Value
     public static function searchPengembangByValue($search_value)
     {
         // Tabel - tabel
@@ -109,7 +109,7 @@ class Pengembang extends Model
         $data_pengembang = DB::table($pengembang)
             ->select("$pengembang.*", "$user.username")
             ->where([
-                ['status_deleted', '=', 0],
+                ["$pengembang.status_deleted", '=', 0],
                 ['id_pengembang', '=', $id_pengembang]
             ])
             ->leftJoin($user, "$user.id", "=", "$pengembang.id_user")
@@ -136,8 +136,8 @@ class Pengembang extends Model
         $pengembang->pengembang_slug    = $slug;
         // End Pembuatan Slug
 
-        $pengembang->ijin_perusahaan = ($req->ijin !== '') ? "/api/$req->ijin" : $pengembang->ijin_perusahaan;
-        $pengembang->foto_pengembang = ($req->foto !== '') ? "/api/$req->foto" : $pengembang->foto_pengembang;
+        $pengembang->ijin_perusahaan = ($req->ijin !== '') ? "$req->ijin" : $pengembang->ijin_perusahaan;
+        $pengembang->foto_pengembang = ($req->foto !== '') ? "$req->foto" : $pengembang->foto_pengembang;
 
         $pengembang->save();
 
@@ -147,7 +147,26 @@ class Pengembang extends Model
     // Soft Deleted
     public static function softDelete($id_pengembang)
     {
-        $pengembang = DB::table('pengembang')
+        // Tabel - tabel
+        $pengembang = 'pengembang';
+        $users = 'users';
+
+        // Mencari data pengembang berdasarkan id pengembang
+        $data_pengembang = DB::table($pengembang)
+            ->where('id_pengembang', '=', $id_pengembang)
+            ->first();
+
+        // Cek apakah data pengembang ditemukan
+        if (!$data_pengembang)
+            return null;
+
+        // Soft delete data user 
+        $data_user = DB::table($users)
+            ->where('id', '=', $data_pengembang->id_user)
+            ->update(['status_deleted' => 1]);
+
+        // Soft delete data pengembang
+        $data_pengembang = DB::table($pengembang)
             ->where('id_pengembang', $id_pengembang)
             ->update(['status_deleted' => 1]);
 

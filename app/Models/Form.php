@@ -16,6 +16,51 @@ class Form extends Model
     protected $table = 'file_form_data_perumahan';
     protected $primaryKey = 'id_file_form_data_perumahan';
 
+    // GetAllFormMaster
+    public static function getAllFormMaster($req)
+    {
+        // Tabel - Tabel 
+        $file_form_data_perumahan = 'file_form_data_perumahan';
+
+        $page = intval($req->page);
+        $per_page = intval($req->per_page);
+        $order = $req->order;
+
+        $total = DB::table($file_form_data_perumahan)
+            ->where([
+                'status_deleted' => 0
+            ])
+            ->orderBy('id_file_form', 'DESC')
+            ->get()
+            ->count();
+
+        // Pagination
+        $offset = ($page - 1) * $per_page;
+        $last_page = ceil($total / $per_page);
+
+        $data_file_form_data_perumahan = DB::table($file_form_data_perumahan)
+            ->where('status_deleted', 0)
+            ->offset($offset)
+            ->limit($per_page)
+            ->orderBy('id_file_form', $order)
+            ->get();
+        // End Pagination
+
+        if (count($data_file_form_data_perumahan) == 0)
+            $data_file_form_data_perumahan = null;
+
+        $data = [
+            "total_data"   => $total,
+            "per_page"     => $per_page,
+            "current_page" => $page,
+            "last_page"    => $last_page,
+            "order"        => $order,
+            "data"         => $data_file_form_data_perumahan
+        ];
+
+        return $data;
+    }
+
     // Get All Form Data Perumahan
     public static function getAllForm()
     {
@@ -73,7 +118,7 @@ class Form extends Model
         DB::table($form)->insert($data_form);
         // Tampilkan form hasil proses tambah
         $data_form = DB::table($form)
-            ->orderBy('id_file_form_data_perumahan', 'DESC')
+            ->orderBy('id_file_form', 'DESC')
             ->get();
 
         return $data_form;
@@ -117,7 +162,7 @@ class Form extends Model
 
         // Get data form
         $data_form = DB::table($form)
-            ->where('id_file_form_data_perumahan', $id_form)
+            ->where('id_file_form', $id_form)
             ->first();
 
         // Cek apakah data form ditemukan
@@ -125,11 +170,17 @@ class Form extends Model
             return 'NOT_FOUND';
 
         // Proses delete
+        // $delete = DB::table($form)
+        //     ->where([
+        //         ['id_file_form_data_perumahan', '=', $id_form],
+        //     ])
+        //     ->delete();
+        // Proses soft delete
         $delete = DB::table($form)
-            ->where([
-                ['id_file_form_data_perumahan', '=', $id_form],
-            ])
-            ->delete();
+            ->where('id_file_form', '=', $id_form)
+            ->update([
+                'status_deleted' => 1
+            ]);
 
         // Cek apakah proses delete berhasil
         if ($delete) {
@@ -206,6 +257,25 @@ class Form extends Model
             ->where([
                 ['id_pengembang', '=', $data_pengembang->id_pengembang],
                 ['id_form_data_perumahan', '=', $id_form]
+            ])
+            ->first();
+
+        // Cek apakah ada data form ditemukan
+        if ($data_form)
+            return $data_form;
+        else
+            return null;
+    }
+
+    // Get Form Admin By ID
+    public static function getFormAdminById($id_form)
+    {
+        $form = 'file_form_data_perumahan';
+
+        // Get data form by id
+        $data_form = DB::table($form)
+            ->where([
+                ['id_file_form', '=', $id_form]
             ])
             ->first();
 

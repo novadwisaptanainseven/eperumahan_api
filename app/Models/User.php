@@ -44,7 +44,35 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
+    // Search User By Value
+    public static function searchUserByValue($search_value)
+    {
+        // Tabel - tabel
+        $users = 'users';
 
+        $data_users = DB::table($users)
+            ->where([
+                ['status_deleted', '=', 0],
+                ['username', 'like', "%$search_value%"]
+            ])
+            ->get();
+
+        if (count($data_users) === 0) {
+            $total_data_pencarian = 0;
+            $data_users = null;
+        } else {
+            $total_data_pencarian = count($data_users);
+        }
+
+        $data = [
+            "total_data" => ($total_data_pencarian !== 0) ? count($data_users) : 0,
+            "data" => $data_users
+        ];
+
+        return $data;
+    }
+
+    // Get All Users
     public static function getAllUsers($req)
     {
         // Tabel - Tabel
@@ -57,24 +85,26 @@ class User extends Authenticatable
 
         // Get total data
         $total = DB::table($users)
-                    ->get()
-                    ->count();
+            ->where('status_deleted', '=', '0')
+            ->get()
+            ->count();
 
         // Pagination
         $offset = ($page - 1) * $per_page;
         $last_page = ceil($total / $per_page);
-        
-        // Mengambil data properti berdasarkan ID Perumahan
+
+        // Mengambil data user
         $data_users = DB::table($users)
-                         ->offset($offset)
-                         ->limit($per_page)
-                         ->orderBy('id', $order)
-                         ->get();
+            ->where('status_deleted', '=', '0')
+            ->offset($offset)
+            ->limit($per_page)
+            ->orderBy('id', $order)
+            ->get();
         // End Pagination
 
         // Cek apakah data perumahan ada isinya
-        if(count($data_users) == 0)
-            $data_users = "Data Tidak Tersedia";
+        if (count($data_users) == 0)
+            $data_users = null;
 
         $data = [
             "total_data"   => $total,
