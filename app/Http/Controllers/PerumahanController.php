@@ -21,7 +21,7 @@ class PerumahanController extends Controller
 
         $data_perumahan = Perumahan::searchPerumahanByValue($search_value);
 
-        // Cek apakah data bangunan ditemukan
+        // Cek apakah data perumahan ditemukan
         if ($data_perumahan) {
             // Jika ditemukan, tampilkan response 200 OK
             return response()->json([
@@ -32,6 +32,29 @@ class PerumahanController extends Controller
             // Jika tidak, tetap tampilkan response 200 OK
             return response()->json([
                 "message" => "Get Data Perumahan dengan data pencarian: $search_value, Gagal",
+                "data"    => $data_perumahan
+            ], 200);
+        }
+    }
+
+    // Search Perumahan Pengembang
+    public function searchPerumahanPengembang(Request $request)
+    {
+        $search_value = ($request->value) ? $request->value : '';
+
+        $data_perumahan = Perumahan::searchPerumahanPengembang($search_value);
+
+        // Cek apakah data perumahan ditemukan
+        if ($data_perumahan) {
+            // Jika ditemukan, tampilkan response 200 OK
+            return response()->json([
+                "message" => "Get Data Perumahan Pengembang dengan data pencarian: $search_value, Berhasil",
+                "data"    => $data_perumahan
+            ], 200);
+        } else {
+            // Jika tidak, tetap tampilkan response 200 OK
+            return response()->json([
+                "message" => "Get Data Perumahan Pengembang dengan data pencarian: $search_value, Gagal",
                 "data"    => $data_perumahan
             ], 200);
         }

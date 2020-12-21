@@ -66,6 +66,66 @@ class Perumahan extends Model
         return $data;
     }
 
+    // Search Perumahan By Value
+    public static function searchPerumahanPengembang($search_value)
+    {
+        // Tabel - tabel
+        $kelurahan = 'kelurahan';
+        $kecamatan = 'kecamatan';
+        $pengembang = 'pengembang';
+        $perumahan = 'perumahan';
+        $bangunan = 'bangunan';
+
+        // Get user saat ini
+        $user = Auth::user();
+
+        // Get pengembang berdasarkan user saat ini
+        $user_pengembang = DB::table($pengembang)
+            ->where('id_user', '=', $user->id)
+            ->first();
+
+        $data_perumahan = DB::table($perumahan)
+            ->select(
+                "$perumahan.*",
+                "$pengembang.nama_pengembang",
+                "$kecamatan.nama_kecamatan",
+                "$kelurahan.nama_kelurahan"
+            )
+            ->where([
+                ['nama_perumahan', 'like', "%$search_value%"],
+                ["$perumahan.id_pengembang", '=', $user_pengembang->id_pengembang],
+            ])
+            ->orWhere([
+                ['lokasi', 'like', "%$search_value%"],
+                ["$perumahan.id_pengembang", '=', $user_pengembang->id_pengembang],
+            ])
+            ->leftJoin($pengembang, "$pengembang.id_pengembang", "=", "$perumahan.id_pengembang")
+            ->leftJoin($kelurahan, "$kelurahan.id_kelurahan", "=", "$perumahan.id_kelurahan")
+            ->leftJoin($kecamatan, "$kecamatan.id_kecamatan", "=", "$perumahan.id_kecamatan")
+            ->get();
+
+        if (count($data_perumahan) === 0) {
+            $total_data_pencarian = 0;
+            $data_perumahan = null;
+        } else {
+            $total_data_pencarian = count($data_perumahan);
+            // Get jumlah bangunan by id perumahan
+            foreach ($data_perumahan as $i => $data) {
+                $jumlah_properti = DB::table($bangunan)
+                    ->where('id_perumahan', $data->id_perumahan)
+                    ->get()
+                    ->count();
+                $data_perumahan[$i++]->jumlah_properti = $jumlah_properti;
+            }
+        }
+
+        $data = [
+            "total_data" => ($total_data_pencarian !== 0) ? count($data_perumahan) : 0,
+            "data" => $data_perumahan
+        ];
+
+        return $data;
+    }
     // Add Data Perumahan
     public static function addPerumahan($req)
     {
@@ -316,7 +376,10 @@ class Perumahan extends Model
         // Get jumlah bangunan by id perumahan
         foreach ($data_perumahan as $i => $data) {
             $jumlah_properti = DB::table($bangunan)
-                ->where('id_perumahan', $data->id_perumahan)
+                ->where([
+                    ['id_perumahan', '=', $data->id_perumahan],
+                    ['status_deleted', '=', 0],
+                ])
                 ->get()
                 ->count();
             $data_perumahan[$i++]->jumlah_properti = $jumlah_properti;
@@ -351,6 +414,7 @@ class Perumahan extends Model
         $pengembang = 'pengembang';
         $kelurahan = 'kelurahan';
         $kecamatan = 'kecamatan';
+        $bangunan = 'bangunan';
 
         // Get data pengembang sekarang berdasarkan current user
         $user = Auth::user();
@@ -387,13 +451,27 @@ class Perumahan extends Model
         if (count($data_perumahan) == 0)
             $data_perumahan = "Data Tidak Tersedia";
 
+        // Get jumlah bangunan by id perumahan
+        foreach ($data_perumahan as $i => $data) {
+            $jumlah_properti = DB::table($bangunan)
+                ->where([
+                    ['id_perumahan', '=', $data->id_perumahan],
+                    ['status_deleted', '=', 0],
+                ])
+                ->get()
+                ->count();
+            $data_perumahan[$i++]->jumlah_properti = $jumlah_properti;
+        }
+
+        $data_perumahan->jumlah_properti = $jumlah_properti;
+
 
         //  Get data belum konfirmasi
         $belum_konfirmasi = DB::table($perumahan)
             ->where([
                 ['id_pengembang', '=', $data_pengembang->id_pengembang],
                 ['status_perumahan', '=', 0],
-                // ['status_deleted', '=', 0]
+                ['status_deleted', '=', 0]
             ])
             ->count();
 

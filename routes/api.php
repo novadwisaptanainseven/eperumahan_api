@@ -12,6 +12,7 @@ use App\Http\Controllers\PerumahanController;
 use App\Http\Controllers\BrosurController;
 use App\Http\Controllers\FormController;
 use App\Http\Controllers\FileController;
+use App\Http\Controllers\DashboardController;
 use App\Models\Pengembang;
 
 /*
@@ -38,6 +39,12 @@ Route::prefix('v1/admin/')->group(function () {
 
 
         Route::group(['middleware' => 'check_status'], function () {
+
+            // GROUP DASHBOARD
+
+            // Get All Dashboard Information
+            Route::get('dashboard/info', [DashboardController::class, 'getDashboardInfo']);
+
             // GROUP USER
 
             // Search User
@@ -167,6 +174,11 @@ Route::prefix('v1/pengembang/')->group(function () {
         // All secure URL's
         Route::group(['middleware' => "is_pengembang"], function () {
 
+            // GROUP DASHBOARD
+
+            // Get All Dashboard Information
+            Route::get('dashboard/info', [DashboardController::class, 'getDashboardPengembangInfo']);
+
             // Logout User Pengembang
             Route::post('user/logout', [AuthController::class, 'logout']);
 
@@ -186,11 +198,17 @@ Route::prefix('v1/pengembang/')->group(function () {
             // ===========================================================================================
             // GROUP PERUMAHAN
 
+            // Search Data Perumahan
+            Route::get('/perumahan/search', [PerumahanController::class, 'searchPerumahanPengembang']);
+
             // Add Data Perumahan
             Route::post('/perumahan', [PerumahanController::class, 'addPerumahan']);
 
             // Update Data Perumahan
             Route::post('/perumahan/{id_perumahan}', [PerumahanController::class, 'updatePerumahanById']);
+
+            // Update Status Perumahan
+            Route::put('/perumahan/{id_perumahan}/status', [PerumahanController::class, 'updateStatus']);
 
             // Get All Perumahan
             Route::get('/perumahan', [PerumahanController::class, 'getAllPerumahan']);
