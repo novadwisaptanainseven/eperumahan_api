@@ -98,7 +98,8 @@ class User extends Authenticatable
             ->where('status_deleted', '=', '0')
             ->offset($offset)
             ->limit($per_page)
-            ->orderBy('id', $order)
+            // ->orderBy('id', $order)
+            ->orderBy('status', $order)
             ->get();
         // End Pagination
 

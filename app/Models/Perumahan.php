@@ -16,6 +16,41 @@ class Perumahan extends Model
 
     protected $table = 'perumahan';
 
+    // Get All Kecamatan
+    public static function getAllKecamatan()
+    {
+        // Tabel
+        $kecamatan = 'kecamatan';
+
+        // Get Data Kecamatan
+        $data_kecamatan = DB::table($kecamatan)->get();
+
+        if (count($data_kecamatan) > 0) {
+            return $data_kecamatan;
+        } else {
+            return null;
+        }
+    }
+
+    // Get All Kelurahan By ID Kecamatan
+    public static function getAllKelurahan($id_kecamatan)
+    {
+        // Tabel
+        $kelurahan = 'kelurahan';
+        if ($id_kecamatan == '') {
+            return 'ID_REQUIRED';
+        }
+
+        // Get Data Kecamatan
+        $data_kelurahan = DB::table($kelurahan)->where('id_kecamatan', $id_kecamatan)->get();
+
+        if (count($data_kelurahan) > 0) {
+            return $data_kelurahan;
+        } else {
+            return null;
+        }
+    }
+
     // GROUP PERUMAHAN
 
     // Search Perumahan By Value
@@ -66,7 +101,7 @@ class Perumahan extends Model
         return $data;
     }
 
-    // Search Perumahan By Value
+    // Search Perumahan Pengembang By Value
     public static function searchPerumahanPengembang($search_value)
     {
         // Tabel - tabel
@@ -193,7 +228,8 @@ class Perumahan extends Model
             "id_kelurahan"        => $req->id_kelurahan,
             "slug"                => $req->perumahan_slug,
             "legalitas"           => $legalitas,
-            "status_perumahan"    => 0
+            "status_perumahan"    => 0,
+            "status_deleted"      => 0
         ];
         // Insert Data Perumahan to Database
         $cek_insert = DB::table($perumahan)->insert($data_perumahan);
@@ -208,7 +244,7 @@ class Perumahan extends Model
             $file_name = pathinfo($foto->getClientOriginalName(), PATHINFO_FILENAME);
             $file_ext = pathinfo($foto->getClientOriginalName(), PATHINFO_EXTENSION);
             $sanitize = Str::of($file_name)->slug('-');
-            $sanitize = $sanitize . '-' . $file_ext;
+            $sanitize = $sanitize . '.' . $file_ext;
 
             $f = $foto->storeAs("perumahan/foto", rand(0, 9999) . '-' . date('Ymd') . '-' . $sanitize);
 
@@ -297,14 +333,24 @@ class Perumahan extends Model
             } else {
                 $file = $req->file('legalitas');
 
+                // Hapus file legalitas lama jika user update file legalitas
+                // Get path file legalitas untuk keperluan menghapus file legalitas di storage
+                $path_legalitas = $data_perumahan->legalitas;
+                Storage::delete("$path_legalitas");
+
                 // Sanitize nama file
                 $file_name = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
                 $file_ext = pathinfo($file->getClientOriginalName(), PATHINFO_EXTENSION);
                 $sanitize = Str::of($file_name)->slug('-');
                 $sanitize = $sanitize . '.' . $file_ext;
 
-                $legalitas = $file->storeAs("perumahan/file", $user->username . rand(0, 9999) . time() . '-' .     $sanitize);
+                $legalitas = $file->storeAs("perumahan/file", rand(0, 9999) . '-' . date('Ymd') . '-' . $sanitize);
             }
+
+            // Lakukan Proses Tambah Data
+            // Pembuatan Slug
+            $slug                = Str::of($data_perumahan->id_perumahan . ' ' . $req->nama_perumahan)->slug('-');
+            // End Pembuatan Slug
 
             $data = [
                 'id_pengembang' => $id_pengembang,
@@ -316,6 +362,7 @@ class Perumahan extends Model
                 'longitude' => ($req->longitude !== null) ? $req->longitude : $data_perumahan->longitude,
                 'id_kelurahan' => ($req->id_kelurahan !== null) ? $req->id_kelurahan : $data_perumahan->id_kelurahan,
                 'id_kecamatan' => ($req->id_kecamatan !== null) ? $req->id_kecamatan : $data_perumahan->id_kecamatan,
+                'slug' => $slug
             ];
             // Update data in database
             DB::table($perumahan)->where('id_perumahan', $id_perumahan)->update($data);
@@ -365,7 +412,7 @@ class Perumahan extends Model
             ->leftJoin($kecamatan, "$kecamatan.id_kecamatan", "=", "$perumahan.id_kecamatan")
             ->offset($offset)
             ->limit($per_page)
-            ->orderBy("$perumahan.id_perumahan", $order)
+            ->orderBy("$perumahan.status_perumahan", $order)
             ->get();
         // End Pagination
 
@@ -740,7 +787,8 @@ class Perumahan extends Model
             ->leftJoin($kecamatan, "$bangunan.id_kecamatan", "=", "$kecamatan.id_kecamatan")
             ->offset($offset)
             ->limit($per_page)
-            ->orderBy("$bangunan.id_bangunan", $order)
+            // ->orderBy("$bangunan.id_bangunan", $order)
+            ->orderBy("$bangunan.status_publish", $order)
             ->get();
         // End Pagination
 
@@ -1408,11 +1456,8 @@ class Perumahan extends Model
     public static function addFotoPerumahan($req, $id_perumahan)
     {
         // Tabel - Tabel
-        $foto = 'foto_perumahan';
+        $tbl_foto_perumahan = 'foto_perumahan';
         $perumahan = 'perumahan';
-
-        // Get Current User
-        $user = Auth::user();
 
         // Get data perumahan
         $data_perumahan = DB::table($perumahan)
@@ -1428,7 +1473,7 @@ class Perumahan extends Model
             $data_foto = [];
             $status = 0;
             $i = 0;
-            $images = $req->file('foto_bangunan');
+            $images = $req->file('foto_perumahan');
             foreach ($images as $image) {
                 $ext_allowed = $req->ext_allowed;
                 $ext_file = $image->extension();
@@ -1456,12 +1501,12 @@ class Perumahan extends Model
                 "status_foto"    => $status
             ];
             // Insert foto to database
-            DB::table($foto)->insert($data);
+            DB::table($tbl_foto_perumahan)->insert($data);
         }
 
 
         // Tampilkan foto hasil proses tambah
-        $data_foto = DB::table($foto)
+        $data_foto = DB::table($tbl_foto_perumahan)
             ->where('id_perumahan', $id_perumahan)
             ->orderBy('id_foto_perumahan', 'DESC')->get();
 
@@ -1588,15 +1633,15 @@ class Perumahan extends Model
         $total = DB::table($foto)->where('id_perumahan', $id_perumahan)->get()->count();
 
         // Pagination
-        $offset = ($page - 1) * $per_page;
-        $last_page = ceil($total / $per_page);
+        // $offset = ($page - 1) * $per_page;
+        // $last_page = ceil($total / $per_page);
 
         // Get All Foto
         $data_foto = DB::table($foto)
             ->where('id_perumahan', $id_perumahan)
-            ->offset($offset)
-            ->limit($per_page)
-            ->orderBy('id_foto_perumahan', $order)
+            // ->offset($offset)
+            // ->limit($per_page)
+            ->orderBy('status_foto', $order)
             ->get();
         // End Pagination
 
@@ -1606,9 +1651,9 @@ class Perumahan extends Model
 
         $data = [
             "total_data"   => $total,
-            "per_page"     => $per_page,
-            "current_page" => $page,
-            "last_page"    => $last_page,
+            // "per_page"     => $per_page,
+            // "current_page" => $page,
+            // "last_page"    => $last_page,
             "order"        => $order,
             "data"         => $data_foto
         ];

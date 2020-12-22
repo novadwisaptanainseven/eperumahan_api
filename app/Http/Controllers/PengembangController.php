@@ -88,7 +88,7 @@ class PengembangController extends Controller
         $user->password = $request->password;
         $konf_pass      = $request->konf_pass;
         $user->level    = 2;
-        $user->status   = 0;
+        $user->status   = 1;
 
         // Cek Apakah Konfimasi Password Cocok
         if ($user->password === $konf_pass) {

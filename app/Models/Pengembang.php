@@ -80,7 +80,8 @@ class Pengembang extends Model
             ->where('status_deleted', 0)
             ->offset($offset)
             ->limit($per_page)
-            ->orderBy('id_pengembang', $order)
+            // ->orderBy('id_pengembang', $order)
+            ->orderBy('status_aktif', $order)
             ->get();
         // End Pagination
 

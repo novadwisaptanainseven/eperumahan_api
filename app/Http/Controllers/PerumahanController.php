@@ -12,6 +12,41 @@ use Illuminate\Support\Facades\DB;
 
 class PerumahanController extends Controller
 {
+
+    // Get All Kecamatan
+    public function getAllKecamatan()
+    {
+        $kecamatan = Perumahan::getAllKecamatan();
+
+        return response()->json([
+            "message" => "Get All Kecamatan Berhasil",
+            "data"    => $kecamatan
+        ], 200);
+    }
+
+    // Get All Kelurahan By ID Kecamatan
+    public function getAllKelurahan($id_kecamatan = '')
+    {
+        $kelurahan = Perumahan::getAllKelurahan($id_kecamatan);
+
+        if ($kelurahan != "ID_REQUIRED") {
+            return response()->json([
+                "message" => "Get All Kelurahan dengan id kecamatan: $id_kecamatan Berhasil",
+                "data"    => $kelurahan
+            ], 200);
+        } elseif ($kelurahan == "ID_REQUIRED") {
+            return response()->json([
+                "message" => "ID Kecamatan dibutuhkan untuk pencarian data kelurahan",
+                "data"    => $kelurahan
+            ], 400);
+        } else {
+            return response()->json([
+                "message" => "Data Kelurahan Tidak Tersedia",
+                "data"    => $kelurahan
+            ], 404);
+        }
+    }
+
     // GROUP PERUMAHAN
 
     // Search Perumahan
@@ -75,7 +110,7 @@ class PerumahanController extends Controller
                 "deskripsi_perumahan" => "required",
                 "lokasi"              => "required",
                 'foto_perumahan'      => 'max:5048|required',
-                'legalitas'           => 'mimes:pdf,xls,xlsx|max:10048',
+                'legalitas'           => 'mimes:pdf,xls,xlsx|max:10048|required',
                 "longitude"           => "required",
                 "latitude"            => "required",
                 "fasilitas_perumahan" => "required",
@@ -200,7 +235,7 @@ class PerumahanController extends Controller
         return response()->json([
             "message" => "Get All Perumahan Berhasil",
             "data"    => $perumahan
-        ]);
+        ], 200);
     }
 
     // Get All Perumahan By Pengembang
@@ -796,7 +831,6 @@ class PerumahanController extends Controller
         $validator = Validator::make(
             $request->all(),
             [
-
                 'foto_perumahan' => 'max:5048|required',
             ],
             $message
@@ -898,8 +932,8 @@ class PerumahanController extends Controller
     public function getAllFoto(Request $request, $id_perumahan)
     {
         // Pagination
-        $request->page = ($request->page) ? $request->page : '1';
-        $request->per_page = ($request->per_page) ? $request->per_page : '8';
+        // $request->page = ($request->page) ? $request->page : '1';
+        // $request->per_page = ($request->per_page) ? $request->per_page : '8';
         $request->order = ($request->order) ? $request->order : 'desc';
         // End Pagination
 

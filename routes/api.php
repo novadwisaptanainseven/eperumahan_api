@@ -36,8 +36,6 @@ Route::prefix('v1/admin/')->group(function () {
     Route::group(['middleware' => 'auth:sanctum'], function () {
         //All secure URL's
 
-
-
         Route::group(['middleware' => 'check_status'], function () {
 
             // GROUP DASHBOARD
@@ -197,6 +195,12 @@ Route::prefix('v1/pengembang/')->group(function () {
 
             // ===========================================================================================
             // GROUP PERUMAHAN
+
+            // Get All Kecamatan
+            Route::get('/kecamatan', [PerumahanController::class, 'getAllKecamatan']);
+
+            // Get All Kelurahan by Id Kecamatan
+            Route::get('/kelurahan/{id_kecamatan}', [PerumahanController::class, 'getAllKelurahan']);
 
             // Search Data Perumahan
             Route::get('/perumahan/search', [PerumahanController::class, 'searchPerumahanPengembang']);
