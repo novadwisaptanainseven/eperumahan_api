@@ -343,7 +343,7 @@ class PerumahanController extends Controller
             // Jika validasi gagal, tampilkan response 400 BAD REQUEST
             return response()->json([
                 "errors" => $validator->errors()
-            ]);
+            ], 400);
         }
 
         // Jika validasi berhasil, lanjutkan proses di bawah ini

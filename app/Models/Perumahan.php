@@ -862,6 +862,7 @@ class Perumahan extends Model
 
         // Mengambil Data Perumahan berdasarkan ID Perumahan
         $data_perumahan = DB::table($perumahan)
+            ->select("$perumahan.id_perumahan", "$perumahan.nama_perumahan", "$pengembang.id_pengembang")
             ->where(['id_perumahan' => $id_perumahan])
             ->leftJoin("$pengembang", "$perumahan.id_pengembang", '=', "$pengembang.id_pengembang")
             ->first();
