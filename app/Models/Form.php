@@ -14,7 +14,7 @@ class Form extends Model
 {
     use HasApiTokens, HasFactory;
     protected $table = 'file_form_data_perumahan';
-    protected $primaryKey = 'id_file_form_data_perumahan';
+    protected $primaryKey = 'id_file_form';
 
     // GetAllFormMaster
     public static function getAllFormMaster($req)
@@ -193,6 +193,23 @@ class Form extends Model
             return null;
     }
 
+    // Get Newest Form Admin
+    public static function getNewestForm()
+    {
+        // Tabel - tabel
+        $formAdmin = 'file_form_data_perumahan';
+
+        $newestFormAdmin = DB::table($formAdmin)
+            ->where('status_deleted', '<>', '1')
+            ->orderBy('id_file_form', 'DESC')
+            ->first();
+        if ($newestFormAdmin) {
+            return $newestFormAdmin;
+        } else {
+            return null;
+        }
+    }
+
     // Get All Form Pengembang
     public static function getAllFormPengembang($req)
     {
@@ -292,6 +309,7 @@ class Form extends Model
         // Tabel - Tabel
         $form = 'form_data_perumahan';
         $pengembang = 'pengembang';
+        $form_admin = 'file_form_data_perumahan';
 
         // Get current user untuk mendapatkan akun pengembang sekarang
         $user = Auth::user();
@@ -299,6 +317,12 @@ class Form extends Model
         // Get akun pengembang sekarang
         $data_pengembang = DB::table($pengembang)
             ->where('id_user', $user->id)
+            ->first();
+
+        // Get data form admin terbaru
+        $data_form_admin = DB::table($form_admin)
+            ->where('status_deleted', '<>', '1')
+            ->orderBy('id_file_form', 'DESC')
             ->first();
 
         // Cek Apakah ada file form / Validasi ekstensi file apakah sesuai dengan ext_allowed
@@ -326,6 +350,7 @@ class Form extends Model
             $ff = $f->storeAs("pengembang/form", rand(0, 9999) . '-' . date('Ymd') . '-' . $sanitize);
 
             $data_form = [
+                "id_file_form" => $data_form_admin->id_file_form,
                 "id_pengembang" => $data_pengembang->id_pengembang,
                 "file" => $ff
             ];

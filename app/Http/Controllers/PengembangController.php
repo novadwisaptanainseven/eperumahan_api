@@ -220,6 +220,22 @@ class PengembangController extends Controller
     // Update Pengembang Level Pengembang
     public function updatePengembang2(Request $request)
     {
+        $konf_pass_rules = '';
+        $pass_baru_rules = '';
+
+        // Cek username
+        $user = Auth::user();
+        // if ($user->username === $request->username) {
+        //     $username_rules = 'required';
+        // } else {
+        //     $username_rules = 'unique:users|required';
+        // }
+
+        if ($request->password_lama) {
+            $konf_pass_rules = 'required';
+            $pass_baru_rules = 'required';
+        }
+
         // Validation
         $messages = [
             "required" => ":attribute harus diisi!"
@@ -228,7 +244,10 @@ class PengembangController extends Controller
             $request->all(),
             [
                 'foto_pengembang'    => 'mimes:jpg,jpeg,png|max:5048',
-                'ijin_perusahaan'    => 'mimes:pdf,xls,xlsx|max:10048'
+                'ijin_perusahaan'    => 'mimes:pdf,xls,xlsx|max:10048',
+                'konf_pass'          => $konf_pass_rules,
+                'password_baru'      => $pass_baru_rules,
+                // 'username'           => $username_rules
             ],
             $messages
         );
@@ -258,7 +277,6 @@ class PengembangController extends Controller
         $table_user = 'users';
         $table_pengembang = 'pengembang';
 
-        $user = Auth::user();
         $pengembang = Pengembang::where(["$table_pengembang.id_user" => $user->id])
             ->select("$table_pengembang.*", "$table_user.username")
             ->leftJoin($table_user, "$table_user.id", "=", "$table_pengembang.id_user")
@@ -277,13 +295,12 @@ class PengembangController extends Controller
                     // ]);
                 } else {
                     return response()->json([
-                        "message" => "Konfirmasi Password Tidak Sesuai"
+                        'errors' => ['Konfirmasi password tidak sesuai']
                     ], 400);
                 }
             } else {
                 return response()->json([
-                    "message" => "Password Lama Salah",
-                    "user"    => $user
+                    'errors' => ['Password lama salah']
                 ], 400);
             }
         }

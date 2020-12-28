@@ -144,6 +144,27 @@ class FormController extends Controller
         ], 200);
     }
 
+    // Get Newest Form Admin
+    public function getNewestForm()
+    {
+        $form = Form::getNewestForm();
+
+        // Cek apakah ada data brosur
+        if ($form) {
+            // Jika ada, tampilkan response 200 OK
+            return response()->json([
+                "message" => "Get form data perumahan dari admin terbaru, Berhasil",
+                "data"    => $form,
+            ], 200);
+        } else {
+            // Jika tidak ada, tetap tampilkan response 200 OK dengan keterangang
+            return response()->json([
+                "message" => "Belum ada form data perumahan",
+                "data"    => $form
+            ], 200);
+        }
+    }
+
     // Get All Form Data Perumahan
     public function getAllForm()
     {
@@ -242,17 +263,12 @@ class FormController extends Controller
                 "message" => "Ekstensi file harus bertipe pdf!",
                 "status_response" => "400 BAD REQUEST"
             ], 400);
-        } else if ($tambah !== 'NOT_FOUND') {
+        } else if ($tambah) {
             // Jika berhasil, tampilkan response 201 CREATED
             return response()->json([
                 "message" => "Tambah form data perumahan, Berhasil",
                 "data"    => $tambah
             ], 201);
-        } else if ($tambah === 'NOT_FOUND') {
-            // Jika data bangunan tidak ditemukan, tampilkan response 404 NOT FOUND
-            return response()->json([
-                "message" => "Data properti tidak ditemukan!"
-            ], 404);
         } else {
             // Jika gagal, tampilkan response 500 INTERNAL SERVER ERROR
             return response()->json([

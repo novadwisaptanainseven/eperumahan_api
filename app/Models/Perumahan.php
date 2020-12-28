@@ -1278,7 +1278,7 @@ class Perumahan extends Model
             return 'NOT_FOUND';
 
         // Get All Foto
-        $data_foto = DB::table($foto)->where('id_bangunan', $id_bangunan)->orderBy('id_foto_bangunan', 'DESC')->get();
+        $data_foto = DB::table($foto)->where('id_bangunan', $id_bangunan)->orderBy('level_foto', 'DESC')->get();
 
 
         // Cek apakah ada data Foto

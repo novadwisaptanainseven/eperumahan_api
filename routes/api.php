@@ -264,6 +264,9 @@ Route::prefix('v1/pengembang/')->group(function () {
 
             // GROUP PERUMAHAN / PROPERTI
 
+            // Search Properti By ID Perumahan
+            Route::get('perumahan/{id_perumahan}/properti/search', [PerumahanController::class, 'searchProperti']);
+
             // Add Properti By ID Perumahan
             Route::post('perumahan/{id_perumahan}/properti', [PerumahanController::class, 'addProperti']);
 
@@ -283,8 +286,7 @@ Route::prefix('v1/pengembang/')->group(function () {
             Route::get('perumahan/{id_perumahan}/properti/{id_bangunan}', [PerumahanController::class, 'getPropertiById']);
 
             // Update Properti By ID
-            Route::post('perumahan/{id_perumahan}/properti/{id_bangunan}', [PerumahanController::class, 'updatePropertiById
-            ']);
+            Route::post('perumahan/{id_perumahan}/properti/{id_bangunan}', [PerumahanController::class, 'updatePropertiById']);
 
             // Update Status Publish Properti By ID Perumahan & ID Bangunan
             Route::put('perumahan/{id_perumahan}/properti/{id_bangunan}/status', [PerumahanController::class, 'updateStatusProperti']);
@@ -337,6 +339,9 @@ Route::prefix('v1/pengembang/')->group(function () {
 
             // ===========================================================================================
             // GROUP FORM DATA PERUMAHAN
+
+            // Get Newest Form Admin
+            Route::get('form/new', [FormController::class, 'getNewestForm']);
 
             // Get All Form Data Perumahan
             Route::get('form', [FormController::class, 'getAllForm']);

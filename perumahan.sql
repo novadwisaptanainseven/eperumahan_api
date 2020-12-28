@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Dec 14, 2020 at 02:37 AM
+-- Generation Time: Dec 28, 2020 at 02:47 AM
 -- Server version: 10.4.14-MariaDB
 -- PHP Version: 7.4.11
 
@@ -54,7 +54,7 @@ CREATE TABLE `bangunan` (
   `sertifikat` text NOT NULL,
   `status_publish` varchar(10) NOT NULL,
   `bangunan_slug` varchar(200) NOT NULL,
-  `status_deleted` int(1) NOT NULL
+  `status_deleted` int(1) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
@@ -75,10 +75,10 @@ INSERT INTO `bangunan` (`id_bangunan`, `id_perumahan`, `id_pengembang`, `id_keca
 (19, 18, 23, 1, 61, 'NON MBR', '48/105', 'Cluster Kakaban', 'Rumah Unit  Tipe 48/105', 727000000, 'Jl. H.A.M.M Riffadin Ruko E2-11, Harapan Baru, Kec. Loa Janan Ilir Kota Samarinda Kalimantan Timur 75131', '5', 48, 105, '8 x 6', '7 x 15', '1', '2', '1', '1', '1300', '', '', '', '1', 'cluster-kakaban-201015875', 0),
 (20, 18, 23, 1, 61, 'NON MBR', '96', 'Cluster Maya', 'Rumah Unit Tipe 96/200', 1381000000, 'Jl. H.A.M.M Riffadin Ruko E2-11, Harapan Baru, Kec. Loa Janan Ilir Kota Samarinda Kalimantan Timur 75131', '5', 96, 200, '8 x 6', '8 x 16', '2', '4', '3', '1', '1300', '', '', '', '1', 'cluster-maya-201015837', 0),
 (21, 19, 7, 6, 16, 'MBR', '36', 'Rumah murah baru 2020', 'deksripsi', 140000000, 'lokasi perumahan', '100', 100, 150, '10 x 10', '10 x 15', '2', '3', '2', '1', '1300', '', '', '', '1', 'rumah-murah-baru-2020-201021153', 0),
-(23, 47, 32, 1, 1, 'kategori', 'MBR', '123', 'deskripsi', 20000, 'Jalan Slamet Riyadi', '10', 10, 10, '10 x 10', '10 x 10', '10', '20', '30', '5', '200', 'Ini Longitude', 'Ini Latitude', '', '0', '20-123', 0),
-(24, 47, 32, 1, 1, 'kategori', 'MBR', '123', 'deskripsi', 20000, 'Jalan Slamet Riyadi', '10', 10, 10, '10 x 10', '10 x 10', '10', '20', '30', '5', '200', 'Ini Longitude', 'Ini Latitude', '', '0', '48-123', 0),
-(25, 47, 32, 1, 1, 'kategori', 'MBR', '123', 'deskripsi', 20000, 'Jalan Slamet Riyadi', '10', 10, 10, '10 x 10', '10 x 10', '10', '20', '30', '5', '200', 'Ini Longitude', 'Ini Latitude', '', '0', '48-123', 0),
-(26, 47, 32, 1, 1, 'kategori', 'MBR', 'Rumah Islamic', 'lorem ipsum dolor sit amet', 20000, 'Jalan Slamet Riyadi', '10', 10, 10, '10 x 10', '10 x 10', '10', '20', '30', '5', '200', 'Ini Longitude', 'Ini Latitude', '', '0', '26-rumah-islamic', 0);
+(22, 23, 32, 1, 3, 'kategori', 'MBR', '123', 'deskripsi', 20000, 'Jalan Slamet Riyadi', '10', 10, 10, '10 x 10', '10 x 10', '10', '20', '30', '5', '200', '123', '123', '', '2', '22-123', 0),
+(23, 23, 32, 1, 3, 'kategori', 'MBR', 'Ini bangunanku', 'deskripsi', 20000, 'Jalan Slamet Riyadi', '10', 10, 10, '10 x 10', '10 x 10', '10', '20', '30', '5', '200', '123', '123', '', '1', '23-ini-bangunanku', 0),
+(24, 28, 32, 1, 60, 'MBR', '60/SA', 'Rumah Islamic 2', 'lorem ipsum dolor sit amet dfdf', 50000000, 'ddfdsfdz', '10', 166, 150, '13 x 13', '15 x 10', '2', '2', '2', '2', '1300', '1234', '1234', '', '0', '24-rumah-islamic-2', 0),
+(25, 28, 32, 1, 60, 'NON MBR', '6A', 'Cluster Maratua 2', 'Rumah unit tipe 6A', 10000000, 'ddfdsfdz', '10', 100, 10, '10 x 10', '10 x 10', '1', '3', '3', '2', '1300', '1234', '1234', '', '2', '25-cluster-maratua-2', 0);
 
 -- --------------------------------------------------------
 
@@ -91,6 +91,15 @@ CREATE TABLE `brosur_pengembang` (
   `id_pengembang` int(11) NOT NULL,
   `brosur_pengembang` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `brosur_pengembang`
+--
+
+INSERT INTO `brosur_pengembang` (`id_brosur_pengembang`, `id_pengembang`, `brosur_pengembang`) VALUES
+(10, 32, 'pengembang/brosur/7126-20201224-perumahan-dregalle-menjadi-pilihan-yang-tepat.jpg'),
+(11, 32, 'pengembang/brosur/9213-20201224-perumahan-grand-sejahtera-sungai-jawi.jpg'),
+(12, 32, 'pengembang/brosur/8468-20201224-perumahan-terlaris-di-ponorogo.jpeg');
 
 -- --------------------------------------------------------
 
@@ -165,11 +174,23 @@ INSERT INTO `fasilitas_perumahan` (`id_fasilitas_perumahan`, `id_perumahan`, `na
 (34, 20, 'Mesin ATM'),
 (35, 20, 'Joging Track'),
 (36, 21, 'tes'),
-(46, 46, 'Kamar Mandi'),
-(47, 46, 'Kamera CCTV'),
-(48, 47, 'Kamar Mandi'),
-(49, 47, 'Kamera CCTV'),
-(50, 46, 'Lampu Taman 1');
+(37, 1, 'Kolam Renang'),
+(38, 22, 'Kamar Mandi'),
+(39, 22, 'Kamera CCTV'),
+(40, 23, 'Kamar Mandi'),
+(41, 23, 'Kamera CCTV'),
+(42, 24, 'Lampu taman'),
+(43, 24, 'Kamera CCTV'),
+(44, 25, 'mantap'),
+(45, 25, 'Snapdragon'),
+(46, 26, 'Playground'),
+(47, 26, 'Area komersil'),
+(48, 26, 'ATM Center'),
+(49, 27, 'ATM Center'),
+(50, 27, 'Keamanan Security'),
+(51, 28, 'Snapdragon'),
+(52, 28, 'Rest area'),
+(53, 28, 'ATM Center');
 
 -- --------------------------------------------------------
 
@@ -186,6 +207,17 @@ CREATE TABLE `file_form_data_perumahan` (
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+--
+-- Dumping data for table `file_form_data_perumahan`
+--
+
+INSERT INTO `file_form_data_perumahan` (`id_file_form`, `file`, `status_active`, `status_deleted`, `created_at`, `updated_at`) VALUES
+(4, 'admin/form/9212-20201219-bukti-pendaftaran-wisuda.pdf', 0, 0, '2020-12-19 06:11:32', '2020-12-19 06:11:32'),
+(5, 'admin/form/6524-20201219-bukti-pendaftaran-wisuda.pdf', 0, 0, '2020-12-19 06:14:28', '2020-12-19 06:14:28'),
+(6, 'admin/form/2793-20201219-ika.pdf', 0, 0, '2020-12-19 06:16:38', '2020-12-19 06:16:38'),
+(7, 'admin/form/2789-20201219-ika.pdf', 0, 1, '2020-12-19 06:29:45', '2020-12-19 14:32:49'),
+(8, 'admin/form/9211-20201219-transkip-nilai.pdf', 0, 1, '2020-12-19 07:37:04', '2020-12-19 14:32:06');
+
 -- --------------------------------------------------------
 
 --
@@ -201,6 +233,15 @@ CREATE TABLE `form_data_perumahan` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `form_data_perumahan`
+--
+
+INSERT INTO `form_data_perumahan` (`id_form_data_perumahan`, `id_file_form`, `id_pengembang`, `file`, `status_deleted`, `created_at`, `updated_at`) VALUES
+(6, 6, 32, 'pengembang/form/2839-20201224-ika.pdf', 0, '2020-12-24 07:46:33', '2020-12-24 07:46:33'),
+(8, 6, 32, 'pengembang/form/2333-20201224-ika.pdf', 0, '2020-12-24 11:48:16', '2020-12-24 11:48:16'),
+(9, 6, 32, 'pengembang/form/5508-20201224-bukti-pendaftaran-wisuda.pdf', 0, '2020-12-24 12:06:59', '2020-12-24 12:06:59');
 
 -- --------------------------------------------------------
 
@@ -220,13 +261,13 @@ CREATE TABLE `foto_bangunan` (
 --
 
 INSERT INTO `foto_bangunan` (`id_foto_bangunan`, `id_bangunan`, `foto_bangunan`, `level_foto`) VALUES
-(9, 9, 'november_2017.jpg', '0'),
+(9, 9, 'november_2017.jpg', '1'),
 (12, 11, 'rumah21.jpg', '0'),
 (14, 9, 'rumah3.jpg', '0'),
 (15, 10, 'home_slider_1.jpg', '0'),
 (16, 10, 'november_20171.jpg', '1'),
 (17, 11, 'rumah.jpg', '1'),
-(18, 9, 'Top-60-Employee-Engagement-image24-1024x511.png', '1'),
+(18, 9, 'Top-60-Employee-Engagement-image24-1024x511.png', '0'),
 (19, 12, 'Screenshot_(6).png', '1'),
 (20, 12, 'Screenshot_(5).png', '0'),
 (22, 13, 'november_20172.jpg', '1'),
@@ -241,17 +282,16 @@ INSERT INTO `foto_bangunan` (`id_foto_bangunan`, `id_bangunan`, `foto_bangunan`,
 (31, 20, 'PHOTO_20200527_095931.jpg', '1'),
 (32, 20, 'PHOTO_20200527_100127.jpg', '0'),
 (33, 21, 'download2.jpg', '1'),
-(36, 23, 'bangunan/foto/5644-20201126-Capture.PNG', '1'),
-(37, 23, 'bangunan/foto/7423-20201126-Laravel-Featured-Image - Copy.png', '0'),
-(38, 24, 'bangunan/foto/9743-20201126-Laravel-Featured-Image - Copy.png', '1'),
-(39, 25, 'bangunan/foto/9326-20201126-Laravel-Featured-Image - Copy.png', '1'),
-(40, 26, 'bangunan/foto/2429-20201126-Laravel-Featured-Image - Copy.png', '0'),
-(41, 26, 'bangunan/foto/8787-20201127-Capture.PNG', '0'),
-(42, 26, 'bangunan/foto/5478-20201127-Capture.PNG', '0'),
-(43, 26, 'bangunan/foto/4889-20201127-react.png', '0'),
-(44, 26, 'bangunan/foto/4938-20201127-Laravel-Featured-Image - Copy.png', '0'),
-(45, 26, 'bangunan/foto/3130-20201127-react.png', '0'),
-(46, 26, 'bangunan/foto/1383-20201127-react.png', '1');
+(34, 22, 'bangunan/foto/4995-20201128-1.png', '1'),
+(35, 22, 'bangunan/foto/3278-20201128-2.jpg', '0'),
+(36, 23, 'bangunan/foto/7272-20201128-1.png', '1'),
+(37, 23, 'bangunan/foto/5775-20201128-2.jpg', '0'),
+(38, 24, 'bangunan/foto/8237-20201222-perumahan-dregalle-menjadi-pilihan-yang-tepat.jpg', '1'),
+(39, 25, 'bangunan/foto/3396-20201222-5e5f5145e0948.jpeg', '0'),
+(40, 25, 'bangunan/foto/9980-20201223-perumahan-grand-sejahtera-sungai-jawi.jpg', '0'),
+(42, 25, 'bangunan/foto/8110-20201223-perumahan-quality-garden-luncurkan-dp-0-rupiah-untuk-tni-polri-asn-m-121462.jpg', '1'),
+(43, 25, 'bangunan/foto/6720-20201224-5e5f5145e0948.jpeg', '0'),
+(44, 25, 'bangunan/foto/1460-20201224-perumahan-dregalle-menjadi-pilihan-yang-tepat.jpg', '0');
 
 -- --------------------------------------------------------
 
@@ -263,47 +303,60 @@ CREATE TABLE `foto_perumahan` (
   `id_foto_perumahan` int(11) NOT NULL,
   `id_perumahan` int(11) NOT NULL,
   `foto_perumahan` varchar(200) NOT NULL,
-  `status_foto` varchar(20) NOT NULL,
-  `status_deleted` int(11) NOT NULL
+  `status_foto` varchar(20) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `foto_perumahan`
 --
 
-INSERT INTO `foto_perumahan` (`id_foto_perumahan`, `id_perumahan`, `foto_perumahan`, `status_foto`, `status_deleted`) VALUES
-(16, 7, 'Screenshot_(1).png', '0', 0),
-(19, 1, 'sports-time-woman-run-running-track-against-city-background-modern-vector-illustration-concept-woman-run-running-track-131162438.jpg', '1', 0),
-(20, 1, 'home_slider_1.jpg', '0', 0),
-(21, 6, 'rumah2.jpg', '0', 0),
-(22, 7, 'rumah21.jpg', '1', 0),
-(24, 6, 'november_20171.jpg', '1', 0),
-(25, 9, 'Screenshot_(11).png', '0', 0),
-(26, 9, 'Screenshot_(9).png', '1', 0),
-(27, 10, 'Screenshot_(28).png', '0', 0),
-(28, 10, 'Screenshot_(29).png', '1', 0),
-(29, 11, 'Screenshot_(25).png', '0', 0),
-(30, 11, 'Screenshot_(32).png', '1', 0),
-(31, 12, 'Screenshot_(2).png', '1', 0),
-(32, 12, 'Screenshot_(6)1.png', '0', 0),
-(33, 13, 'Screenshot_(25)1.png', '1', 0),
-(34, 14, 'image-upload.png', '1', 0),
-(37, 16, 'download_(1)1.jpg', '1', 0),
-(38, 17, 'citraland.jpg', '1', 0),
-(39, 18, 'WhatsApp_Image_2020-10-05_at_12_25_33.jpeg', '1', 0),
-(40, 19, 'download1.jpg', '1', 0),
-(41, 20, 'Gerbang_cluster_damar_kembang_juni_2013_a_kirim.jpg', '1', 0),
-(42, 21, 'IMG_20200917_094518.jpg', '1', 0),
-(43, 15, 'bg-flat.png', '1', 0),
-(44, 15, 'rumahsehar.png', '0', 0),
-(86, 46, 'perumahan/foto/VnBKYCHyleK7MrZy6QSBpRL7VJFXdh53nntRVDrM.png', '1', 0),
-(87, 46, 'perumahan/foto/vJmgOAo7ev3LY0iF0IzF7aImRFwcvqytwv0G2nlL.png', '0', 0),
-(88, 47, 'perumahan/foto/V1HQ1Yf7oh4otcKxZC2E1HmNHNrNUVYYAoI4smNe.png', '1', 0),
-(89, 47, 'perumahan/foto/O5i777pRUoqjudwn2qtYT9nZ9SLaaFQIkJCkDzjE.png', '0', 0),
-(90, 47, 'perumahan/foto/0YA5d9MAvKI3JoGH1tk2M7sp7zajkW1gXrC6QBMu.png', '0', 0),
-(92, 46, 'perumahan/foto//pengembang5133-Laravel-Featured-Image - Copy.png', '0', 0),
-(93, 46, 'perumahan/foto//pengembang2732-Laravel-Featured-Image.png', '0', 0),
-(95, 46, 'perumahan/foto//pengembang754-Laravel-Featured-Image - Copy.png', '0', 0);
+INSERT INTO `foto_perumahan` (`id_foto_perumahan`, `id_perumahan`, `foto_perumahan`, `status_foto`) VALUES
+(16, 7, 'Screenshot_(1).png', '0'),
+(19, 1, 'sports-time-woman-run-running-track-against-city-background-modern-vector-illustration-concept-woman-run-running-track-131162438.jpg', '1'),
+(20, 1, 'home_slider_1.jpg', '0'),
+(21, 6, 'rumah2.jpg', '0'),
+(22, 7, 'rumah21.jpg', '1'),
+(24, 6, 'november_20171.jpg', '1'),
+(25, 9, 'Screenshot_(11).png', '0'),
+(26, 9, 'Screenshot_(9).png', '1'),
+(27, 10, 'Screenshot_(28).png', '0'),
+(28, 10, 'Screenshot_(29).png', '1'),
+(29, 11, 'Screenshot_(25).png', '0'),
+(30, 11, 'Screenshot_(32).png', '1'),
+(31, 12, 'Screenshot_(2).png', '1'),
+(32, 12, 'Screenshot_(6)1.png', '0'),
+(33, 13, 'Screenshot_(25)1.png', '1'),
+(34, 14, 'image-upload.png', '1'),
+(37, 16, 'download_(1)1.jpg', '1'),
+(38, 17, 'citraland.jpg', '1'),
+(39, 18, 'WhatsApp_Image_2020-10-05_at_12_25_33.jpeg', '1'),
+(40, 19, 'download1.jpg', '1'),
+(41, 20, 'Gerbang_cluster_damar_kembang_juni_2013_a_kirim.jpg', '1'),
+(42, 21, 'IMG_20200917_094518.jpg', '1'),
+(43, 15, 'bg-flat.png', '1'),
+(44, 15, 'rumahsehar.png', '0'),
+(45, 22, 'perumahan/foto/6844-20201127-3x4.jpg', '1'),
+(46, 23, 'perumahan/foto/8007-20201127-3x4.jpg', '1'),
+(47, 24, 'perumahan/foto/5202-20201215-5e5f5145e0948-jpeg', '1'),
+(48, 24, 'perumahan/foto/4462-20201215-perumahan-dregalle-menjadi-pilihan-yang-tepat-jpg', '0'),
+(49, 24, 'perumahan/foto/7803-20201215-perumahan-grand-sejahtera-sungai-jawi-jpg', '0'),
+(50, 24, 'perumahan/foto/1044-20201215-perumahan-parayasa-0-km-stasiun-parung-panjang-baru-bogor-indonesia-jpg', '0'),
+(51, 25, 'perumahan/foto/9452-20201222-5e5f5145e0948-jpeg', '1'),
+(52, 25, 'perumahan/foto/9372-20201222-perumahan-dregalle-menjadi-pilihan-yang-tepat-jpg', '0'),
+(53, 25, 'perumahan/foto/1634-20201222-perumahan-grand-sejahtera-sungai-jawi-jpg', '0'),
+(54, 26, 'perumahan/foto/1464-20201222-perumahan-parayasa-0-km-stasiun-parung-panjang-baru-bogor-indonesia-jpg', '1'),
+(55, 26, 'perumahan/foto/7269-20201222-perumahan-quality-garden-luncurkan-dp-0-rupiah-untuk-tni-polri-asn-m-121462-jpg', '0'),
+(56, 26, 'perumahan/foto/1010-20201222-perumahan-terlaris-di-ponorogo-jpeg', '0'),
+(57, 27, 'perumahan/foto/2165-20201222-perumahan-grand-sejahtera-sungai-jawi.jpg', '0'),
+(58, 27, 'perumahan/foto/7682-20201222-perumahan-parayasa-0-km-stasiun-parung-panjang-baru-bogor-indonesia.jpg', '0'),
+(59, 27, 'perumahan/foto/5901-20201222-perumahan-quality-garden-luncurkan-dp-0-rupiah-untuk-tni-polri-asn-m-121462.jpg', '0'),
+(60, 27, 'perumahan/foto/7295-20201222-img-20200930-225638-862.jpg', '0'),
+(61, 27, 'perumahan/foto/6217-20201222-img-20201002-231521-698.jpg', '0'),
+(64, 27, 'perumahan/foto/7735-20201222-3x4.jpg', '1'),
+(66, 28, 'perumahan/foto/7374-20201222-5e5f5145e0948.jpeg', '0'),
+(67, 28, 'perumahan/foto/590-20201222-perumahan-dregalle-menjadi-pilihan-yang-tepat.jpg', '0'),
+(68, 28, 'perumahan/foto/2350-20201222-perumahan-grand-sejahtera-sungai-jawi.jpg', '0'),
+(71, 28, 'perumahan/foto/7721-20201226-img-20200930-225638-862.jpg', '1');
 
 -- --------------------------------------------------------
 
@@ -672,8 +725,17 @@ INSERT INTO `pengembang` (`id_pengembang`, `nik_pengembang`, `nama_pengembang`, 
 (25, '-', 'PT Haidir Griya Karya', '081346604110', 'palaranindahresidences@yahoo.com', 'Jl. Niaga, RT 19, Kel. Handil Bhakti, Kec. Palaran', 'pt-haidir-griya-karya-201021297', 'Sertifikat_Induk.pdf', 'photo6267073617145735873.jpg', 44, '1', '2020-11-19 06:07:56', '2020-11-19 06:07:56', 0),
 (26, '94 Tanggal 24 April ', 'PT Embun Pagi Berseri', '082331370800', 'newbumicitralestari@gmail.com ', 'Jl Jakarta Gg. Perjuangan Blok 9 No. 9D Rt. 72 Kel. Loa Bakung Kec. sungai Kunjang Samarinda Kalimantan Timur', 'pt-embun-pagi-berseri-201021330', 'NIB_9120009551889.pdf', 'Foto_Kantor.jpg', 45, '1', '2020-11-19 06:07:56', '2020-11-19 06:07:56', 0),
 (27, '-', 'PT Timur Adya Citra', '08888888', 'email@email.com', 'Jl.Bukit Alaya Samarinda', 'pt-timur-adya-citra-201021334', 'Untitled-13.png', 'user3.png', 46, '1', '2020-11-19 06:07:56', '2020-11-19 06:07:56', 0),
-(32, '123123', 'Nova Dwi Sapta', '0812444373231', 'novagitarisav7@gmail.com', 'Jalan Slamet Riadi', '28-nova-dwi-sapta', '/api/', '/api/', 13, '0', '2020-11-18 23:31:49', '2020-11-18 23:31:49', 0),
-(33, '123123', 'Ikwal Ramadhani', '0812444373231', 'ikwal123@gmail.com', 'Jalan Slamet Riadi', '33-ikwal-ramadhani', '/api/pengembang/file/eOO8ueEiIzdg4rvfTU82bUcVUSsjMopXbdyciBd3.xlsx', '/api/pengembang/foto/a6QMhmd9hbPvwcdt43ECWiKSEvANK72uu9pbdShT.png', 14, '0', '2020-11-18 23:35:41', '2020-11-18 23:35:41', 0);
+(32, '6403056711970001', 'Nova Dwi Sapta Nain Seven', '0812444373231', 'novagitarisav7@gmail.com', 'Jalan Slamet Riadi', '32-nova-dwi-sapta-nain-seven', 'pengembang/file/kVEw9Qhc9sh80XjexjA2rPfYrd4m7EZx6svAjN95.pdf', 'pengembang/foto/MlFCpEKYSGKU4pSr0Twh0UHTMIwkzskURh9igvrI.jpeg', 13, '1', '2020-11-18 23:31:49', '2020-12-24 19:46:50', 0),
+(33, '123123', 'Ikwal Ramadhani', '0812444373231', 'ikwal123@gmail.com', 'Jalan Slamet Riadi', '33-ikwal-ramadhani', '/api/pengembang/file/eOO8ueEiIzdg4rvfTU82bUcVUSsjMopXbdyciBd3.xlsx', '/api/pengembang/foto/a6QMhmd9hbPvwcdt43ECWiKSEvANK72uu9pbdShT.png', 14, '0', '2020-11-18 23:35:41', '2020-11-19 05:01:45', 1),
+(34, '2312', 'Lyntom Irfan Darmawan', '082321453', 'lyntom123@gmail.com', 'Jalan Rajawali', '34-lyntom-irfan-darmawan', '/api/pengembang/file/kA4VFsZwsl2pLi9czoyVJlSESZWDgBjBrhuvD2JJ.pdf', '/api/pengembang/foto/lOqTbN85JF8IPQJ836hQIfQjrgr9obCqdlZYWivX.jpeg', 15, '1', '2020-11-20 05:08:57', '2020-11-20 05:31:10', 1),
+(35, '6403056700970001', 'Riptcode', '082321453', 'riptcode@gmail.com', 'Jalan Rajawali', '35-riptcode', '/api/pengembang/file/ckMu7RpyexFQ56unNZnrkUmuprHDnVUwvyxdNtug.pdf', '/api/pengembang/foto/otwemq1F0lDT2AS8315LaQJmnVYtDOI5JAKaR3V0.jpeg', 16, '1', '2020-12-17 05:55:54', '2020-12-17 05:55:54', 1),
+(36, '6403056700970001', 'Riptcode', '082321453', 'riptcode@gmail.com', 'Jalan Rajawali', '36-riptcode', 'pengembang/file/JvXlpbWhC7GbnekIOJTUNy8iVZjEPyTscEQlMdj4.pdf', 'pengembang/foto/RbjQBgOWa34HQUV8mbz33iiWZivauFwHiAdDZF6a.jpeg', 17, '0', '2020-12-17 05:57:11', '2020-12-17 05:57:11', 1),
+(37, '123', 'nova', '123', 'nova@gmail.com', 'fadfads', '37-nova', 'pengembang/file/tsxMMziUr6H4ZmSGjALDakzXk7Ysa7OjhwrIYwaZ.pdf', 'pengembang/foto/Qd8VuaWfjbvgCt5FPznGLMKxuy5e5iROjBnjEigx.jpeg', 18, '0', '2020-12-18 06:51:59', '2020-12-18 06:51:59', 1),
+(38, '12345', 'Testing hapus', '1233456', 'testing@gmail.com', 'Jalan Testing', '38-testing-hapus', 'pengembang/file/J0P5ayTmvk6mZeFPrS60phUjF6vWwDZ0dRKIOQ3D.pdf', 'pengembang/foto/1ey2q1ATeDijU2qt3as8CHekjF9UajZpmvfGDMjX.jpeg', 19, '0', '2020-12-18 07:41:49', '2020-12-18 07:41:49', 1),
+(39, '123', 'Riptcode123', '123', 'riptcode@gmail.com', 'Jalan Riptcode', '39-riptcode123', 'pengembang/file/qQjS73iM2e5ZwRpBRaxy1qiyOauXN7H5jQriVGzl.pdf', 'pengembang/foto/Bz7j6yjZO76DR2okj6qL1qoSfHbFbwIGNERXTZGV.jpeg', 20, '0', '2020-12-18 08:34:45', '2020-12-18 09:08:00', 0),
+(40, '6403056700970001', 'Riptcode', '082321453', 'riptcode@gmail.com', 'Jalan Rajawali', '40-riptcode', 'pengembang/file/VfOCxPZxVSA67Ag6vIKUh3jUBrBXmcfknNNAgiCl.pdf', 'pengembang/foto/jHrjHVjFhxTu8cZNKlP29zQcqofk0IxXPWw6qdBq.jpeg', 21, '0', '2020-12-18 08:48:51', '2020-12-18 08:48:51', 0),
+(41, '6403056700970001', 'Riptcode 123', '082321453', 'riptcode@gmail.com', 'Jalan Rajawali', '41-riptcode-123', 'pengembang/file/15dtgZzJ7y5q9D0iR1f3NAlHjicuFGP4FZpBfyVK.pdf', 'pengembang/foto/mDddSYj5JcOAx99WBFSE2TYMa2P6UKBQNvx4KLKJ.jpeg', 22, '0', '2020-12-18 09:01:10', '2020-12-18 20:23:12', 0),
+(42, '12345', 'Arthur Morgan', '1233456', 'arthur@gmail.com', 'Jalan Pangeran Antasari', '42-arthur-morgan', 'pengembang/file/m0Xg99p3fBQQ37a0Q505RGw7ndZG4qqmBu1Jd6yL.pdf', 'pengembang/foto/yNE1FvxZBlxSSzXLyroeuRwWP8c4gPZY6SGN1LZp.jpeg', 25, '0', '2020-12-21 04:01:10', '2020-12-21 04:01:10', 0);
 
 -- --------------------------------------------------------
 
@@ -698,16 +760,38 @@ CREATE TABLE `personal_access_tokens` (
 --
 
 INSERT INTO `personal_access_tokens` (`id`, `tokenable_type`, `tokenable_id`, `name`, `token`, `abilities`, `last_used_at`, `created_at`, `updated_at`) VALUES
-(9, 'App\\Models\\User', 13, 'user-token', 'a7bdb52e59975e6c911c6f4288ad748a31774fdb528e072b62a78255afa7ec2e', '[\"*\"]', '2020-11-23 21:49:55', '2020-11-23 00:44:21', '2020-11-23 21:49:55'),
-(10, 'App\\Models\\User', 13, 'user-token', '7b81071a62d558080868e5bb885c763a2c8504ceceeaac060b232d50fd0de786', '[\"*\"]', '2020-11-29 22:28:44', '2020-11-23 18:02:04', '2020-11-29 22:28:44'),
-(11, 'App\\Models\\User', 13, 'user-token', '1cdb0d975829b740e678efaeb8496cad1d3d720ebf365f01531310b5462c8805', '[\"*\"]', '2020-11-29 22:30:00', '2020-11-24 17:52:25', '2020-11-29 22:30:00'),
-(12, 'App\\Models\\User', 13, 'user-token', '045de7f13a85ca420640918c4fc2ba94701a5a4839809c7befa52d61fc25ccc3', '[\"*\"]', '2020-11-25 23:58:55', '2020-11-25 17:25:06', '2020-11-25 23:58:55'),
-(16, 'App\\Models\\User', 13, 'user-token', '7d978542867b98db85c33dbeb616878e09790e302f4c758fd8ec36403897fe98', '[\"*\"]', '2020-11-30 00:12:26', '2020-11-29 21:32:09', '2020-11-30 00:12:26'),
-(18, 'App\\Models\\User', 13, 'user-token', '7895be4f1e160bc15e7157197158f69514cb3d3a1517974e5b9b65b532f82645', '[\"*\"]', '2020-12-02 20:29:17', '2020-12-02 20:24:44', '2020-12-02 20:29:17'),
-(19, 'App\\Models\\User', 2, 'user-token', '63cd313f612ad4198b44bfe1d04135a25429c4bfa9b5b348d46dce8257a37743', '[\"*\"]', '2020-12-02 20:31:44', '2020-12-02 20:31:12', '2020-12-02 20:31:44'),
-(20, 'App\\Models\\User', 2, 'user-token', '7bd275da0bc3488ea265f8b5b7204489cc62f9bc89d262e965f81bc199bcb98f', '[\"*\"]', NULL, '2020-12-13 17:32:53', '2020-12-13 17:32:53'),
-(21, 'App\\Models\\User', 2, 'user-token', 'd5730caac8293bb5a8ad151251bcf304e11b45faa76d5f402ac9240d6b60ff4a', '[\"*\"]', NULL, '2020-12-13 17:34:36', '2020-12-13 17:34:36'),
-(22, 'App\\Models\\User', 13, 'user-token', 'dd5cc203817dec78d1b925cb3e9c1e295c495eb2ce1c56c361193b4d8b6ad017', '[\"*\"]', NULL, '2020-12-13 17:35:14', '2020-12-13 17:35:14');
+(35, 'App\\Models\\User', 2, 'user-token', 'ea41bc1757a9a3c0b53d33b861871c13d62f793209ea1666de15b518910030f8', '[\"*\"]', '2020-12-14 03:58:14', '2020-12-14 03:57:59', '2020-12-14 03:58:14'),
+(39, 'App\\Models\\User', 2, 'user-token', 'cb91c0dae8bc930ac5875d25bc477ad84300aad111b8940f18f88e2a6257424f', '[\"*\"]', '2020-12-14 04:11:52', '2020-12-14 04:10:35', '2020-12-14 04:11:52'),
+(42, 'App\\Models\\User', 2, 'user-token', 'dbd224ee16f600bc5e683ca47317521a3a84d30bb5e8a16f4f84927c138508a1', '[\"*\"]', '2020-12-14 04:18:06', '2020-12-14 04:18:03', '2020-12-14 04:18:06'),
+(43, 'App\\Models\\User', 13, 'user-token', 'b2f520fac0683e27c0a300c010795d56b6692a61a13e61b0d2802e4779defc4c', '[\"*\"]', '2020-12-14 04:20:25', '2020-12-14 04:20:23', '2020-12-14 04:20:25'),
+(44, 'App\\Models\\User', 2, 'user-token', '3da6f9a17ddcc9c3e7dfbc464e8279db5150b118507e28118bef3472b6988f9d', '[\"*\"]', '2020-12-14 04:22:20', '2020-12-14 04:22:18', '2020-12-14 04:22:20'),
+(48, 'App\\Models\\User', 2, 'user-token', '5e92aec1fb50dbd5ad761073e619f2fa9c979e23373622af8f2e5ff06916b671', '[\"*\"]', '2020-12-14 08:50:08', '2020-12-14 05:19:09', '2020-12-14 08:50:08'),
+(49, 'App\\Models\\User', 2, 'user-token', '47e0f15203f759b6bd72c6ed3c86e24aff2fae398fbef73e0524f01cd6aa23b5', '[\"*\"]', '2020-12-14 05:24:14', '2020-12-14 05:20:49', '2020-12-14 05:24:14'),
+(50, 'App\\Models\\User', 2, 'user-token', '2d2f1323b34a06006845e4117417be45464f4d02fabd41127313927405ea1e0c', '[\"*\"]', '2020-12-15 07:12:44', '2020-12-15 03:59:44', '2020-12-15 07:12:44'),
+(51, 'App\\Models\\User', 2, 'user-token', 'f1cfbb66b5acc3fd48c64d4f35509d2395b777a560314d3a395f52dae3d22ceb', '[\"*\"]', '2020-12-15 06:04:12', '2020-12-15 04:11:05', '2020-12-15 06:04:12'),
+(52, 'App\\Models\\User', 13, 'user-token', '4f25c71183078d1707c174d3e295f290c9b83d488072d2258d5dd4c692304468', '[\"*\"]', '2020-12-15 05:07:12', '2020-12-15 05:02:32', '2020-12-15 05:07:12'),
+(53, 'App\\Models\\User', 2, 'user-token', 'f49f95f2876ba3e4c1875e0e40eb5147a0dc659ae5bceb4d2c63ded8a2a5f43a', '[\"*\"]', '2020-12-16 07:16:39', '2020-12-16 04:15:42', '2020-12-16 07:16:39'),
+(54, 'App\\Models\\User', 2, 'user-token', '1d2e9662e3b48646110606983a945c688a59d830be2671fe515c165f8620b990', '[\"*\"]', '2020-12-17 06:27:15', '2020-12-16 04:22:23', '2020-12-17 06:27:15'),
+(55, 'App\\Models\\User', 2, 'user-token', 'e251739152cdcc8b56343280db331a483b273fbb4f19cf297b6d2741188050af', '[\"*\"]', '2020-12-16 08:56:49', '2020-12-16 07:47:51', '2020-12-16 08:56:49'),
+(56, 'App\\Models\\User', 2, 'user-token', '6c4607e037531b7e1253c309f74219a8d469f2afb805966783b4b2384144842b', '[\"*\"]', '2020-12-17 07:10:31', '2020-12-17 05:07:04', '2020-12-17 07:10:31'),
+(57, 'App\\Models\\User', 2, 'user-token', '901bfbbb950962f49adfe2b60cc9c83a0b7b7b9c3b647ddbaa1130031a3494ab', '[\"*\"]', '2020-12-18 07:57:01', '2020-12-18 06:32:12', '2020-12-18 07:57:01'),
+(58, 'App\\Models\\User', 2, 'user-token', 'fd3810691842c3e4084a9d1933433ccf9ab6f0857ca1eac7af879926a9675c81', '[\"*\"]', '2020-12-21 05:07:52', '2020-12-18 08:03:01', '2020-12-21 05:07:52'),
+(59, 'App\\Models\\User', 2, 'user-token', '4717f0a1f0291281ee934e621286253c34943ecd3b20f0c14e1ff662f1e54f2c', '[\"*\"]', '2020-12-19 08:26:50', '2020-12-18 19:34:14', '2020-12-19 08:26:50'),
+(60, 'App\\Models\\User', 2, 'user-token', '4eb87fb7e486d9acf09b4dcff875b32c2d34db0fb480cb4ecdf4ad8f5c2136a8', '[\"*\"]', '2020-12-19 08:58:43', '2020-12-19 08:39:30', '2020-12-19 08:58:43'),
+(61, 'App\\Models\\User', 2, 'user-token', '8f3a5762ab49cf9f99f9ad218fa977ea74f41934ce8ab50baca9723fcabae597', '[\"*\"]', '2020-12-19 09:25:00', '2020-12-19 09:23:02', '2020-12-19 09:25:00'),
+(62, 'App\\Models\\User', 2, 'user-token', '5d00904bbf704b6f320f6c87228e89e27f3b4d5ce43c7917834d1d39543fb97c', '[\"*\"]', '2020-12-20 05:55:32', '2020-12-20 01:22:10', '2020-12-20 05:55:32'),
+(64, 'App\\Models\\User', 13, 'user-token', 'baf6151889423f2add47f471aa819dfd8e09c0bc70e65cc52fc683f071ee8104', '[\"*\"]', '2020-12-21 07:13:32', '2020-12-21 04:33:58', '2020-12-21 07:13:32'),
+(65, 'App\\Models\\User', 13, 'user-token', 'd78687e32c43b2986859211560421287befb85832942b410ff8355ffadfd4742', '[\"*\"]', '2020-12-24 19:45:02', '2020-12-21 04:44:10', '2020-12-24 19:45:02'),
+(66, 'App\\Models\\User', 13, 'user-token', 'beabc1c5960b037743f10332a482bbb733deff27fdb03162c4c895ffc6b9b289', '[\"*\"]', '2020-12-21 20:23:06', '2020-12-21 17:52:14', '2020-12-21 20:23:06'),
+(67, 'App\\Models\\User', 13, 'user-token', '3263fb5ad10031a120a6c54e5b6eb37fed90954136a951aabfd65c0dbd6d497d', '[\"*\"]', '2020-12-21 21:07:36', '2020-12-21 20:25:07', '2020-12-21 21:07:36'),
+(68, 'App\\Models\\User', 13, 'user-token', '193a866c3986e87217f931f2d083810c26ebb228dbe092f662e2cf2afa28f204', '[\"*\"]', '2020-12-22 00:16:03', '2020-12-21 21:08:33', '2020-12-22 00:16:03'),
+(69, 'App\\Models\\User', 13, 'user-token', '320cd4f4ac67b64a69f18c13ed8690672c6879345e95ec5ccc49777df1a79c6d', '[\"*\"]', '2020-12-22 06:42:48', '2020-12-22 06:03:43', '2020-12-22 06:42:48'),
+(73, 'App\\Models\\User', 13, 'user-token', 'ea36dda21b7327f97e1862f8cf7908dcf7789ee26322ad2e649ddc4d41ea8904', '[\"*\"]', '2020-12-22 22:15:43', '2020-12-22 17:09:16', '2020-12-22 22:15:43'),
+(74, 'App\\Models\\User', 13, 'user-token', 'efeb85b8e667b4eb35e9a7e3d050b49ad6a853661b5ec7e669aefcd4d2da30f6', '[\"*\"]', '2020-12-22 22:38:46', '2020-12-22 22:36:02', '2020-12-22 22:38:46'),
+(75, 'App\\Models\\User', 13, 'user-token', '534673327cd6b471b24457b4bf9250fa651eb70e73efddbc36265a0eb7db78a3', '[\"*\"]', '2020-12-23 00:32:19', '2020-12-22 22:39:13', '2020-12-23 00:32:19'),
+(76, 'App\\Models\\User', 13, 'user-token', '395384562757908b3002e77ff4df0fcb5b874bfc2b7b374aa16757e7122a857e', '[\"*\"]', '2020-12-24 06:12:02', '2020-12-23 19:45:45', '2020-12-24 06:12:02'),
+(78, 'App\\Models\\User', 13, 'user-token', '6eb85b0db774a52b1599858d75aa84e123183bc6db7cac48e91accc92d7fcf8a', '[\"*\"]', '2020-12-24 19:47:13', '2020-12-24 19:47:09', '2020-12-24 19:47:13'),
+(79, 'App\\Models\\User', 13, 'user-token', '8abb1339ae9246f3171e35062e2e3d38b81e1988968fef9862d69e68a5fe2928', '[\"*\"]', '2020-12-25 23:47:02', '2020-12-25 23:00:52', '2020-12-25 23:47:02');
 
 -- --------------------------------------------------------
 
@@ -740,7 +824,7 @@ INSERT INTO `perumahan` (`id_perumahan`, `id_pengembang`, `id_kecamatan`, `id_ke
 (6, 7, 3, 21, 'Perumahan Damai Sejahtera', 'opasdjkasopdasdoopasjdopjasdpjop', 'Jalan Dama', '117.11020840523383', '-0.5580592583990835', 'construction-worker.png', 'perumahan-damai-sejahtera-190513158', '2', 0),
 (7, 7, 6, 14, 'Perumahan Damai1', '', 'Jalan Graha Indah', '117.13757260482294', '-0.49870532421209646', 'automation.png', 'perumahan-damai1-190422649', '2', 0),
 (8, 7, 9, 37, 'Perumahan Hills', '', 'Jalan Graha Indaha', '117.29478281629076', '-0.5655634313352635', 'curve-24.png', 'perumahan-hills-190416579', '1', 0),
-(9, 7, 5, 6, 'Perumahan Keren', '', 'Jalan Keledang', '117.30434045124355', '-0.45543945164118327', '1556180793388.jpg', 'perumahan-keren-190502690', '0', 0),
+(9, 7, 5, 6, 'Perumahan Keren', '', 'Jalan Keledang', '117.30434045124355', '-0.45543945164118327', '1556180793388.jpg', 'perumahan-keren-190502690', '1', 0),
 (10, 7, 9, 38, 'Perumahan Tes', '', 'Jalan Karang Asam', '117.03502072212723', '-0.4547231596136072', 'Screenshot_(21).png', 'perumahan-tes-190502770', '0', 0),
 (11, 7, 3, 21, 'Perumahan Damaix', '', 'Jalan Dama', '117.03055752632622', '-0.4729186692780587', 'Screenshot_(9).png', 'perumahan-damaix-190502184', '0', 0),
 (12, 7, 2, 2, 'Perumahan Hillsl', '', 'Jalan Graha Indah', '117.21457852242747', '-0.450260102997845', 'Screenshot_(23).png', 'perumahan-hillsl-190502625', '0', 0),
@@ -753,8 +837,13 @@ INSERT INTO `perumahan` (`id_perumahan`, `id_pengembang`, `id_kecamatan`, `id_ke
 (19, 7, 6, 16, 'Perumahan Sample', 'dekripsi perumahan', 'lokasi perumahan', '117.1294671839214', '-0.4977241180325649', 'download.jpg', 'perumahan-sample-201021553', '1', 0),
 (20, 27, 10, 49, 'Alaya', 'Kawasan Hijau dengan Fasilitas Terlengkap di Samarinda dan Hunian Bebas Banjir', 'Jl.Bukit Alaya', '117.17545620611969', '-0.466335461147267', '05_brosur_ALAYA_copy_siteplan.jpg', 'alaya-201021479', '1', 0),
 (21, 7, 2, 2, 'tes', 'tes', 'lokasi', '117.06832302925909', '-0.5148024883757074', 'Tugas_ke-2_Metode_Numerik.pdf', 'tes-201027657', '0', 0),
-(46, 32, 1, 1, 'Rumah Karang Asam 2', 'Lorem Ipsum Dolor Sit Amet', 'Jalan Slamet Riyadi', '123', '123', 'perumahan/file/Ve8WypElU1XNfEM21FCjMqFsWKSHEfLjWnwk5kqd.xlsx', '22-rumah-karang-asam-2', '0', 0),
-(47, 32, 1, 1, 'Rumah Berau', 'Lorem Ipsum Dolor Sit Amet', 'Jalan Slamet Riyadi', 'Ini Longitude', 'Ini Latitude', 'perumahan/file/pengembang7903-Book1.xlsx', '47-rumah-karang-asam-2', '0', 0);
+(22, 32, 6, 13, 'Rumah Impian Nova', 'Lorem Ipsum Dolor Sit Amet', 'Jalan Slamet Riyadi', '123', '123', '', '22-rumah-impian-nova', '0', 0),
+(23, 32, 1, 3, 'Rumah Surga Nova test', 'Lorem Ipsum Dolor Sit Amet', 'Jalan Slamet Riyadi', '123', '123', 'perumahan/file/2800-20201127-IKA.pdf', '23-rumah-surga-nova-test', '1', 0),
+(24, 32, 4, 55, 'Perumahan Bayangkari', 'Perumahan yang indah dan murah', 'Jalan Slamet Riyadi 123', 'Ini Longitude 123', 'Ini Latitude 123', 'perumahan/file/1610-20201221-transkip-nilai.pdf', '24-perumahan-bayangkari', '2', 0),
+(25, 32, 4, 54, 'Dinas Perumahan dan Permukiman Samarinda', 'Lorem Ipsum dolor sit amet', 'Jalan Balai Kota', '123', '123', 'perumahan/file/277-20201222-bukti-pendaftaran-wisuda.pdf', '25-dinas-perumahan-dan-permukiman-samarinda', '1', 0),
+(26, 32, 2, 1, 'Tamansari Grand Samarinda Residance', 'Beauty nature within your window', 'Jl. H.A.M.M Riffadin Ruko E2-11, Harapan Baru, Kec. Loa Janan Ilir, Kota Samarinda Kalimantan Timur 75131', '123', '123', 'perumahan/file/7080-20201222-transkip-nilai.pdf', '26-tamansari-grand-samarinda-residance', '0', 0),
+(27, 32, 1, 58, 'Perumahan Kuy Entertainment', 'Hidup itu dibawa santai saja', 'Jalan H.A.A.M Riffadin Ruko E2-11, Harapan', '123', '123', 'perumahan/file/760-20201222-bukti-pendaftaran-wisuda.pdf', '27-perumahan-kuy-entertainment', '1', 0),
+(28, 32, 1, 60, 'Perumahan Bayangkari 2z', 'sddsdz', 'ddfdsfdz', '1234', '1234', 'perumahan/file/8488-20201222-bukti-pendaftaran-wisuda.pdf', '28-perumahan-bayangkari-2z', '0', 0);
 
 -- --------------------------------------------------------
 
@@ -820,11 +909,22 @@ INSERT INTO `sarana_prasarana_perumahan` (`id_sarana_prasarana_perumahan`, `id_p
 (42, 20, 'Pengelolaan Lingkungan'),
 (43, 20, 'Ruang Terbuka Hijau ( RTH)'),
 (44, 21, 'tes'),
-(55, 46, 'Taman Bermain'),
-(56, 46, 'Lapangan Tenis'),
-(57, 47, 'Taman Bermain'),
-(58, 47, 'Lapangan Tenis'),
-(59, 46, 'Water Park');
+(45, 22, 'Taman Bermain'),
+(46, 22, 'Lapangan Tenis'),
+(47, 23, 'Taman Bermain'),
+(48, 23, 'Lapangan Tenis'),
+(49, 24, 'Taman Bermain'),
+(50, 24, 'Lapangan Tenis'),
+(51, 25, 'nasgor'),
+(52, 25, 'Komputer'),
+(53, 26, 'Keamanan Security'),
+(54, 26, 'Masjid'),
+(55, 26, 'Lapangan basket / volly'),
+(57, 27, 'Lapangan basket / volly'),
+(58, 27, 'Masjid'),
+(61, 28, 'realme'),
+(63, 27, 'Komputer'),
+(64, 28, 'Komputer');
 
 -- --------------------------------------------------------
 
@@ -912,10 +1012,13 @@ INSERT INTO `spesifikasi_rumah` (`id_spesifikasi_rumah`, `id_bangunan`, `nama_sp
 (56, 20, 'PDAM'),
 (57, 21, 'Dinding plester'),
 (58, 21, 'Lantai Keramik'),
-(59, 25, 'Warna merah'),
-(60, 25, 'Remang - remang'),
-(61, 26, 'Warna merah'),
-(62, 26, 'Remang - remang');
+(59, 22, 'Warna merah'),
+(60, 22, 'Remang - remang'),
+(61, 23, 'Warna merah'),
+(62, 23, 'Remang - remang'),
+(63, 24, 'Kayu c'),
+(64, 25, 'Dinding Plester'),
+(65, 25, 'Lantai Keramik');
 
 -- --------------------------------------------------------
 
@@ -975,6 +1078,7 @@ CREATE TABLE `users` (
   `username` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `level` varchar(25) COLLATE utf8mb4_unicode_ci NOT NULL,
   `status` int(25) NOT NULL,
+  `status_deleted` int(1) NOT NULL DEFAULT 0,
   `email_verified_at` timestamp NULL DEFAULT NULL,
   `password` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `remember_token` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
@@ -986,11 +1090,22 @@ CREATE TABLE `users` (
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`id`, `username`, `level`, `status`, `email_verified_at`, `password`, `remember_token`, `created_at`, `updated_at`) VALUES
-(2, 'novadwisapta', '1', 1, NULL, '$2y$10$AateYE38SbdmwcGimblKJuAzQ.SWOueG.1f57WTRDYFfH.8SB7khG', NULL, '2020-11-18 17:47:56', '2020-11-18 18:32:45'),
-(3, 'iqbalwahyudi', '2', 1, NULL, '$2y$10$gOBe3XsWRGuy6ix1nnv5E.3qdXHovm10Qs97iv131ELzB.rXaxw/.', NULL, '2020-11-18 17:54:11', '2020-11-22 18:17:35'),
-(13, 'pengembang', '2', 1, NULL, '$2y$10$VX0jePxC3wzarh1WpkeyTOsafLrxJeqVdjY4nxDiVtJs9u/Ihr7K.', NULL, '2020-11-18 23:31:49', '2020-11-18 23:31:49'),
-(14, 'pengembang2', '2', 0, NULL, '$2y$10$Z20B8ggY5RnuMzh1H1BLGun5z9S/ReFmaUVLaFbPDQ8MC53FGDmim', NULL, '2020-11-18 23:35:41', '2020-11-18 23:35:41');
+INSERT INTO `users` (`id`, `username`, `level`, `status`, `status_deleted`, `email_verified_at`, `password`, `remember_token`, `created_at`, `updated_at`) VALUES
+(2, 'novadwisapta', '1', 1, 0, NULL, '$2y$10$AateYE38SbdmwcGimblKJuAzQ.SWOueG.1f57WTRDYFfH.8SB7khG', NULL, '2020-11-18 17:47:56', '2020-12-20 03:24:57'),
+(3, 'iqbalwahyudi', '2', 1, 0, NULL, '$2y$10$USga3K138rprIA/TT6g5e./LvxtFDEFjRZmBZd8CJNN7Y3Q5UnqDm', NULL, '2020-11-18 17:54:11', '2020-11-18 18:32:12'),
+(13, 'pengembang', '2', 1, 0, NULL, '$2y$10$YdEWzi5UpMrq92gYrr.Hk.DtSgokmxlU2txxQ9.zPtSThOdRHAjCq', NULL, '2020-11-18 23:31:49', '2020-12-24 19:46:50'),
+(14, 'pengembang2', '2', 0, 0, NULL, '$2y$10$xRj0Q1M3Ej9yeCgqRQum.eM0Icz2xJid9B8gsyMASSXRjf359kHIq', NULL, '2020-11-18 23:35:41', '2020-11-22 08:42:53'),
+(15, 'lyntom', '2', 0, 0, NULL, '$2y$10$tD/P9M.fYcr/lBdX.bAlXObfel1JAO8R5LwaVMmjcZUt1gQ9yK4Ai', NULL, '2020-11-20 05:08:56', '2020-11-20 05:08:56'),
+(16, 'riptcode', '2', 0, 0, NULL, '$2y$10$exMDkckoWbN3WSf4KIAZ4OP5UCNKsewH/xQiwG/yMbacj1xbFDqBW', NULL, '2020-12-17 05:55:53', '2020-12-17 05:55:53'),
+(17, 'riptcode2', '2', 0, 0, NULL, '$2y$10$HbS.51N9.ulrTq7Mr6eac.gU8uF9Ny/lJySAr6TStGGBwyBTkOoK6', NULL, '2020-12-17 05:57:11', '2020-12-17 05:57:11'),
+(18, 'riptcode3', '2', 0, 0, NULL, '$2y$10$ur45ASoG0WdQnrljJC/fLeHmUU65CY4hPa3JjZBkKCQf3biI7m4R6', NULL, '2020-12-18 06:51:59', '2020-12-18 06:51:59'),
+(19, 'testing', '2', 0, 1, NULL, '$2y$10$qEFUgBCrWvp9uMV76TLq8OiJyM3CxwjceT/LLjGKiCtZnIuJy4TBK', NULL, '2020-12-18 07:41:49', '2020-12-18 07:41:49'),
+(20, 'riptcode123', '2', 0, 0, NULL, '$2y$10$5dfyDc6J3HkGu1NZfztd.eINBwETQ9yxtHnadv7FhOIcy6U1eAKBG', NULL, '2020-12-18 08:34:45', '2020-12-20 03:39:40'),
+(21, 'riptcode4', '2', 1, 0, NULL, '$2y$10$oD5ZkjO0DvDq70D40E7if.jGXwdFGsLqmUtctioD7d5yaE0Z07C.G', NULL, '2020-12-18 08:48:51', '2020-12-20 03:38:50'),
+(22, 'riptcode5', '2', 1, 0, NULL, '$2y$10$27zYioJXwNOQ9./zM5PLiuqcVMf7Irq2pjQ4m6X1GUqvksiWDulcW', NULL, '2020-12-18 09:01:10', '2020-12-20 03:29:10'),
+(23, 'milo kucing', 'admin', 1, 0, NULL, '$2y$10$ccN9d44inXjWPGNaUC2eFeytQyjSTwMS6PbbV5Dz46.6bnQ4qtD.m', NULL, '2020-12-20 04:42:31', '2020-12-20 04:42:31'),
+(24, 'ada kucing', '2', 1, 0, NULL, '$2y$10$Woy1vDPuVKLop.Zq5FuUle/hKpP7WB9poE6PKF3vv4jxKXzoW99aK', NULL, '2020-12-20 04:44:11', '2020-12-20 05:46:24'),
+(25, 'arthur', '2', 0, 0, NULL, '$2y$10$eWHE6RIzL3AyONL4g3px/u7C8HHx1RCQw1qKXmrJLV8JObcJQeCcm', NULL, '2020-12-21 04:01:09', '2020-12-21 04:01:09');
 
 -- --------------------------------------------------------
 
@@ -1232,13 +1347,13 @@ ALTER TABLE `wishlist`
 -- AUTO_INCREMENT for table `bangunan`
 --
 ALTER TABLE `bangunan`
-  MODIFY `id_bangunan` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
+  MODIFY `id_bangunan` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
 
 --
 -- AUTO_INCREMENT for table `brosur_pengembang`
 --
 ALTER TABLE `brosur_pengembang`
-  MODIFY `id_brosur_pengembang` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_brosur_pengembang` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
 -- AUTO_INCREMENT for table `failed_jobs`
@@ -1256,31 +1371,31 @@ ALTER TABLE `fasilitas`
 -- AUTO_INCREMENT for table `fasilitas_perumahan`
 --
 ALTER TABLE `fasilitas_perumahan`
-  MODIFY `id_fasilitas_perumahan` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=53;
+  MODIFY `id_fasilitas_perumahan` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=57;
 
 --
 -- AUTO_INCREMENT for table `file_form_data_perumahan`
 --
 ALTER TABLE `file_form_data_perumahan`
-  MODIFY `id_file_form` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id_file_form` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `form_data_perumahan`
 --
 ALTER TABLE `form_data_perumahan`
-  MODIFY `id_form_data_perumahan` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id_form_data_perumahan` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `foto_bangunan`
 --
 ALTER TABLE `foto_bangunan`
-  MODIFY `id_foto_bangunan` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=49;
+  MODIFY `id_foto_bangunan` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=45;
 
 --
 -- AUTO_INCREMENT for table `foto_perumahan`
 --
 ALTER TABLE `foto_perumahan`
-  MODIFY `id_foto_perumahan` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=101;
+  MODIFY `id_foto_perumahan` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=73;
 
 --
 -- AUTO_INCREMENT for table `kecamatan`
@@ -1352,19 +1467,19 @@ ALTER TABLE `migrations`
 -- AUTO_INCREMENT for table `pengembang`
 --
 ALTER TABLE `pengembang`
-  MODIFY `id_pengembang` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=34;
+  MODIFY `id_pengembang` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=43;
 
 --
 -- AUTO_INCREMENT for table `personal_access_tokens`
 --
 ALTER TABLE `personal_access_tokens`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=80;
 
 --
 -- AUTO_INCREMENT for table `perumahan`
 --
 ALTER TABLE `perumahan`
-  MODIFY `id_perumahan` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=48;
+  MODIFY `id_perumahan` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
 
 --
 -- AUTO_INCREMENT for table `sarana_prasarana`
@@ -1376,7 +1491,7 @@ ALTER TABLE `sarana_prasarana`
 -- AUTO_INCREMENT for table `sarana_prasarana_perumahan`
 --
 ALTER TABLE `sarana_prasarana_perumahan`
-  MODIFY `id_sarana_prasarana_perumahan` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=68;
+  MODIFY `id_sarana_prasarana_perumahan` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=67;
 
 --
 -- AUTO_INCREMENT for table `setting`
@@ -1388,7 +1503,7 @@ ALTER TABLE `setting`
 -- AUTO_INCREMENT for table `spesifikasi_rumah`
 --
 ALTER TABLE `spesifikasi_rumah`
-  MODIFY `id_spesifikasi_rumah` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=65;
+  MODIFY `id_spesifikasi_rumah` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=70;
 
 --
 -- AUTO_INCREMENT for table `user`
@@ -1400,7 +1515,7 @@ ALTER TABLE `user`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
 
 --
 -- AUTO_INCREMENT for table `wishlist`
@@ -1443,8 +1558,8 @@ ALTER TABLE `fasilitas_perumahan`
 -- Constraints for table `form_data_perumahan`
 --
 ALTER TABLE `form_data_perumahan`
-  ADD CONSTRAINT `form_data_perumahan_ibfk_2` FOREIGN KEY (`id_pengembang`) REFERENCES `pengembang` (`id_pengembang`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `form_data_perumahan_ibfk_3` FOREIGN KEY (`id_file_form`) REFERENCES `file_form_data_perumahan` (`id_file_form`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+  ADD CONSTRAINT `form_data_perumahan_ibfk_1` FOREIGN KEY (`id_file_form`) REFERENCES `file_form_data_perumahan` (`id_file_form`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  ADD CONSTRAINT `form_data_perumahan_ibfk_2` FOREIGN KEY (`id_pengembang`) REFERENCES `pengembang` (`id_pengembang`) ON DELETE NO ACTION ON UPDATE CASCADE;
 
 --
 -- Constraints for table `foto_bangunan`
@@ -1495,43 +1610,12 @@ ALTER TABLE `masyarakat`
   ADD CONSTRAINT `masyarakat_ibfk_1` FOREIGN KEY (`id_user`) REFERENCES `user` (`id_user`) ON DELETE NO ACTION ON UPDATE CASCADE;
 
 --
--- Constraints for table `pengembang`
---
-ALTER TABLE `pengembang`
-  ADD CONSTRAINT `pengembang_ibfk_1` FOREIGN KEY (`id_user`) REFERENCES `user` (`id_user`) ON UPDATE CASCADE;
-
---
 -- Constraints for table `perumahan`
 --
 ALTER TABLE `perumahan`
   ADD CONSTRAINT `perumahan_ibfk_1` FOREIGN KEY (`id_pengembang`) REFERENCES `pengembang` (`id_pengembang`) ON DELETE NO ACTION ON UPDATE CASCADE,
   ADD CONSTRAINT `perumahan_ibfk_2` FOREIGN KEY (`id_kecamatan`) REFERENCES `kecamatan` (`id_kecamatan`) ON DELETE NO ACTION ON UPDATE CASCADE,
   ADD CONSTRAINT `perumahan_ibfk_3` FOREIGN KEY (`id_kelurahan`) REFERENCES `kelurahan` (`id_kelurahan`) ON DELETE NO ACTION ON UPDATE CASCADE;
-
---
--- Constraints for table `sarana_prasarana`
---
-ALTER TABLE `sarana_prasarana`
-  ADD CONSTRAINT `sarana_prasarana_ibfk_1` FOREIGN KEY (`id_bangunan`) REFERENCES `bangunan` (`id_bangunan`) ON DELETE CASCADE ON UPDATE CASCADE;
-
---
--- Constraints for table `sarana_prasarana_perumahan`
---
-ALTER TABLE `sarana_prasarana_perumahan`
-  ADD CONSTRAINT `sarana_prasarana_perumahan_ibfk_1` FOREIGN KEY (`id_perumahan`) REFERENCES `perumahan` (`id_perumahan`) ON DELETE CASCADE ON UPDATE CASCADE;
-
---
--- Constraints for table `spesifikasi_rumah`
---
-ALTER TABLE `spesifikasi_rumah`
-  ADD CONSTRAINT `spesifikasi_rumah_ibfk_1` FOREIGN KEY (`id_bangunan`) REFERENCES `bangunan` (`id_bangunan`) ON DELETE CASCADE ON UPDATE CASCADE;
-
---
--- Constraints for table `wishlist`
---
-ALTER TABLE `wishlist`
-  ADD CONSTRAINT `wishlist_ibfk_1` FOREIGN KEY (`id_masyarakat`) REFERENCES `masyarakat` (`id_masyarakat`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `wishlist_ibfk_2` FOREIGN KEY (`id_bangunan`) REFERENCES `bangunan` (`id_bangunan`) ON DELETE CASCADE ON UPDATE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

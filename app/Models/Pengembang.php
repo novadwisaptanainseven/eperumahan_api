@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class Pengembang extends Model
@@ -133,12 +134,25 @@ class Pengembang extends Model
 
         // Pembuatan Slug
         // Dapatkan data terakhir di tabel pengembang
-        $slug                           = Str::of($pengembang->id_pengembang + 1 . ' ' . $pengembang->nama_pengembang)->slug('-');
+        $slug                           = Str::of($pengembang->id_pengembang . ' ' . $pengembang->nama_pengembang)->slug('-');
         $pengembang->pengembang_slug    = $slug;
         // End Pembuatan Slug
 
-        $pengembang->ijin_perusahaan = ($req->ijin !== '') ? "$req->ijin" : $pengembang->ijin_perusahaan;
-        $pengembang->foto_pengembang = ($req->foto !== '') ? "$req->foto" : $pengembang->foto_pengembang;
+        // Hapus foto lama jika user update foto
+        // Get path foto untuk keperluan menghapus file foto di storage
+        if ($req->foto !== '') {
+            $path_foto = $pengembang->foto_pengembang;
+            Storage::delete($path_foto);
+        }
+        // Hapus file ijin perusahaan lama jika user update file ijin perusahaan
+        // Get path file ijin perusahaan untuk keperluan menghapus file di storage
+        if ($req->ijin !== '') {
+            $path_ijin = $pengembang->ijin_perusahaan;
+            Storage::delete($path_ijin);
+        }
+
+        $pengembang->ijin_perusahaan = ($req->ijin !== '') ? $req->ijin : $pengembang->ijin_perusahaan;
+        $pengembang->foto_pengembang = ($req->foto !== '') ? $req->foto : $pengembang->foto_pengembang;
 
         $pengembang->save();
 
