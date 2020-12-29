@@ -13,6 +13,7 @@ use App\Http\Controllers\BrosurController;
 use App\Http\Controllers\FormController;
 use App\Http\Controllers\FileController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\PropertiController;
 use App\Models\Pengembang;
 
 /*
@@ -374,3 +375,9 @@ Route::get('/image/{path}/{filename}', [FileController::class, 'image']);
 Route::get('/brosur/{path}/{filename}', [FileController::class, 'brosur']);
 Route::get('/document/{path}/{filename}', [FileController::class, 'document']);
 Route::get('/form/{path}/{filename}', [FileController::class, 'form']);
+
+// API UNTUK BAGIAN HALAMAN WEBSITE E-PERUMAHAN
+Route::prefix('v1/')->group(function () {
+    // Get All Properti Yang Status Publishnya Aktif
+    Route::get('properti', [PropertiController::class, 'getAllProperties']);
+});
