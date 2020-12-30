@@ -334,6 +334,30 @@ class PengembangController extends Controller
         ], 200);
     }
 
+    // Get All Pengembang 2
+    public function getAllPengembang2(Request $req)
+    {
+        $limit = $req->limit ? $req->limit : 3;
+
+        $pengembang = Pengembang::getAll2($limit);
+
+        $total_data = Pengembang::where('status_aktif', '=', '1')->count();
+
+        if ($pengembang) {
+            return response()->json([
+                "message" => "Get All Pengembange Success",
+                "total_data" => $total_data,
+                "data" => $pengembang
+            ], 200);
+        } else {
+            return response()->json([
+                "message" => "Belum Ada Pengembang yang Aktif",
+                "total_data" => $total_data,
+                "data" => $pengembang
+            ], 200);
+        }
+    }
+
     // Get Pengembang By ID
     public function getPengembangById($id_pengembang)
     {
@@ -342,6 +366,23 @@ class PengembangController extends Controller
         if ($pengembang) {
             return response()->json([
                 "message" => "Get Data Pengembang with id: $id_pengembang Berhasil",
+                "data"    => $pengembang
+            ], 200);
+        } else {
+            return response()->json([
+                "message" => "Data Pengembang Tidak Ditemukan!"
+            ], 404);
+        }
+    }
+
+    // Get Pengembang By Slug
+    public function getPengembangBySlug($slug)
+    {
+        $pengembang = Pengembang::getBySlug($slug);
+
+        if ($pengembang) {
+            return response()->json([
+                "message" => "Get Data Pengembang with slug: $slug Berhasil",
                 "data"    => $pengembang
             ], 200);
         } else {

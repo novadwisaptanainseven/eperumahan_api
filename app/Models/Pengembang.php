@@ -100,6 +100,24 @@ class Pengembang extends Model
 
         return $data;
     }
+    // Get All Pengembang
+    public static function getAll2($limit)
+    {
+        // Tabel - Tabel 
+        $tbl_pengembang = 'pengembang';
+
+        $data_pengembang = DB::table($tbl_pengembang)
+            ->where('status_aktif', '=', '1')
+            ->orderBy('id_pengembang', 'DESC')
+            ->limit($limit)
+            ->get();
+
+        if ($data_pengembang) {
+            return $data_pengembang;
+        } else {
+            return null;
+        }
+    }
 
     // Get Pengembang By ID
     public static function getById($id_pengembang)
@@ -122,6 +140,7 @@ class Pengembang extends Model
         else
             return null;
     }
+    
 
     // Update Pengembang
     public static function updatePengembang($req, $pengembang)

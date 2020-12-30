@@ -380,4 +380,8 @@ Route::get('/form/{path}/{filename}', [FileController::class, 'form']);
 Route::prefix('v1/')->group(function () {
     // Get All Properti Yang Status Publishnya Aktif
     Route::get('properti', [PropertiController::class, 'getAllProperties']);
+    // Get Properti berdasarkan slug
+    Route::get('properti/{slug}', [PropertiController::class, 'getPropertiBySlug']);
+    // Get All Pengembang Aktif
+    Route::get('pengembang', [PengembangController::class, 'getAllPengembang2']);
 });
