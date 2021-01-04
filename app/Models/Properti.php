@@ -12,6 +12,7 @@ class Properti extends Model
 
     protected $table = 'bangunan';
 
+    // Get All Properties
     public static function getAllProperties($limit)
     {
         // Tabel - tabel
@@ -21,6 +22,39 @@ class Properti extends Model
         $data_bangunan = DB::table($tbl_bangunan)
             ->where('status_publish', '=', '2')
             ->limit($limit)
+            ->orderBy('id_bangunan', 'DESC')
+            ->get();
+
+        if (count($data_bangunan) > 0) {
+
+            foreach ($data_bangunan as $i => $data) {
+                $data_foto = DB::table($tbl_foto)
+                    ->where([
+                        ['id_bangunan', '=', $data->id_bangunan],
+                        ['level_foto', '=', '1'],
+                    ])
+                    ->first();
+                $data->foto_bangunan = $data_foto->foto_bangunan;
+            }
+
+            return $data_bangunan;
+        } else {
+            return null;
+        }
+    }
+
+    // Get Properti By ID Pengembang
+    public static function getPropertiByIdPengembang($id_pengembang)
+    {
+        // Tabel - tabel
+        $tbl_bangunan = 'bangunan';
+        $tbl_foto = "foto_bangunan";
+
+        $data_bangunan = DB::table($tbl_bangunan)
+            ->where([
+                ['status_publish', '=', '2'],
+                ['id_pengembang', '=', $id_pengembang]
+            ])
             ->orderBy('id_bangunan', 'DESC')
             ->get();
 
@@ -52,12 +86,18 @@ class Properti extends Model
         $tbl_pengembang = "pengembang";
         $tbl_sarana_prasarana = 'sarana_prasarana_perumahan';
         $tbl_fasilitas = 'fasilitas_perumahan';
+        $tbl_perumahan = 'perumahan';
 
         $data_bangunan = DB::table($tbl_bangunan)
             ->where('bangunan_slug', '=', $slug)
             ->first();
 
         if ($data_bangunan) {
+            // Get Legalitas
+            $data_legalitas = DB::table($tbl_perumahan)
+                ->where('id_perumahan', '=', $data_bangunan->id_perumahan)
+                ->first()
+                ->legalitas;
 
             // Get Fasilitas
             $data_fasilitas = DB::table($tbl_fasilitas)
@@ -95,6 +135,7 @@ class Properti extends Model
             $data_bangunan->foto_bangunan = $data_foto;
             $data_bangunan->sarana_prasarana = $data_sarana_prasarana;
             $data_bangunan->fasilitas = $data_fasilitas;
+            $data_bangunan->legalitas = $data_legalitas;
 
             return $data_bangunan;
         } else {

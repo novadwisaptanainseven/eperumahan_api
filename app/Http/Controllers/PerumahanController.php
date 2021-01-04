@@ -276,6 +276,45 @@ class PerumahanController extends Controller
         }
     }
 
+    // Get Data Perumahan By ID
+    public function getPerumahanByIdPengembang($id_pengembang)
+    {
+        $perumahan = Perumahan::getPerumahanByIdPengembang($id_pengembang);
+        $total_data = Perumahan::where('status_perumahan', '=', '2')->get()->count();
+
+        if ($perumahan) {
+            return response()->json([
+                "message" => "Get Perumahan with id pengembang: $id_pengembang, Success",
+                "total_data" => $total_data,
+                "data" => $perumahan
+            ], 200);
+        } else {
+            return response()->json([
+                "message" => "Perumahan Tidak Ditemukan",
+                "total_data" => $total_data,
+                "data" => $perumahan
+            ], 404);
+        }
+    }
+
+    // Get Data Perumahan By Slug
+    public function getPerumahanBySlug($slug)
+    {
+        $perumahan = Perumahan::getPerumahanBySlug($slug);
+
+        if ($perumahan) {
+            return response()->json([
+                "message" => "Get Perumahan with slug: $slug, Success",
+                "data" => $perumahan
+            ], 200);
+        } else {
+            return response()->json([
+                "message" => "Perumahan Tidak Ditemukan",
+                "data" => $perumahan
+            ], 404);
+        }
+    }
+
     // Update Status Perumahan By ID
     public function updateStatus(Request $request, $id_perumahan)
     {

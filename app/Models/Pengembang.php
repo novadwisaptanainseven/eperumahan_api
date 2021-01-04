@@ -140,8 +140,31 @@ class Pengembang extends Model
         else
             return null;
     }
-    
 
+    // Get Pengembang By Slug
+    public static function getBySlug($slug)
+    {
+        // Tabel - Tabel
+        $pengembang = 'pengembang';
+        $tbl_perumahan = 'perumahan';
+        $tbl_bangunan = 'bangunan';
+        $tbl_foto_perumahan = 'foto_perumahan';
+        $tbl_foto_bangunan = 'foto_bangunan';
+
+        $data_pengembang = DB::table($pengembang)
+            ->where([
+                ["$pengembang.status_deleted", '=', 0],
+                ['pengembang_slug', '=', $slug]
+            ])
+            ->first();
+
+        if ($data_pengembang)
+            return $data_pengembang;
+        else
+            return null;
+    }
+
+    // 
     // Update Pengembang
     public static function updatePengembang($req, $pengembang)
     {

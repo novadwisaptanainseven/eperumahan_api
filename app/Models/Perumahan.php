@@ -579,6 +579,77 @@ class Perumahan extends Model
             return null;
     }
 
+    // Get Data Perumahan By ID Pengembang
+    public static function getPerumahanByIdPengembang($id_pengembang)
+    {
+        // Tabel - tabel
+        $tbl_perumahan = 'perumahan';
+        $tbl_kecamatan = 'kecamatan';
+        $tbl_kelurahan = 'kelurahan';
+        $foto_perumahan = "foto_perumahan";
+        $tbl_sarana_prasarana = "sarana_prasarana_perumahan";
+        $tbl_fasilitas = "fasilitas_perumahan";
+        $tbl_pengembang = "pengembang";
+        $tbl_bangunan = 'bangunan';
+
+        // Cek Id Pengembang
+        $pengembang = DB::table($tbl_pengembang)
+            ->where('id_pengembang', '=', $id_pengembang)
+            ->first();
+        if (!$pengembang) {
+            return null;
+        }
+
+        // Get Data Perumahan
+        $perumahan = DB::table($tbl_perumahan)
+            ->where([
+                ["$tbl_perumahan.id_pengembang", '=', $id_pengembang],
+                ["$tbl_perumahan.status_perumahan", '=', "2"]
+            ])
+            ->leftJoin($tbl_kecamatan, "$tbl_perumahan.id_kecamatan", '=', "$tbl_kecamatan.id_kecamatan")
+            ->leftJoin($tbl_kelurahan, "$tbl_perumahan.id_kelurahan", '=', "$tbl_kelurahan.id_kelurahan")
+            ->orderBy("$tbl_perumahan.id_perumahan", 'DESC')
+            ->get();
+
+        if (count($perumahan) > 0) {
+
+            foreach ($perumahan as $data) {
+                // Get Foto Perumahan
+                $foto = DB::table($foto_perumahan)
+                    ->where([
+                        ['id_perumahan', '=', $data->id_perumahan],
+                        ['status_foto', '=', "1"]
+                    ])
+                    ->first();
+
+                // Get Sarana Prasarana
+                $sarana_prasarana = DB::table($tbl_sarana_prasarana)
+                    ->where('id_perumahan', '=', $data->id_perumahan)
+                    ->get();
+
+                // Get Fasilitas
+                $fasilitas = DB::table($tbl_fasilitas)
+                    ->where('id_perumahan', '=', $data->id_perumahan)
+                    ->get();
+
+                // Get Total Properti
+                $jumlah_bangunan = DB::table($tbl_bangunan)
+                    ->where('id_perumahan', '=', $data->id_perumahan)
+                    ->get()
+                    ->count();
+
+                $data->foto_perumahan = $foto->foto_perumahan;
+                $data->sarana_prasarana = $sarana_prasarana;
+                $data->fasilitas = $fasilitas;
+                $data->jumlah_bangunan = $jumlah_bangunan;
+            }
+
+            return $perumahan;
+        } else {
+            return [];
+        }
+    }
+
     // Update Status Perumahan By ID
     public static function updateStatusById($id_perumahan, $status)
     {
@@ -607,6 +678,80 @@ class Perumahan extends Model
             ->first();
 
         return $data;
+    }
+
+    // Get Data Perumahan By ID
+    public static function getPerumahanBySlug($slug)
+    {
+        // Tabel - tabel
+        $sarana_prasarana_perumahan = "sarana_prasarana_perumahan";
+        $fasilitas_perumahan = "fasilitas_perumahan";
+        $foto_perumahan = "foto_perumahan";
+        $tbl_bangunan = 'bangunan';
+        $tbl_foto_bangunan = 'foto_bangunan';
+        $tbl_perumahan = 'perumahan';
+        $tbl_pengembang = 'pengembang';
+        $tbl_kelurahan = 'kelurahan';
+        $tbl_kecamatan = 'kecamatan';
+
+        // Get Data Perumahan
+        $perumahan = DB::table($tbl_perumahan)
+            ->select(
+                "$tbl_perumahan.*",
+                "$tbl_kelurahan.*",
+                "$tbl_kecamatan.*",
+                "$tbl_pengembang.nama_pengembang",
+                "$tbl_pengembang.email_pengembang",
+                "$tbl_pengembang.telepon_pengembang",
+                "$tbl_pengembang.pengembang_slug",
+                "$tbl_pengembang.foto_pengembang",
+            )
+            ->where(['slug' => $slug])
+            ->leftJoin($tbl_kecamatan, "$tbl_perumahan.id_kecamatan", '=', "$tbl_kecamatan.id_kecamatan")
+            ->leftJoin($tbl_kelurahan, "$tbl_perumahan.id_kelurahan", '=', "$tbl_kelurahan.id_kelurahan")
+            ->leftJoin($tbl_pengembang, "$tbl_perumahan.id_pengembang", '=', "$tbl_pengembang.id_pengembang")
+            ->first();
+
+        if ($perumahan) {
+            // Get Data Bangunan
+            $bangunan = DB::table($tbl_bangunan)
+                ->where('id_perumahan', '=', $perumahan->id_perumahan)
+                ->get();
+
+            foreach ($bangunan as $data) {
+                // Get Foto Bangunan
+                $foto_bangunan = DB::table($tbl_foto_bangunan)
+                    ->where([
+                        ['id_bangunan', '=', $data->id_bangunan],
+                        ['level_foto', '=', '1']
+                    ])
+                    ->first();
+                $data->foto_bangunan = $foto_bangunan->foto_bangunan;
+            }
+
+            // Get Data Fasilitas
+            $fasilitas = DB::table($fasilitas_perumahan)
+                ->where(['id_perumahan' => $perumahan->id_perumahan])
+                ->get();
+
+            // Get Data Sarana Prasarana
+            $sarana_prasarana = DB::table($sarana_prasarana_perumahan)
+                ->where(['id_perumahan' => $perumahan->id_perumahan])
+                ->get();
+
+            // Get Foto Perumahan
+            $foto = DB::table($foto_perumahan)
+                ->where(['id_perumahan' => $perumahan->id_perumahan])
+                ->orderBy('status_foto', 'DESC')
+                ->get();
+            // Gabungkan semua hasil pencarian data dengan id yang sama
+            $perumahan->fasilitas_perumahan = $fasilitas;
+            $perumahan->sarana_prasarana_perumahan = $sarana_prasarana;
+            $perumahan->foto_perumahan = $foto;
+            $perumahan->bangunan = $bangunan;
+            return $perumahan;
+        } else
+            return null;
     }
 
     // GROUP PERUMAHAN / PROPERTI

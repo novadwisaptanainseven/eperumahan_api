@@ -46,4 +46,25 @@ class PropertiController extends Controller
             ], 404);
         }
     }
+
+    // Get Properti by ID Pengembang
+    public function getPropertiByIdPengembang($id_pengembang)
+    {
+        $bangunan = Properti::getPropertiByIdPengembang($id_pengembang);
+        $total_data = Properti::where('status_publish', '=', '2')->get()->count();
+
+        if ($bangunan) {
+            return response()->json([
+                "message" => "Get Properti By ID Pengembang: $id_pengembang, Success",
+                "total_data" => $total_data,
+                "data" => $bangunan
+            ], 200);
+        } else {
+            return response()->json([
+                "message" => "Get Properti By ID Pengembang: $id_pengembang, Gagal. Data Tidak Ditemukan",
+                "total_data" => $total_data,
+                "data" => $bangunan
+            ], 404);
+        }
+    }
 }
