@@ -243,7 +243,7 @@ class PerumahanController extends Controller
     {
         // Pagination
         $request->page = ($request->page) ? $request->page : '1';
-        $request->per_page = ($request->per_page) ? $request->per_page : '8';
+        $request->per_page = ($request->per_page) ? $request->per_page : '0';
         $request->order = ($request->order) ? $request->order : 'desc';
         // End Pagination
 
@@ -421,7 +421,7 @@ class PerumahanController extends Controller
     {
         // Pagination
         $request->page = ($request->page) ? $request->page : '1';
-        $request->per_page = ($request->per_page) ? $request->per_page : '8';
+        $request->per_page = $request->per_page ? $request->per_page : '0';
         $request->order = ($request->order) ? $request->order : 'desc';
         // End Pagination
 
@@ -439,7 +439,7 @@ class PerumahanController extends Controller
     {
         // Pagination
         $request->page = ($request->page) ? $request->page : '1';
-        $request->per_page = ($request->per_page) ? $request->per_page : '8';
+        $request->per_page = ($request->per_page) ? $request->per_page : '0';
         $request->order = ($request->order) ? $request->order : 'desc';
         // End Pagination
 

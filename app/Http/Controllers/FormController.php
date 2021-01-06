@@ -131,7 +131,7 @@ class FormController extends Controller
     {
         // Pagination
         $request->page = ($request->page) ? $request->page : '1';
-        $request->per_page = ($request->per_page) ? $request->per_page : '8';
+        $request->per_page = ($request->per_page) ? $request->per_page : '0';
         $request->order = ($request->order) ? $request->order : 'desc';
         // End Pagination
 
@@ -179,6 +179,33 @@ class FormController extends Controller
             ], 200);
         } else {
             // Jika tidak ada, tetap tampilkan response 200 OK dengan ketrangang
+            return response()->json([
+                "message" => "Belum ada form data perumahan",
+                "data"    => $form
+            ], 200);
+        }
+    }
+
+    // Get All Form Data Perumahan
+    public function getAllFormForAdmin(Request $req)
+    {
+        // Pagination
+        $req->page = ($req->page) ? $req->page : '1';
+        $req->per_page = ($req->per_page) ? $req->per_page : '8';
+        $req->order = ($req->order) ? $req->order : 'desc';
+        // End Pagination
+
+        $form = Form::getAllFormForAdmin($req);
+
+        // Cek apakah ada data brosur
+        if (count($form) > 0) {
+            // Jika ada, tampilkan response 200 OK
+            return response()->json([
+                "message" => "Get all form data perumahan, Berhasil",
+                "data"    => $form,
+            ], 200);
+        } else {
+            // Jika tidak ada, tetap tampilkan response 200 OK dengan keterangan
             return response()->json([
                 "message" => "Belum ada form data perumahan",
                 "data"    => $form

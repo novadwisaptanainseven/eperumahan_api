@@ -33,6 +33,23 @@ class FileController extends Controller
         return $this->downloads($fullpath, $message);
     }
 
+    public function documentPreview($path, $filename)
+    {
+        $fullpath = "/app/$path/file/$filename";
+        $message = "Data Document Tidak Ditemukan";
+
+        if (file_exists(storage_path($fullpath))) {
+            return response()->file(storage_path($fullpath), [
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => 'inline; filename="' . $filename . '"'
+            ], 200);
+        } else {
+            return response()->json([
+                "message" => $message
+            ], 404);
+        }
+    }
+
     // Download Form Data Perumahan
     public function form($path, $filename)
     {
@@ -42,6 +59,21 @@ class FileController extends Controller
         return $this->downloads($fullpath, $message);
     }
 
+    public function formPreview($path, $filename)
+    {
+        $fullpath = "/app/$path/form/$filename";
+        if (file_exists(storage_path($fullpath))) {
+            return response()->file(storage_path($fullpath), [
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => 'inline; filename="' . $filename . '"'
+            ], 200);
+        } else {
+            return response()->json([
+                "message" => $message
+            ], 404);
+        }
+    }
+
     public function downloads($fullpath, $message)
     {
         if (file_exists(storage_path($fullpath))) {
@@ -49,7 +81,7 @@ class FileController extends Controller
         } else {
             return response()->json([
                 "message" => $message
-            ]);
+            ], 404);
         }
     }
 }

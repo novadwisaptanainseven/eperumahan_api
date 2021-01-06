@@ -90,6 +90,56 @@ class Form extends Model
             return null;
     }
 
+    // Get All Form Data Perumahan untuk Admin
+    public static function getAllFormForAdmin($req)
+    {
+        // Tabel - Tabel
+        $tbl_form = 'form_data_perumahan';
+        $tbl_pengembang = 'pengembang';
+
+        $page = intval($req->page);
+        $per_page = intval($req->per_page);
+        $order = $req->order;
+
+        $total = DB::table($tbl_form)
+            ->where([
+                'status_deleted' => 0
+            ])
+            ->orderBy('id_form_data_perumahan', 'DESC')
+            ->get()
+            ->count();
+
+        // Pagination
+        $offset = ($page - 1) * $per_page;
+        $last_page = ceil($total / $per_page);
+
+        $data_form = DB::table($tbl_form)
+            ->select("$tbl_form.*", "$tbl_pengembang.nama_pengembang")
+            ->where('status_deleted', 0)
+            ->leftJoin("$tbl_pengembang", "$tbl_pengembang.id_pengembang", '=', "$tbl_form.id_pengembang")
+            ->offset($offset)
+            ->limit($per_page)
+            ->orderBy("$tbl_form.id_form_data_perumahan", $order)
+            ->get();
+        // End Pagination
+
+        // Cek apakah ada data form
+        if (count($data_form) == 0) {
+            $data_form = null;
+        }
+
+        $data = [
+            "total_data"   => $total,
+            "per_page"     => $per_page,
+            "current_page" => $page,
+            "last_page"    => $last_page,
+            "order"        => $order,
+            "data"         => $data_form
+        ];
+
+        return $data;
+    }
+
     // Add Form Master
     public static function addFormMaster($req)
     {
@@ -227,13 +277,14 @@ class Form extends Model
 
         // Pagination
         $offset = ($page - 1) * $per_page;
-        $last_page = ceil($total / $per_page);
+        $last_page = $per_page != 0 ? ceil($total / $per_page) : 1;
+        $limit = $per_page != 0 ? $per_page : $total;
 
         $data_form = DB::table($form)
             ->select("$form.*", "$pengembang.nama_pengembang")
             ->leftJoin($pengembang, "$pengembang.id_pengembang", "=", "$form.id_pengembang")
             ->offset($offset)
-            ->limit($per_page)
+            ->limit($limit)
             ->orderBy("$form.id_form_data_perumahan", $order)
             ->get();
         // End Pagination

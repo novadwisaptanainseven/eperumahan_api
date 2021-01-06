@@ -420,6 +420,7 @@ class Perumahan extends Model
         if (count($data_perumahan) <= 0)
             $data_perumahan = "Data Tidak Tersedia";
 
+        $nomor = $offset;
         // Get jumlah bangunan by id perumahan
         foreach ($data_perumahan as $i => $data) {
             $jumlah_properti = DB::table($bangunan)
@@ -430,6 +431,8 @@ class Perumahan extends Model
                 ->get()
                 ->count();
             $data_perumahan[$i++]->jumlah_properti = $jumlah_properti;
+            $nomor = $nomor + 1;
+            $data->no = $nomor;
         }
 
         $data_perumahan->jumlah_properti = $jumlah_properti;
@@ -482,14 +485,15 @@ class Perumahan extends Model
 
         // Pagination
         $offset = ($page - 1) * $per_page;
-        $last_page = ceil($total / $per_page);
+        $last_page = $per_page != 0 ? ceil($total / $per_page) : 1;
+        $limit = $per_page != 0 ? $per_page : $total;
 
         $data_perumahan = DB::table($perumahan)
             ->where("$perumahan.id_pengembang", $data_pengembang->id_pengembang)
             ->leftJoin($kelurahan, "$kelurahan.id_kelurahan", "=", "$perumahan.id_kelurahan")
             ->leftJoin($kecamatan, "$kecamatan.id_kecamatan", "=", "$perumahan.id_kecamatan")
             ->offset($offset)
-            ->limit($per_page)
+            ->limit($limit)
             ->orderBy("$perumahan.id_perumahan", $order)
             ->get();
         // End Pagination
@@ -923,7 +927,8 @@ class Perumahan extends Model
 
         // Pagination
         $offset = ($page - 1) * $per_page;
-        $last_page = ceil($total / $per_page);
+        $last_page = $per_page != 0 ? ceil($total / $per_page) : 1;
+        $limit = $per_page != 0 ? $per_page : $total;
 
         $data_bangunan = DB::table($bangunan)
             // ->where("$bangunan.status_deleted", 0)
@@ -931,7 +936,7 @@ class Perumahan extends Model
             ->leftJoin($kelurahan, "$bangunan.id_kelurahan", "=", "$kelurahan.id_kelurahan")
             ->leftJoin($kecamatan, "$bangunan.id_kecamatan", "=", "$kecamatan.id_kecamatan")
             ->offset($offset)
-            ->limit($per_page)
+            ->limit($limit)
             // ->orderBy("$bangunan.id_bangunan", $order)
             ->orderBy("$bangunan.status_publish", $order)
             ->get();
@@ -990,13 +995,14 @@ class Perumahan extends Model
 
         // Pagination
         $offset = ($page - 1) * $per_page;
-        $last_page = ceil($total / $per_page);
+        $last_page = $per_page != 0 ? ceil($total / $per_page) : 1;
+        $limit = $per_page != 0 ? $per_page : $total;
 
         // Mengambil data properti berdasarkan ID Perumahan
         $data_bangunan = DB::table($bangunan)
             ->where(['id_perumahan' => $id_perumahan])
             ->offset($offset)
-            ->limit($per_page)
+            ->limit($limit)
             ->orderBy('id_bangunan', $order)
             ->get();
         // End Pagination

@@ -149,6 +149,9 @@ Route::prefix('v1/admin/')->group(function () {
             // Add Formulir Master
             Route::post("formulir", [FormController::class, 'addFormMaster']);
 
+            // Get All Form Data Perumahan
+            Route::get('form', [FormController::class, 'getAllForm']);
+
             // Update Status Active Form Master By ID
             Route::put("formulir/{id_form}/status_active", [FormController::class, 'updateStatusActive']);
             // Get Form By ID
@@ -375,7 +378,9 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
 Route::get('/image/{path}/{filename}', [FileController::class, 'image']);
 Route::get('/brosur/{path}/{filename}', [FileController::class, 'brosur']);
 Route::get('/document/{path}/{filename}', [FileController::class, 'document']);
+Route::get('/document/{path}/{filename}/preview', [FileController::class, 'documentPreview']);
 Route::get('/form/{path}/{filename}', [FileController::class, 'form']);
+Route::get('/form/{path}/{filename}/preview', [FileController::class, 'formPreview']);
 
 // API UNTUK BAGIAN HALAMAN WEBSITE E-PERUMAHAN
 Route::prefix('v1/')->group(function () {
