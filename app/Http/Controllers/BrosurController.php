@@ -34,6 +34,51 @@ class BrosurController extends Controller
         }
     }
 
+    // Get All Brosur Umum
+    public function getAllBrosurUmum()
+    {
+        // Get Brosur
+        $brosur = Brosur::getAllBrosurUmum();
+
+        // Cek apakah ada data brosur
+        if (count($brosur) != 0) {
+            // Jika ada, tampilkan response 200 OK
+            return response()->json([
+                "message" => "Get all brosur pengembang Berhasil",
+                "data"    => $brosur,
+            ], 200);
+        } else {
+            // Jika tidak ada, tetap tampilkan response 200 OK dengan keteranang
+            return response()->json([
+                "message" => "Belum ada data brosur",
+                "data"    => $brosur
+            ], 200);
+        }
+    }
+
+    // Get Brosur Pengembang By ID untuk keperluan Front End Website E-Perumahan
+    public function getBrosurByIdPengembang($id_pengembang)
+    {
+        // Get Brosur
+        $brosur = Brosur::getBrosurByIdPengembang($id_pengembang);
+
+        // Cek apakah ada data brosur
+        if (count($brosur) != 0) {
+            // Jika ada, tampilkan response 200 OK
+            return response()->json([
+                "message" => "Get all brosur dengan id pengembang : $id_pengembang Berhasil",
+                "data"    => $brosur,
+            ], 200);
+        } else {
+            // Jika tidak ada, tetap tampilkan response 200 OK dengan keteranang
+            return response()->json([
+                "message" => "Belum ada data brosur",
+                "data"    => $brosur
+            ], 200);
+        }
+    }
+
+
     // Get Brosur Pengembang By ID
     public function getBrosurById($id_brosur)
     {

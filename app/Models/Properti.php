@@ -93,6 +93,12 @@ class Properti extends Model
             ->first();
 
         if ($data_bangunan) {
+            // Get Latitude and Longitude dari tabel perumahan
+            $lngLat = DB::table($tbl_perumahan)
+                ->select('longitude', 'latitude')
+                ->where('id_perumahan', '=', $data_bangunan->id_perumahan)
+                ->first();
+
             // Get Legalitas
             $data_legalitas = DB::table($tbl_perumahan)
                 ->where('id_perumahan', '=', $data_bangunan->id_perumahan)
@@ -136,6 +142,8 @@ class Properti extends Model
             $data_bangunan->sarana_prasarana = $data_sarana_prasarana;
             $data_bangunan->fasilitas = $data_fasilitas;
             $data_bangunan->legalitas = $data_legalitas;
+            $data_bangunan->latitude = $lngLat->latitude;
+            $data_bangunan->longitude = $lngLat->longitude;
 
             return $data_bangunan;
         } else {

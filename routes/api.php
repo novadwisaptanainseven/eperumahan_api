@@ -407,4 +407,8 @@ Route::prefix('v1/')->group(function () {
     Route::post('kontak', [KontakController::class, 'sendMessage']);
     Route::get('kontak', [KontakController::class, 'getAllMessages']);
     Route::delete('kontak/{id}', [KontakController::class, 'deleteMessage']);
+
+    // Brosur
+    Route::get('brosur', [BrosurController::class, 'getAllBrosurUmum']);
+    Route::get('brosur/{id_pengembang}', [BrosurController::class, 'getBrosurByIdPengembang']);
 });

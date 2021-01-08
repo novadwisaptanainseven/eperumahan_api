@@ -46,6 +46,40 @@ class Brosur extends Model
             return null;
     }
 
+    // Get All Brosur Umum
+    public static function getAllBrosurUmum()
+    {
+        // Tabel - Tabel
+        $brosur = 'brosur_pengembang';
+
+        $data_brosur = DB::table($brosur)
+            ->orderBy('id_brosur_pengembang', 'DESC')
+            ->get();
+
+        // Cek apakah ada data brosur
+        if ($data_brosur)
+            return $data_brosur;
+        else
+            return null;
+    }
+
+    // Get Brosur By ID Pengembang
+    public static function getBrosurByIdPengembang($id_pengembang)
+    {
+        // Tabel - Tabel
+        $tbl_brosur = 'brosur_pengembang';
+
+        $data_brosur = DB::table($tbl_brosur)
+            ->where('id_pengembang', '=', $id_pengembang)
+            ->get();
+
+        if (count($data_brosur) > 0 || $data_brosur) {
+            return $data_brosur;
+        } else {
+            return null;
+        }
+    }
+
     // Get Brosur By ID
     public static function getBrosurById($id_brosur)
     {
