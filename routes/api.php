@@ -384,6 +384,8 @@ Route::get('/form/{path}/{filename}/preview', [FileController::class, 'formPrevi
 
 // API UNTUK BAGIAN HALAMAN WEBSITE E-PERUMAHAN
 Route::prefix('v1/')->group(function () {
+    // Search Properti
+    Route::put('properti-search', [PropertiController::class, 'searchProperti']);
     // Get All Properti Yang Status Publishnya Aktif
     Route::get('properti', [PropertiController::class, 'getAllProperties']);
     // Get Properti berdasarkan slug
@@ -411,4 +413,10 @@ Route::prefix('v1/')->group(function () {
     // Brosur
     Route::get('brosur', [BrosurController::class, 'getAllBrosurUmum']);
     Route::get('brosur/{id_pengembang}', [BrosurController::class, 'getBrosurByIdPengembang']);
+
+    // Kecamatan
+    Route::get('/kecamatan', [PerumahanController::class, 'getAllKecamatan']);
+
+    // Kelurahan
+    Route::get('/kelurahan/{id_kecamatan}', [PerumahanController::class, 'getAllKelurahan']);
 });

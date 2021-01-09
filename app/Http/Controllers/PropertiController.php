@@ -7,6 +7,39 @@ use Illuminate\Http\Request;
 
 class PropertiController extends Controller
 {
+    // Search Properti
+    public function searchProperti(Request $request)
+    {
+        $bangunan = Properti::searchProperti($request);
+
+        if ($bangunan) {
+            return response()->json([
+                "message" => "Get Properties, success",
+                "total_pencarian" => count($bangunan),
+                "data" => $bangunan,
+            ], 200);
+        } else {
+            return response()->json([
+                "message" => "Properti Tidak Ditemukan",
+                "data" => $bangunan
+            ], 404);
+        }
+
+        // return response()->json([
+        //     "message" => "Get Properties, Success",
+        //     "request" => [
+        //         "id_kelurahan" => $request->id_kelurahan,
+        //         "id_kecamatan" => $request->id_kecamatan,
+        //         "min_harga" => $request->min_harga,
+        //         "max_harga" => $request->max_harga,
+        //         "min_luas_bangunan" => $request->min_luas_bangunan,
+        //         "max_luas_bangunan" => $request->max_luas_bangunan,
+        //         "min_luas_tanah" => $request->min_luas_tanah,
+        //         "max_luas_tanah" => $request->max_luas_tanah,
+        //     ]
+        // ], 200);
+    }
+
     // Get All Properties
     public function getAllProperties(Request $request)
     {
