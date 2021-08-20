@@ -62,6 +62,8 @@ class FileController extends Controller
     public function formPreview($path, $filename)
     {
         $fullpath = "/app/$path/form/$filename";
+		$message = "Data Document Tidak Ditemukan";
+		
         if (file_exists(storage_path($fullpath))) {
             return response()->file(storage_path($fullpath), [
                 'Content-Type' => 'application/pdf',

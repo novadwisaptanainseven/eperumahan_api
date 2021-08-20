@@ -505,7 +505,7 @@ class PerumahanController extends Controller
     }
 
     // Get Data Properti/Bangunan By ID
-    public function getPropertiById($id_perumahan = '', $id_bangunan)
+    public function getPropertiById($id_perumahan = '', $id_bangunan = "")
     {
         $data_bangunan = Perumahan::getPropertiById($id_bangunan);
 

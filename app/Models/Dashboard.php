@@ -67,6 +67,8 @@ class Dashboard extends Model
         $user_pengembang = DB::table($pengembang)
             ->where('id_user', '=', $user->id)
             ->first();
+            
+       
 
         // Get perumahan berdasarkan id pengembang
         $data_perumahan = DB::table($perumahan)
