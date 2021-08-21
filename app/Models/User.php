@@ -99,7 +99,7 @@ class User extends Authenticatable
             ->offset($offset)
             ->limit($per_page)
             // ->orderBy('id', $order)
-            ->orderBy('status', $order)
+            ->orderBy('level', $order)
             ->get();
         // End Pagination
 

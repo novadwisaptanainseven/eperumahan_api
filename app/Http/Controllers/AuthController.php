@@ -48,8 +48,8 @@ class AuthController extends Controller
         if ($user->status === 0) {
             // Jika user tidak aktif maka tampilkan response 
             return response()->json([
-                'message' => "Status Akun User dengan id: $user->id, Belum Aktif, Silahkan konfirmasi ke Administrator"
-            ], 403);
+                'message' => "Status Akun User dengan usename: $user->username, Belum Aktif, Silahkan konfirmasi ke Administrator"
+            ], 404);
         }
 
         $token = $user->createToken('user-token')->plainTextToken;

@@ -22,7 +22,7 @@ class IsPengembang
         $user = Auth::user();
 
         // Cek Apakah User adalah Pengembang
-        if ($user->level == 2) {
+        if ($user->level == 3) {
             // Jika Iya, maka access url diteruskan
             return $next($request);
         }

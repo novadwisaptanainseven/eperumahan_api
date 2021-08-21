@@ -191,4 +191,22 @@ class UserController extends Controller
             ]
         ], 201);
     }
+
+    public function destroy($id_user)
+    {
+        $user = User::find($id_user);
+
+        if ($user) {
+            $user->delete();
+
+            return response()->json([
+                "message" => "Berhasil menghapus data user dengan id: {$id_user}",
+                "deleted_data" => $user
+            ], 201);
+        } else {
+            return response()->json([
+                "message" => "Data user dengan id: {$id_user} tidak ditemukan",
+            ], 404);
+        }
+    }
 }

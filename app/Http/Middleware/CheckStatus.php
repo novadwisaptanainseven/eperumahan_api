@@ -21,8 +21,8 @@ class CheckStatus
         // Get Current User
         $user = Auth::user();
 
-        // Cek Apakah User adalah Admin
-        if ($user->level == 1) {
+        // Cek Apakah User adalah Admin atau Super Administrator
+        if ($user->level == 1 || $user->level == 2) {
             // Jika Iya, maka access url diteruskan
             return $next($request);
         }
