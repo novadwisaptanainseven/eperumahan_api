@@ -433,6 +433,26 @@ class PengembangController extends Controller
         }
     }
 
+    // Delete Permanent Pengembang
+    public function destroy($id_pengembang)
+    {
+        $pengembang = Pengembang::find($id_pengembang);
+
+        if ($pengembang) {
+            $pengembang->delete();
+            Storage::delete([$pengembang->foto_pengembang, $pengembang->ijin_perusahaan]);
+
+            return response()->json([
+                "message" => "Data pengembang dengan id: $id_pengembang berhasil dihapus",
+                "deleted_data" => $pengembang
+            ], 201);
+        } else {
+            return response()->json([
+                "message" => "Data pengembang dengan id: $id_pengembang tidak ditemukan",
+            ], 404);
+        }
+    }
+
     // Update status pengemban
     public function updateStatusPengembang(Request $request, $id_pengembang)
     {
@@ -451,5 +471,16 @@ class PengembangController extends Controller
                 "message" => "Data dengan id: $id_pengembang, Tidak Ditemukan",
             ], 404);
         }
+    }
+
+    // Get Select Pengembang
+    public function getSelectPengembang()
+    {
+        $pengembang = Pengembang::all();
+
+        return response()->json([
+            "message" => "Berhasil mendapatkan semua data pengembang",
+            "data" => $pengembang
+        ], 200);
     }
 }

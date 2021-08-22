@@ -499,10 +499,13 @@ class Perumahan extends Model
         // End Pagination
 
         // Cek apakah data perumahan ada isinya
-        if (count($data_perumahan) == 0)
-            $data_perumahan = "Data Tidak Tersedia";
+        // if (count($data_perumahan) == 0) {
+
+        //     $data_perumahan = "Data Tidak Tersedia";
+        // }
 
         // Get jumlah bangunan by id perumahan
+        $jumlah_properti = 0;
         foreach ($data_perumahan as $i => $data) {
             $jumlah_properti = DB::table($bangunan)
                 ->where([

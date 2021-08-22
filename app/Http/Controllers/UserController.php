@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\UserStoreRequest;
+use App\Models\Pengembang;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Validator;
@@ -93,6 +94,19 @@ class UserController extends Controller
         $user->level = $request->level;
         $user->status = $request->status;
         $user->save();
+
+        // Cek apakah akun dibuatkan untuk pengembang (id_pengembang)
+        if ($request->id_pengembang) {
+            $pengembang = Pengembang::find($request->id_pengembang);
+            $pengembang->id_user = $user->id;
+            $pengembang->save();
+
+            return response()->json([
+                "message" => "Register user untuk pengembang berhasil",
+                "data_akun"    => $user,
+                "pengembang" => $pengembang
+            ], 201);
+        }
 
         return response()->json([
             "message" => "Register User Berhasil",

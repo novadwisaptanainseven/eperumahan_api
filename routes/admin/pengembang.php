@@ -20,8 +20,14 @@ Route::prefix($prefix)->group(function () {
   // Delete Pengembang
   Route::delete('/{id_pengembang}', [PengembangController::class, 'deletePengembang']);
 
+  // Delete Permanent Pengembang
+  Route::delete('/{id_pengembang}/delete-permanent', [PengembangController::class, 'destroy']);
+
   // Get All Pengembang
   Route::get('/', [PengembangController::class, 'getAllPengembang']);
+
+  // Get All Select Pengembang
+  Route::get('/select', [PengembangController::class, 'getSelectPengembang']);
 
   // Get Pengembang By ID
   Route::get('/{id_pengembang}', [PengembangController::class, 'getPengembangById']);
