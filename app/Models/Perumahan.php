@@ -15,6 +15,7 @@ class Perumahan extends Model
     use HasApiTokens, HasFactory;
 
     protected $table = 'perumahan';
+    protected $primaryKey = "id_perumahan";
 
     // Get All Kecamatan
     public static function getAllKecamatan()
@@ -141,7 +142,7 @@ class Perumahan extends Model
 
         if (count($data_perumahan) === 0) {
             $total_data_pencarian = 0;
-            $data_perumahan = null;
+            $data_perumahan = [];
         } else {
             $total_data_pencarian = count($data_perumahan);
             // Get jumlah bangunan by id perumahan

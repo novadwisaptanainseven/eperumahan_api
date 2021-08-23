@@ -4,11 +4,10 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Perumahan;
-use App\Models\Pengembang;
+use App\Models\Properti;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class PerumahanController extends Controller
 {
@@ -331,6 +330,50 @@ class PerumahanController extends Controller
             // Jika gagal, tampilkan response 404 NOT FOUND
             return response()->json([
                 "message" => "Data dengan id: $id_perumahan, Tidak Ditemukan",
+            ], 404);
+        }
+    }
+
+    // Delete Perumahan
+    public function deletePerumahan($id_perumahan)
+    {
+        $tbl_foto = "foto_bangunan";
+        $tbl_foto_perumahan = "foto_perumahan";
+        $perumahan = Perumahan::find($id_perumahan);
+        if ($perumahan) {
+            // Hapus tabel children (relasi) dari tabel parent (perumahan)
+            // --- Delete Properti ---
+            // Delete Properti
+            $properti = Properti::where("id_perumahan", $id_perumahan)->get();
+            // Delete Foto Bangunan
+            foreach ($properti as $p) {
+                $foto_properti = DB::table($tbl_foto)->where("id_bangunan", $p->id_bangunan)->get();
+
+                foreach ($foto_properti as $foto) {
+                    $path = $foto->foto_bangunan;
+                    Storage::delete($path);
+                }
+            }
+
+            // --- Data Perumahan ---
+            // Delete Foto Perumahan
+            $foto_perumahan = DB::table($tbl_foto_perumahan)->where("id_perumahan", $id_perumahan)->get();
+            foreach ($foto_perumahan as $foto) {
+                $path = $foto->foto_perumahan;
+                Storage::delete($path);
+            }
+            // Delete Perumahan
+            // Hapus file legalitas
+            Storage::delete($perumahan->legalitas);
+            $perumahan->delete();
+
+            return response()->json([
+                "message" => "Data perumahan dengan id_perumahan: $id_perumahan berhasil dihapus",
+                "data" => $perumahan,
+            ], 200);
+        } else {
+            return response()->json([
+                "message" => "Data perumahan dengan id_perumahan: $id_perumahan tidak ditemukan",
             ], 404);
         }
     }
@@ -1201,6 +1244,40 @@ class PerumahanController extends Controller
             return response()->json([
                 "message" => "Delete fasilitas dengan id: $id_fasilitas_perumahan dari perumahan: $id_perumahan, Gagal"
             ], 500);
+        }
+    }
+
+    // Delete Properti
+    public function deleteProperti($id_perumahan, $id_bangunan)
+    {
+        $tbl_foto = "foto_bangunan";
+        $properti = Properti::where([
+            ["id_perumahan", '=', $id_perumahan],
+            ["id_bangunan", '=', $id_bangunan],
+        ])
+            ->first();
+
+        if ($properti) {
+
+            // Delete Foto Bangunan
+            $foto_properti = DB::table($tbl_foto)->where("id_bangunan", $id_bangunan)->get();
+            foreach ($foto_properti as $foto) {
+                $path = $foto->foto_bangunan;
+                Storage::delete($path);
+            }
+
+            // Delete Properti
+            $properti->delete();
+
+            return response()->json([
+                "message" => "Data bangunan dengan id_perumahan: $id_perumahan & id_bangunan: $id_bangunan berhasil dihapus",
+                "data" => $properti,
+                "foto_properti" => $foto_properti,
+            ], 200);
+        } else {
+            return response()->json([
+                "message" => "Data bangunan dengan id_perumahan: $id_perumahan & id_bangunan: $id_bangunan tidak ditemukan",
+            ], 404);
         }
     }
 }

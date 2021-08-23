@@ -11,6 +11,7 @@ class Properti extends Model
     use HasFactory;
 
     protected $table = 'bangunan';
+    protected $primaryKey = "id_bangunan";
 
     // Search Properti
     public static function searchProperti($req)

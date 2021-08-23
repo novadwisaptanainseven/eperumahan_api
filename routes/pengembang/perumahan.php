@@ -37,6 +37,9 @@ Route::prefix($prefix1)->group(function () {
   // Get File Legalitas Perumahan
   Route::get('/file/{filename}', [PerumahanController::class, 'getFileLegalitas']);
 
+  // Delete Perumahan
+  Route::delete('/{id_perumahan}', [PerumahanController::class, 'deletePerumahan']);
+
   // GROUP PERUMAHAN / FOTO
 
   // Add Foto Perumahan
@@ -95,6 +98,9 @@ Route::prefix($prefix1)->group(function () {
 
   // Add Spesifikasi Bangunan
   Route::post('/{id_perumahan}/properti/{id_bangunan}/spesifikasi', [PerumahanController::class, 'addSpesifikasiProperti']);
+
+  // Delete Bangunan
+  Route::delete('/{id_perumahan}/properti/{id_bangunan}', [PerumahanController::class, 'deleteProperti']);
 });
 
 Route::prefix($prefix2)->group(function () {
