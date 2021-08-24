@@ -7,7 +7,18 @@ use Illuminate\Http\Request;
 
 class DashboardController extends Controller
 {
-    // Get All Dashboard Information
+    // Get All Dashboard Information Super Admin
+    public function getDashboardInfoSuperAdmin()
+    {
+        $dashboard_info = Dashboard::getDashboardInfoSuperAdmin();
+
+        return response()->json([
+            "message" => "Get All Dashboard Information untuk Super Administrator Berhasil",
+            "data"    => $dashboard_info
+        ], 200);
+    }
+
+    // Get All Dashboard Information Admin
     public function getDashboardInfo()
     {
         $dashboard_info = Dashboard::getDashboardInfo();

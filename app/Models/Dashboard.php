@@ -11,7 +11,42 @@ class Dashboard extends Model
 {
     use HasFactory;
 
-    // Get All Dashboard Information
+    // Get All Dashboard Information Super Admin
+    public static function getDashboardInfoSuperAdmin()
+    {
+        // Tabel - tabel
+        $tbl_users = 'users';
+        $tbl_pengembang = 'pengembang';
+
+        // Get total users
+        $user_super_admin = DB::table($tbl_users)
+            ->where("level", 1)
+            ->get()
+            ->count();
+        $user_admin = DB::table($tbl_users)
+            ->where("level", 2)
+            ->get()
+            ->count();
+        $user_pengembang = DB::table($tbl_users)
+            ->where("level", 3)
+            ->get()
+            ->count();
+        $pengembang = DB::table($tbl_pengembang)
+            ->get()
+            ->count();
+
+
+        $data = [
+            "total_super_admin"     => $user_super_admin,
+            "total_admin"           => $user_admin,
+            "total_user_pengembang" => $user_pengembang,
+            "total_pengembang"      => $pengembang,
+        ];
+
+        return $data;
+    }
+
+    // Get All Dashboard Information Admin
     public static function getDashboardInfo()
     {
         // Tabel - tabel
