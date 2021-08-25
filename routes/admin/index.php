@@ -12,6 +12,7 @@ Route::prefix('v1/admin/')->group(function () {
       include_once __DIR__ . "/pengembang.php";
       include_once __DIR__ . "/perumahan.php";
       include_once __DIR__ . "/formulir.php";
+      include_once __DIR__ . "/kecamatan_kelurahan.php";
     });
   });
 });

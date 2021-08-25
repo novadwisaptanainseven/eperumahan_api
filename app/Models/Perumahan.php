@@ -16,6 +16,7 @@ class Perumahan extends Model
 
     protected $table = 'perumahan';
     protected $primaryKey = "id_perumahan";
+    protected static $tblKecamatan = "kecamatan";
 
     // Get All Kecamatan
     public static function getAllKecamatan()
@@ -33,6 +34,33 @@ class Perumahan extends Model
         }
     }
 
+    // Get Kecamatan By ID
+    public static function getKecamatanById($id_kecamatan)
+    {
+        return DB::table(self::$tblKecamatan)->where("id_kecamatan", $id_kecamatan)->first();
+    }
+
+    // Insert Kecamatan
+    public static function insertKecamatan($req)
+    {
+        return DB::table(self::$tblKecamatan)->insert($req->all());
+    }
+
+    // Edit Kecamatan
+    public static function updateKecamatan($req, $id_kecamatan)
+    {
+        return DB::table(self::$tblKecamatan)
+            ->where("id_kecamatan", $id_kecamatan)
+            ->update($req->all());
+    }
+
+    // Delete Kecamatan By ID
+    public static function deleteKecamatanById($id_kecamatan)
+    {
+        return DB::table(self::$tblKecamatan)
+            ->where("id_kecamatan", $id_kecamatan)
+            ->delete();
+    }
     // Get All Kelurahan By ID Kecamatan
     public static function getAllKelurahan($id_kecamatan)
     {
