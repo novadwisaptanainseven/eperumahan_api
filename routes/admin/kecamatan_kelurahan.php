@@ -21,7 +21,7 @@ Route::prefix($prefix)->group(function () {
 
   Route::get("/kelurahan/{id_kelurahan}", [PerumahanController::class, "getKelurahanById"]);
 
-  Route::post("/kelurahan", [PerumahanController::class, "insertKelurahan"]);
+  Route::post("{id_kecamatan}/kelurahan", [PerumahanController::class, "insertKelurahan"]);
 
   Route::put("/kelurahan/{id_kelurahan}", [PerumahanController::class, "editKelurahan"]);
 

@@ -170,6 +170,97 @@ class PerumahanController extends Controller
         }
     }
 
+    // Insert Kelurahan
+    public function insertKelurahan(Request $req, $id_kecamatan)
+    {
+        $message = [
+            "required" => ":attribute harus diisi"
+        ];
+
+        $validator = Validator::make(
+            $req->all(),
+            [
+                "nama_kelurahan" => "required"
+            ],
+            $message
+        );
+        if ($validator->fails()) {
+            return response()->json([
+                'errors' => $validator->errors()
+            ], 400);
+        }
+
+        // Cek apakah data kecamatan ditemukan
+        $kecamatan = Perumahan::getKecamatanById($id_kecamatan);
+        if (!$kecamatan) {
+            return response()->json([
+                "message" => "Data kecamatan dengan id: $id_kecamatan tidak ditemukan",
+            ], 404);
+        }
+
+        $insert = Perumahan::insertKelurahan($req, $id_kecamatan);
+
+        return response()->json([
+            "message" => "Berhasil menambahkan data kelurahan untuk kecamatan dengan id: $id_kecamatan",
+            "input_data" => $req->all()
+        ], 201);
+    }
+
+    // Edit Kelurahan
+    public function editKelurahan(Request $req, $id_kelurahan)
+    {
+        $message = [
+            "required" => ":attribute harus diisi"
+        ];
+
+        $validator = Validator::make(
+            $req->all(),
+            [
+                "nama_kelurahan" => "required"
+            ],
+            $message
+        );
+        if ($validator->fails()) {
+            return response()->json([
+                'errors' => $validator->errors()
+            ], 400);
+        }
+
+        // Cek apakah data kelurahan ditemukan
+        $kelurahan = Perumahan::getKelurahanById($id_kelurahan);
+        if (!$kelurahan) {
+            return response()->json([
+                "message" => "Data kelurahan dengan id: $id_kelurahan tidak ditemukan",
+            ], 404);
+        }
+
+        $update = Perumahan::updateKelurahan($req, $id_kelurahan);
+
+        return response()->json([
+            "message" => "Berhasil mengubah data kelurahan  dengan id: $id_kelurahan",
+            "input_data" => $req->all()
+        ], 201);
+    }
+
+    // Delete Kelurahan by ID
+    public function deleteKelurahan($id_kelurahan)
+    {
+        // Cek apakah data kelurahan ditemukan
+        $kelurahan = Perumahan::getKelurahanById($id_kelurahan);
+        if ($kelurahan) {
+            $delete = Perumahan::deleteKelurahanById($id_kelurahan);
+
+            return response()->json([
+                "message" => "Berhasil menghapus data kelurahan dengan id: $id_kelurahan",
+                "deleted_data" => $kelurahan
+            ], 200);
+        } else {
+            return response()->json([
+                "message" => "Data kelurahan dengan id: $id_kelurahan tidak ditemukan",
+            ], 404);
+        }
+    }
+
     // GROUP PERUMAHAN
 
     // Search Perumahan

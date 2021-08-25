@@ -17,6 +17,7 @@ class Perumahan extends Model
     protected $table = 'perumahan';
     protected $primaryKey = "id_perumahan";
     protected static $tblKecamatan = "kecamatan";
+    protected static $tblKelurahan = "kelurahan";
 
     // Get All Kecamatan
     public static function getAllKecamatan()
@@ -61,6 +62,7 @@ class Perumahan extends Model
             ->where("id_kecamatan", $id_kecamatan)
             ->delete();
     }
+
     // Get All Kelurahan By ID Kecamatan
     public static function getAllKelurahan($id_kecamatan)
     {
@@ -78,6 +80,39 @@ class Perumahan extends Model
         } else {
             return null;
         }
+    }
+
+    // Get Kelurahan By ID
+    public static function getKelurahanById($id_kelurahan)
+    {
+        return DB::table(self::$tblKelurahan)->where("id_kelurahan", $id_kelurahan)->first();
+    }
+
+    // Insert Kelurahan
+    public static function insertKelurahan($req, $id_kecamatan)
+    {
+        $data = [
+            "id_kecamatan" => $id_kecamatan,
+            "nama_kelurahan" => $req->nama_kelurahan,
+        ];
+
+        return DB::table(self::$tblKelurahan)->insert($data);
+    }
+
+    // Update Kelurahan
+    public static function updateKelurahan($req, $id_kelurahan)
+    {
+        return DB::table(self::$tblKelurahan)
+            ->where("id_kelurahan", $id_kelurahan)
+            ->update($req->all());
+    }
+
+    // Delete Kelurahan By ID
+    public static function deleteKelurahanById($id_kelurahan)
+    {
+        return DB::table(self::$tblKelurahan)
+            ->where("id_kelurahan", $id_kelurahan)
+            ->delete();
     }
 
     // GROUP PERUMAHAN
