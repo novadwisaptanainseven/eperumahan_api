@@ -77,11 +77,26 @@ class Dashboard extends Model
             ->get()
             ->count();
 
+        // Get total properti berdasarkan MBR dan NON MBR
+        $properti_mbr = DB::table($bangunan)
+            ->where("kategori_bangunan", "MBR")
+            ->get()
+            ->count();
+        $properti_non_mbr = DB::table($bangunan)
+            ->where("kategori_bangunan", "NON MBR")
+            ->get()
+            ->count();
+
+
         $data = [
             "total_perumahan"  => $total_perumahan,
             "total_properti"   => $total_bangunan,
             "total_perumahan_menunggu_konfirmasi"   => $total_perumahan_menunggu_konfirmasi,
-            "total_properti_menunggu_konfirmasi"   => $total_bangunan_menunggu_konfirmasi
+            "total_properti_menunggu_konfirmasi"   => $total_bangunan_menunggu_konfirmasi,
+            "properti"   => [
+                "total_mbr" => $properti_mbr,
+                "total_non_mbr" => $properti_non_mbr,
+            ],
         ];
 
         return $data;
