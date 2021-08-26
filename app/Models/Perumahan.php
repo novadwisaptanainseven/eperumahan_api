@@ -72,7 +72,7 @@ class Perumahan extends Model
             return 'ID_REQUIRED';
         }
 
-        // Get Data Kecamatan
+        // Get Data Kelurahan
         $data_kelurahan = DB::table($kelurahan)->where('id_kecamatan', $id_kecamatan)->get();
 
         if (count($data_kelurahan) > 0) {

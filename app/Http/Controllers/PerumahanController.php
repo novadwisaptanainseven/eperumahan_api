@@ -129,6 +129,8 @@ class PerumahanController extends Controller
     // Get All Kelurahan By ID Kecamatan
     public function getAllKelurahan($id_kecamatan = '')
     {
+        // Get Data Kecamatan
+        $kecamatan = Perumahan::getKecamatanById($id_kecamatan);
         $kelurahan = Perumahan::getAllKelurahan($id_kecamatan);
 
         if ($kelurahan != "ID_REQUIRED") {
@@ -138,6 +140,7 @@ class PerumahanController extends Controller
 
             return response()->json([
                 "message" => "Get All Kelurahan dengan id kecamatan: $id_kecamatan Berhasil",
+                "kecamatan" => $kecamatan->nama_kecamatan,
                 "data"    => $kelurahan
             ], 200);
         } elseif ($kelurahan == "ID_REQUIRED") {
