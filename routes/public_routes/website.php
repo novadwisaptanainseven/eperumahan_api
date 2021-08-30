@@ -3,6 +3,7 @@
 use App\Http\Controllers\BrosurController;
 use App\Http\Controllers\KontakController;
 use App\Http\Controllers\PengembangController;
+use App\Http\Controllers\PerumahanController;
 use App\Http\Controllers\PropertiController;
 
 // API UNTUK BAGIAN HALAMAN WEBSITE E-PERUMAHAN
