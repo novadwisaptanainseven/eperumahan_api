@@ -18,6 +18,15 @@ class Perumahan extends Model
     protected $primaryKey = "id_perumahan";
     protected static $tblKecamatan = "kecamatan";
     protected static $tblKelurahan = "kelurahan";
+    protected static $tblKategori = "kategori";
+    protected static $tblProperti = "bangunan";
+
+    // Get All Kategori
+    public static function getAllKategori()
+    {
+        // Get Data Kecamatan
+        return DB::table(self::$tblKategori)->get();
+    }
 
     // Get All Kecamatan
     public static function getAllKecamatan()
@@ -290,6 +299,7 @@ class Perumahan extends Model
             "latitude"            => $req->latitude,
             "id_kecamatan"        => $req->id_kecamatan,
             "id_kelurahan"        => $req->id_kelurahan,
+            "id_kategori"         => $req->id_kategori,
             "slug"                => $req->perumahan_slug,
             "legalitas"           => $legalitas,
             "status_perumahan"    => 0,
@@ -426,6 +436,7 @@ class Perumahan extends Model
                 'longitude' => ($req->longitude !== null) ? $req->longitude : $data_perumahan->longitude,
                 'id_kelurahan' => ($req->id_kelurahan !== null) ? $req->id_kelurahan : $data_perumahan->id_kelurahan,
                 'id_kecamatan' => ($req->id_kecamatan !== null) ? $req->id_kecamatan : $data_perumahan->id_kecamatan,
+                'id_kategori' => ($req->id_kategori !== null) ? $req->id_kategori : $data_perumahan->id_kategori,
                 'slug' => $slug
             ];
             // Update data in database
@@ -451,6 +462,7 @@ class Perumahan extends Model
         $pengembang = 'pengembang';
         $kelurahan = 'kelurahan';
         $kecamatan = 'kecamatan';
+        $tbl_kategori = 'kategori';
 
         // Inisialisasi Pagination
         $page = intval($req->page);
@@ -462,6 +474,7 @@ class Perumahan extends Model
             ->leftJoin($pengembang, "$perumahan.id_pengembang", '=', "$pengembang.id_pengembang")
             ->leftJoin($kelurahan, "$kelurahan.id_kelurahan", "=", "$perumahan.id_kelurahan")
             ->leftJoin($kecamatan, "$kecamatan.id_kecamatan", "=", "$perumahan.id_kecamatan")
+            ->leftJoin($tbl_kategori, "$tbl_kategori.id_kategori", "=", "$perumahan.id_kategori")
             ->get()
             ->count();
 
@@ -474,6 +487,7 @@ class Perumahan extends Model
             ->leftJoin($pengembang, "$perumahan.id_pengembang", '=', "$pengembang.id_pengembang")
             ->leftJoin($kelurahan, "$kelurahan.id_kelurahan", "=", "$perumahan.id_kelurahan")
             ->leftJoin($kecamatan, "$kecamatan.id_kecamatan", "=", "$perumahan.id_kecamatan")
+            ->leftJoin($tbl_kategori, "$tbl_kategori.id_kategori", "=", "$perumahan.id_kategori")
             ->offset($offset)
             ->limit($per_page)
             ->orderBy("$perumahan.status_perumahan", $order)
@@ -529,6 +543,7 @@ class Perumahan extends Model
         $kelurahan = 'kelurahan';
         $kecamatan = 'kecamatan';
         $bangunan = 'bangunan';
+        $tbl_kategori = 'kategori';
 
         // Get data pengembang sekarang berdasarkan current user
         $user = Auth::user();
@@ -556,6 +571,7 @@ class Perumahan extends Model
             ->where("$perumahan.id_pengembang", $data_pengembang->id_pengembang)
             ->leftJoin($kelurahan, "$kelurahan.id_kelurahan", "=", "$perumahan.id_kelurahan")
             ->leftJoin($kecamatan, "$kecamatan.id_kecamatan", "=", "$perumahan.id_kecamatan")
+            ->leftJoin($tbl_kategori, "$tbl_kategori.id_kategori", "=", "$perumahan.id_kategori")
             ->offset($offset)
             ->limit($limit)
             ->orderBy("$perumahan.id_perumahan", $order)
@@ -616,6 +632,7 @@ class Perumahan extends Model
         $sarana_prasarana_perumahan = "sarana_prasarana_perumahan";
         $fasilitas_perumahan = "fasilitas_perumahan";
         $foto_perumahan = "foto_perumahan";
+        $tbl_kategori = "kategori";
 
         // Get Data Fasilitas
         $fasilitas = DB::table($fasilitas_perumahan)
@@ -637,6 +654,7 @@ class Perumahan extends Model
             ->where(['id_perumahan' => $id_perumahan])
             ->leftJoin('kecamatan', 'perumahan.id_kecamatan', '=', 'kecamatan.id_kecamatan')
             ->leftJoin('kelurahan', 'perumahan.id_kelurahan', '=', 'kelurahan.id_kelurahan')
+            ->leftJoin($tbl_kategori, "$tbl_kategori.id_kategori", '=', "perumahan.id_kategori")
             ->first();
 
 
@@ -875,6 +893,7 @@ class Perumahan extends Model
             "id_pengembang"      => $data_pengembang->id_pengembang,
             "id_kecamatan"       => $data_perumahan->id_kecamatan,
             "id_kelurahan"       => $data_perumahan->id_kelurahan,
+            "id_kategori"        => $data_perumahan->id_kategori,
             "lokasi_bangunan"    => $data_perumahan->lokasi,
             "longitude"          => $data_perumahan->longitude,
             "latitude"           => $data_perumahan->latitude,
@@ -1039,6 +1058,7 @@ class Perumahan extends Model
         $bangunan   = 'bangunan';
         $perumahan  = 'perumahan';
         $pengembang = 'pengembang';
+        $tblKategori = 'kategori';
 
         // Inisialisasi Pagination
         $page = intval($req->page);
@@ -1068,6 +1088,7 @@ class Perumahan extends Model
         // Mengambil data properti berdasarkan ID Perumahan
         $data_bangunan = DB::table($bangunan)
             ->where(['id_perumahan' => $id_perumahan])
+            ->leftJoin($tblKategori, "$tblKategori.id_kategori", '=', "$bangunan.id_kategori")
             ->offset($offset)
             ->limit($limit)
             ->orderBy('id_bangunan', $order)
@@ -1221,6 +1242,7 @@ class Perumahan extends Model
         $kecamatan = 'kecamatan';
         $foto_bangunan = 'foto_bangunan';
         $spesifikasi_rumah = 'spesifikasi_rumah';
+        $tblKategori = 'kategori';
 
         // Get Data Foto Bangunan By ID Bangunan
         $data_foto = DB::table($foto_bangunan)
@@ -1238,6 +1260,7 @@ class Perumahan extends Model
             ->where(['id_bangunan' => $id_bangunan])
             ->leftJoin("$kelurahan", "$bangunan.id_kelurahan", "=", "$kelurahan.id_kelurahan")
             ->leftJoin("$kecamatan", "$bangunan.id_kecamatan", "=", "$kecamatan.id_kecamatan")
+            ->leftJoin($tblKategori, "$tblKategori.id_kategori", "=", "$bangunan.id_kategori")
             ->first();
 
         // Cek apakah data bangunan ada
@@ -1291,6 +1314,7 @@ class Perumahan extends Model
         $data = [
             "nama_bangunan"      => ($req->nama_bangunan !== null) ? $req->nama_bangunan : $data_bangunan->nama_bangunan,
             "kategori_bangunan"  => ($req->kategori_bangunan !== null) ? $req->kategori_bangunan : $data_bangunan->kategori_bangunan,
+            "id_kategori"        => ($req->id_kategori !== null) ? $req->id_kategori : $data_bangunan->id_kategori,
             "tipe_bangunan"      => ($req->tipe_bangunan !== null) ? $req->tipe_bangunan : $data_bangunan->tipe_bangunan,
             "deskripsi_bangunan" => ($req->deskripsi_bangunan !== null) ? $req->deskripsi_bangunan : $data_bangunan->deskripsi_bangunan,
             "harga_bangunan"     => ($req->harga_bangunan !== null) ? $req->harga_bangunan : $data_bangunan->harga_bangunan,

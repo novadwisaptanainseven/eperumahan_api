@@ -6,6 +6,9 @@ $prefix1 = "perumahan";
 $prefix2 = "properti";
 
 // GROUP PERUMAHAN
+// Get All Kategori
+Route::get('/kategori', [PerumahanController::class, 'getAllKategori']);
+
 // Get All Kecamatan
 Route::get('/kecamatan', [PerumahanController::class, 'getAllKecamatan']);
 

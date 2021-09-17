@@ -11,6 +11,9 @@ class Dashboard extends Model
 {
     use HasFactory;
 
+    protected static $tbl_perumahan = "perumahan";
+    protected static $tbl_properti = "bangunan";
+
     // Get All Dashboard Information Super Admin
     public static function getDashboardInfoSuperAdmin()
     {
@@ -118,8 +121,6 @@ class Dashboard extends Model
             ->where('id_user', '=', $user->id)
             ->first();
 
-
-
         // Get perumahan berdasarkan id pengembang
         $data_perumahan = DB::table($perumahan)
             ->where([
@@ -191,6 +192,51 @@ class Dashboard extends Model
             ->count();
         $total_bangunan_tidak_ditayangkan = $total_bangunan - $total_bangunan_ditayangkan;
 
+        // Get total perumahan berdasarkan kategori
+        $tot_mbr = DB::table(self::$tbl_perumahan)->where([
+            ["id_pengembang", "=", $user_pengembang->id_pengembang],
+            ["id_kategori", "=", 1],
+        ])->get()->count();
+        $tot_komersial = DB::table(self::$tbl_perumahan)->where([
+            ["id_pengembang", "=", $user_pengembang->id_pengembang],
+            ["id_kategori", "=", 2],
+        ])->get()->count();
+        $tot_campuran = DB::table(self::$tbl_perumahan)->where([
+            ["id_pengembang", "=", $user_pengembang->id_pengembang],
+            ["id_kategori", "=", 3],
+        ])->get()->count();
+        $tot_perumahan = DB::table(self::$tbl_perumahan)->where("id_pengembang", $user_pengembang->id_pengembang)->get()->count();
+
+        // Get total properti berdasarkan kategori
+        $tot_mbr2 = DB::table(self::$tbl_properti)->where([
+            ["id_pengembang", "=", $user_pengembang->id_pengembang],
+            ["id_kategori", "=", 1],
+        ])->get()->count();
+        $tot_komersial2 = DB::table(self::$tbl_properti)->where([
+            ["id_pengembang", "=", $user_pengembang->id_pengembang],
+            ["id_kategori", "=", 2],
+        ])->get()->count();
+        $tot_campuran2 = DB::table(self::$tbl_properti)->where([
+            ["id_pengembang", "=", $user_pengembang->id_pengembang],
+            ["id_kategori", "=", 3],
+        ])->get()->count();
+        $tot_properti = DB::table(self::$tbl_properti)->where("id_pengembang", $user_pengembang->id_pengembang)->get()->count();
+
+        $total_grafik = [
+            "perumahan" => [
+                "tot_mbr" => $tot_mbr,
+                "tot_komersial" => $tot_komersial,
+                "tot_campuran" => $tot_campuran,
+                "tot_perumahan" => $tot_perumahan,
+            ],
+            "properti" => [
+                "tot_mbr" => $tot_mbr2,
+                "tot_komersial" => $tot_komersial2,
+                "tot_campuran" => $tot_campuran2,
+                "tot_properti" => $tot_properti,
+            ],
+        ];
+
         $data = [
             "id_pengembang"                         => $user_pengembang->id_pengembang,
             "total_perumahan"                       => $total_perumahan,
@@ -200,7 +246,8 @@ class Dashboard extends Model
             "total_perumahan_ditayangkan"           => $total_perumahan_ditayangkan,
             "total_perumahan_tidak_ditayangkan"     => $total_perumahan_tidak_ditayangkan,
             "total_properti_ditayangkan"            => $total_bangunan_ditayangkan,
-            "total_properti_tidak_ditayangkan"      => $total_bangunan_tidak_ditayangkan
+            "total_properti_tidak_ditayangkan"      => $total_bangunan_tidak_ditayangkan,
+            "total_grafik"                          => $total_grafik,
         ];
 
         return $data;

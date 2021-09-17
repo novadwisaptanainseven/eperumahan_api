@@ -11,6 +11,15 @@ use Illuminate\Support\Facades\Storage;
 
 class PerumahanController extends Controller
 {
+    // Get All Kategori
+    public function getAllKategori() {
+        $kategori = Perumahan::getAllKategori();
+
+        return response()->json([
+            "message" => "Get All Kategori Berhasil",
+            "data"    => $kategori
+        ], 200);
+    }
 
     // Get All Kecamatan
     public function getAllKecamatan()
@@ -333,7 +342,8 @@ class PerumahanController extends Controller
                 "fasilitas_perumahan" => "required",
                 "sarana_prasarana_perumahan" => "required",
                 "id_kecamatan"        => 'required',
-                "id_kelurahan"        => 'required'
+                "id_kelurahan"        => 'required',
+                "id_kategori"         => 'required',
             ],
             $message
         );
@@ -611,6 +621,7 @@ class PerumahanController extends Controller
             "nama_bangunan"      => "required",
             "deskripsi_bangunan" => "required",
             "kategori_bangunan"  => "required",
+            "id_kategori"        => "required",
             "tipe_bangunan"      => "required",
             "jumlah_tersedia"    => "required|numeric",
             "harga_bangunan"     => "required|numeric",
