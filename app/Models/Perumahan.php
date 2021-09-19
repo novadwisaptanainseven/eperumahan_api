@@ -1314,6 +1314,7 @@ class Perumahan extends Model
         $data = [
             "nama_bangunan"      => ($req->nama_bangunan !== null) ? $req->nama_bangunan : $data_bangunan->nama_bangunan,
             "kategori_bangunan"  => ($req->kategori_bangunan !== null) ? $req->kategori_bangunan : $data_bangunan->kategori_bangunan,
+            "id_kategori"  => ($req->id_kategori !== null) ? $req->id_kategori : $data_bangunan->id_kategori,
             "id_kategori"        => ($req->id_kategori !== null) ? $req->id_kategori : $data_bangunan->id_kategori,
             "tipe_bangunan"      => ($req->tipe_bangunan !== null) ? $req->tipe_bangunan : $data_bangunan->tipe_bangunan,
             "deskripsi_bangunan" => ($req->deskripsi_bangunan !== null) ? $req->deskripsi_bangunan : $data_bangunan->deskripsi_bangunan,

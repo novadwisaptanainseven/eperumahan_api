@@ -55,6 +55,7 @@ class Dashboard extends Model
         // Tabel - tabel
         $perumahan = 'perumahan';
         $bangunan = 'bangunan';
+        $pengembang = 'pengembang';
 
         // Get total perumahan
         $total_perumahan = DB::table($perumahan)
@@ -80,26 +81,67 @@ class Dashboard extends Model
             ->get()
             ->count();
 
-        // Get total properti berdasarkan MBR dan NON MBR
-        $properti_mbr = DB::table($bangunan)
-            ->where("kategori_bangunan", "MBR")
+        // Get total perumahan berdasarkan MBR, Komersial, dan Campuran
+        $perum_mbr = DB::table($perumahan)
+            ->where("id_kategori", 1)
             ->get()
             ->count();
-        $properti_non_mbr = DB::table($bangunan)
-            ->where("kategori_bangunan", "NON MBR")
+        $perum_komersial = DB::table($perumahan)
+            ->where("id_kategori", 2)
+            ->get()
+            ->count();
+        $perum_campuran = DB::table($perumahan)
+            ->where("id_kategori", 3)
             ->get()
             ->count();
 
+        // Get total properti berdasarkan MBR, Komersial, dan Campuran
+        $properti_mbr = DB::table($bangunan)
+            ->where("id_kategori", 1)
+            ->get()
+            ->count();
+        $properti_komersial = DB::table($bangunan)
+            ->where("id_kategori", 2)
+            ->get()
+            ->count();
+        $properti_campuran = DB::table($bangunan)
+            ->where("id_kategori", 3)
+            ->get()
+            ->count();
+
+        // Hitung jumlah pengembang yang aktif dan tidak aktif
+        $tot_pengembang = DB::table($pengembang)
+            ->get()
+            ->count();
+        $tot_pengembang_aktif = DB::table($pengembang)
+            ->where("status_aktif", 1)
+            ->get()
+            ->count();
+        $tot_pengembang_tdk_aktif = DB::table($pengembang)
+            ->where("status_aktif", 0)
+            ->get()
+            ->count();
 
         $data = [
             "total_perumahan"  => $total_perumahan,
             "total_properti"   => $total_bangunan,
             "total_perumahan_menunggu_konfirmasi"   => $total_perumahan_menunggu_konfirmasi,
             "total_properti_menunggu_konfirmasi"   => $total_bangunan_menunggu_konfirmasi,
+            "perumahan"   => [
+                "total_mbr" => $perum_mbr,
+                "total_komersial" => $perum_komersial,
+                "total_campuran" => $perum_campuran,
+            ],
             "properti"   => [
                 "total_mbr" => $properti_mbr,
-                "total_non_mbr" => $properti_non_mbr,
+                "total_komersial" => $properti_komersial,
+                "total_campuran" => $properti_campuran,
             ],
+            "pengembang" => [
+                "aktif" => $tot_pengembang_aktif,
+                "tidak_aktif" => $tot_pengembang_tdk_aktif,
+                "total" => $tot_pengembang,
+            ]
         ];
 
         return $data;
