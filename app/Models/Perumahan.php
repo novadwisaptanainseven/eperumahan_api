@@ -135,13 +135,15 @@ class Perumahan extends Model
         $pengembang = 'pengembang';
         $perumahan = 'perumahan';
         $bangunan = 'bangunan';
+        $tblKategori = 'kategori';
 
         $data_perumahan = DB::table($perumahan)
             ->select(
                 "$perumahan.*",
                 "$pengembang.nama_pengembang",
                 "$kecamatan.nama_kecamatan",
-                "$kelurahan.nama_kelurahan"
+                "$kelurahan.nama_kelurahan",
+                "$tblKategori.*"
             )
             ->where('nama_perumahan', 'like', "%$search_value%")
             ->orWhere('lokasi', 'like', "%$search_value%")
@@ -149,6 +151,7 @@ class Perumahan extends Model
             ->leftJoin($pengembang, "$pengembang.id_pengembang", "=", "$perumahan.id_pengembang")
             ->leftJoin($kelurahan, "$kelurahan.id_kelurahan", "=", "$perumahan.id_kelurahan")
             ->leftJoin($kecamatan, "$kecamatan.id_kecamatan", "=", "$perumahan.id_kecamatan")
+            ->leftJoin($tblKategori, "$tblKategori.id_kategori", "=", "$perumahan.id_kategori")
             ->get();
 
         if (count($data_perumahan) === 0) {
