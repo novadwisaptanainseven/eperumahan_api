@@ -11,8 +11,20 @@ use Illuminate\Support\Facades\Storage;
 
 class PerumahanController extends Controller
 {
+    // Get Select Perumahan
+    public function getSelectPerumahan()
+    {
+        $perumahan = Perumahan::all();
+
+        return response()->json([
+            "message" => "Get All Perumahan Berhasil",
+            "data"    => $perumahan
+        ], 200);
+    }
+
     // Get All Kategori
-    public function getAllKategori() {
+    public function getAllKategori()
+    {
         $kategori = Perumahan::getAllKategori();
 
         return response()->json([
@@ -20,6 +32,8 @@ class PerumahanController extends Controller
             "data"    => $kategori
         ], 200);
     }
+
+
 
     // Get All Kecamatan
     public function getAllKecamatan()

@@ -11,6 +11,9 @@ Route::prefix($prefix1)->group(function () {
   Route::get('/search', [PerumahanController::class, 'searchPerumahan']);
 
   // Get All Data Perumahan
+  Route::get('/select', [PerumahanController::class, 'getSelectPerumahan']);
+
+  // Get All Data Perumahan
   Route::get('/', [PerumahanController::class, 'getAll']);
 
   // Get Data Perumahan By ID
