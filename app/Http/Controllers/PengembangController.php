@@ -48,7 +48,7 @@ class PengembangController extends Controller
         $validator = Validator::make(
             $request->all(),
             [
-                'nik_pengembang'     => 'required',
+                'nama_perusahaan'    => 'required',
                 'nama_pengembang'    => 'required',
                 'telepon_pengembang' => 'required',
                 'email_pengembang'   => 'required',
@@ -87,7 +87,7 @@ class PengembangController extends Controller
         $user->username = $request->username;
         $user->password = $request->password;
         $konf_pass      = $request->konf_pass;
-        $user->level    = 2;
+        $user->level    = 3;
         $user->status   = 1;
 
         // Cek Apakah Konfimasi Password Cocok
@@ -107,7 +107,7 @@ class PengembangController extends Controller
 
         // Tambah Data Pengembang
         $pengembang = new Pengembang;
-        $pengembang->nik_pengembang     = $request->nik_pengembang;
+        $pengembang->nama_perusahaan     = $request->nama_perusahaan;
         $pengembang->nama_pengembang    = $request->nama_pengembang;
         $pengembang->telepon_pengembang = $request->telepon_pengembang;
         $pengembang->alamat_pengembang  = $request->alamat_pengembang;
@@ -115,8 +115,8 @@ class PengembangController extends Controller
 
         // Pembuatan Slug -> id-nama_pengembang
         // Dapatkan data terakhir di tabel pengembang
-        $last_data                      = DB::table('pengembang')->orderBy('id_pengembang', 'DESC')->first();
-        $slug                           = Str::of($last_data->id_pengembang + 1 . ' ' . $pengembang->nama_pengembang)->slug('-');
+        // $last_data                      = DB::table('pengembang')->orderBy('id_pengembang', 'DESC')->first();
+        $slug                           = Str::of($pengembang->nama_perusahaan)->slug('-');
         $pengembang->pengembang_slug    = $slug;
         // End Pembuatan Slug
 

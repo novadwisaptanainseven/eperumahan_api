@@ -28,6 +28,10 @@ class Pengembang extends Model
             ])
             ->orWhere([
                 ['status_deleted', '=', 0],
+                ['nama_perusahaan', 'like', "%$search_value%"]
+            ])
+            ->orWhere([
+                ['status_deleted', '=', 0],
                 ['telepon_pengembang', 'like', "%$search_value%"]
             ])
             ->orWhere([
@@ -168,7 +172,7 @@ class Pengembang extends Model
     // Update Pengembang
     public static function updatePengembang($req, $pengembang)
     {
-        $pengembang->nik_pengembang  = ($req->nik_pengembang) ? $req->nik_pengembang : $pengembang->nik_pengembang;
+        $pengembang->nama_perusahaan  = ($req->nama_perusahaan) ? $req->nama_perusahaan : $pengembang->nama_perusahaan;
         $pengembang->nama_pengembang = ($req->nama_pengembang) ? $req->nama_pengembang : $pengembang->nama_pengembang;
         $pengembang->telepon_pengembang = ($req->telepon_pengembang) ? $req->telepon_pengembang : $pengembang->telepon_pengembang;
         $pengembang->alamat_pengembang = ($req->alamat_pengembang) ? $req->alamat_pengembang : $pengembang->alamat_pengembang;
@@ -176,7 +180,7 @@ class Pengembang extends Model
 
         // Pembuatan Slug
         // Dapatkan data terakhir di tabel pengembang
-        $slug                           = Str::of($pengembang->id_pengembang . ' ' . $pengembang->nama_pengembang)->slug('-');
+        $slug                           = Str::of($pengembang->id_pengembang . ' ' . $pengembang->nama_perusahaan)->slug('-');
         $pengembang->pengembang_slug    = $slug;
         // End Pembuatan Slug
 

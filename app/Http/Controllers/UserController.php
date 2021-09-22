@@ -117,12 +117,27 @@ class UserController extends Controller
     // Update Data User
     public function updateUser(Request $request, $id_user)
     {
+        $konf_pass_rules = '';
+        $pass_baru_rules = '';
+        $pass_lama_rules = '';
+
         // Cek username
         $user = User::where('id', $id_user)->first();
         if ($user->username === $request->username) {
             $username_rules = 'required';
         } else {
             $username_rules = 'unique:users|required';
+        }
+
+        if ($request->password_lama) {
+            $konf_pass_rules = 'required';
+            $pass_baru_rules = 'required';
+        } else {
+            if ($request->password_baru || $request->konf_pass) {
+                $pass_lama_rules = 'required';
+                $konf_pass_rules = 'required';
+                $pass_baru_rules = 'required';
+            }
         }
 
         // Validation
@@ -134,9 +149,9 @@ class UserController extends Controller
             $request->all(),
             [
                 "username"      => $username_rules,
-                "password_lama" => 'required',
-                "password_baru" => 'required',
-                "konf_pass"     => 'required',
+                "password_lama" => $pass_lama_rules,
+                'konf_pass'     => $konf_pass_rules,
+                'password_baru' => $pass_baru_rules,
                 "status"        => 'required',
                 "level"         => 'required',
             ],
@@ -146,30 +161,50 @@ class UserController extends Controller
             // Jika Validasi Gagal
             return response()->json([
                 "errors" => $validator->errors()
-            ]);
-        }
-
-        // Cek password lama
-        if (!Hash::check($request->password_lama, $user->password)) {
-            return response([
-                'errors' => ['Password lama salah']
             ], 400);
         }
 
-        // Cek apakah konfirmasi password cocok
-        if ($request->password_baru === $request->konf_pass) {
-            // Hashing password
-            $password_baru = Hash::make($request->password_baru);
-        } else {
-            return response([
-                'errors' => ['Konfirmasi password tidak sesuai']
-            ], 400);
+        $password_baru = "";
+        if (!empty($request->password_lama)) {
+            if (Hash::check($request->password_lama, $user->password)) {
+                if ($request->password_baru === $request->konf_pass) {
+                    $password_baru = Hash::make($request->password_baru);
+
+                    // return response()->json([
+                    //     "message" => "Update Berhasil"
+                    // ]);
+                } else {
+                    return response()->json([
+                        'errors' => ['Konfirmasi password tidak sesuai']
+                    ], 400);
+                }
+            } else {
+                return response()->json([
+                    'errors' => ['Password lama salah']
+                ], 400);
+            }
         }
+        // // Cek password lama
+        // if (!Hash::check($request->password_lama, $user->password)) {
+        //     return response([
+        //         'errors' => ['Password lama salah']
+        //     ], 400);
+        // }
+
+        // // Cek apakah konfirmasi password cocok
+        // if ($request->password_baru === $request->konf_pass) {
+        //     // Hashing password
+        //     $password_baru = Hash::make($request->password_baru);
+        // } else {
+        //     return response([
+        //         'errors' => ['Konfirmasi password tidak sesuai']
+        //     ], 400);
+        // }
         // Jika Validasi Berhasil
         // Lakukan Update Data
 
         $user->username = ($request->username !== null) ? $request->username : $user->username;
-        $user->password = $password_baru;
+        $user->password = $password_baru ? $password_baru : $user->password;
         $user->level    = ($request->level !== null) ? $request->level : $user->level;
         $user->status   = ($request->status !== null) ? $request->status : $user->status;
         $user->save();
