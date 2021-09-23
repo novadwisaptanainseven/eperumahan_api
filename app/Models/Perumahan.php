@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Laravel\Sanctum\HasApiTokens;
@@ -20,6 +21,156 @@ class Perumahan extends Model
     protected static $tblKelurahan = "kelurahan";
     protected static $tblKategori = "kategori";
     protected static $tblProperti = "bangunan";
+    protected static $tblPerumahan = "perumahan";
+    protected static $tblFotoPerumahan = "foto_perumahan";
+    protected static $tblSaranaPrasarana = "sarana_prasarana_perumahan";
+    protected static $tblFasilitas = "fasilitas_perumahan";
+
+    // Add Perumahan Master
+    public static function addPerumahanMaster($req)
+    {
+        // Cek Apakah ada file foto / Validasi ekstensi file apakah sesuai dengan ext_allowed
+        $foto = [];
+        if (!$req->hasFile('foto_perumahan'))
+            $foto = '';
+        else {
+            $images = $req->file('foto_perumahan');
+            foreach ($images as $image) {
+                $ext_allowed = $req->ext_allowed;
+                $ext_file = $image->extension();
+                if (!in_array($ext_file, $ext_allowed)) {
+                    return 'WRONG_EXTENSION';
+                }
+            }
+        }
+        // Akhir validasi
+
+        // Cek Apakah ada file legalitas
+        if (!$req->hasFile('legalitas'))
+            $legalitas = '';
+        else {
+
+            $file = $req->file('legalitas');
+
+            // Sanitize nama file
+            $file_name = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+            $file_ext = pathinfo($file->getClientOriginalName(), PATHINFO_EXTENSION);
+            $sanitize = Str::of($file_name)->slug('-');
+            $sanitize = $sanitize . '.' . $file_ext;
+
+            $legalitas = $file->storeAs("perumahan/file", rand(0, 9999) . '-' . date('Ymd') . '-' . $sanitize);
+        }
+
+        // Cek Apakah ada file siteplan
+        if (!$req->hasFile('siteplan'))
+            $siteplan = '';
+        else {
+
+            $file = $req->file('siteplan');
+
+            // Sanitize nama file
+            $file_name = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+            $file_ext = pathinfo($file->getClientOriginalName(), PATHINFO_EXTENSION);
+            $sanitize = Str::of($file_name)->slug('-');
+            $sanitize = $sanitize . '.' . $file_ext;
+
+            $siteplan = $file->storeAs("perumahan/file", rand(0, 9999) . '-' . date('Ymd') . '-' . $sanitize);
+        }
+
+        // Lakukan Proses Tambah Data
+        // Pembuatan Slug
+        // $last_data           = DB::table($perumahan)->orderBy('id_perumahan', 'DESC')->first();
+        $slug                = Str::of($req->nama_perumahan)->slug('-');
+        $req->perumahan_slug = $slug;
+        // End Pembuatan Slug
+
+        // Persiapan Data Perumahan
+        $data_perumahan = [
+            "id_pengembang"       => $req->id_pengembang,
+            "nama_perumahan"      => $req->nama_perumahan,
+            "deskripsi_perumahan" => $req->deskripsi_perumahan,
+            "lokasi"              => $req->lokasi,
+            "tahun"               => $req->tahun,
+            "luas"                => $req->luas,
+            "jumlah_unit_mbr"     => $req->jumlah_unit_mbr,
+            "jumlah_unit_non_mbr" => $req->jumlah_unit_non_mbr,
+            "jumlah_unit"         => $req->jumlah_unit,
+            "longitude"           => $req->longitude,
+            "latitude"            => $req->latitude,
+            "id_kecamatan"        => $req->id_kecamatan,
+            "id_kelurahan"        => $req->id_kelurahan,
+            "id_kategori"         => $req->id_kategori,
+            "slug"                => $req->perumahan_slug,
+            "legalitas"           => $legalitas,
+            "siteplan"            => $siteplan,
+            "status_perumahan"    => 1,
+            "status_deleted"      => 0,
+            "created_at"          => Carbon::now(),
+            "updated_at"          => Carbon::now(),
+        ];
+        // Insert Data Perumahan to Database
+        $cek_insert = DB::table(self::$tblPerumahan)->insert($data_perumahan);
+
+        $get_latest_id_perumahan = DB::table(self::$tblPerumahan)->orderBy('id_perumahan', 'DESC')->first()->id_perumahan;
+
+        // Insert Foto Perumahan
+        if ($req->foto_perumahan) {
+            $status = 0;
+
+            foreach ($req->foto_perumahan as $i => $foto) {
+
+                // Sanitize nama file
+                $file_name = pathinfo($foto->getClientOriginalName(), PATHINFO_FILENAME);
+                $file_ext = pathinfo($foto->getClientOriginalName(), PATHINFO_EXTENSION);
+                $sanitize = Str::of($file_name)->slug('-');
+                $sanitize = $sanitize . '.' . $file_ext;
+
+                $f = $foto->storeAs("perumahan/foto", rand(0, 9999) . '-' . date('Ymd') . '-' . $sanitize);
+
+                // Request foto pertama akan menjadi status utama
+                if ($i == 0)
+                    $status = 1;
+                else
+                    $status = 0;
+
+                $data_foto = [
+                    "id_perumahan" => $get_latest_id_perumahan,
+                    "foto_perumahan" => $f,
+                    "status_foto" => $status
+                ];
+
+                // Insert Data Foto Perumahan ke Database
+                DB::table(self::$tblFotoPerumahan)->insert($data_foto);
+                $i++;
+            }
+        }
+
+        // Insert Sarana dan Prasarana Perumahan
+        if ($req->sarana_prasarana) {
+            foreach ($req->sarana_prasarana_perumahan as $s) {
+                $data_sarana = [
+                    "id_perumahan" => $get_latest_id_perumahan,
+                    "nama_sarana_prasarana_perumahan" => $s
+                ];
+                // Insert Data Sarana Prasarana ke Database
+                DB::table(self::$tblSaranaPrasarana)->insert($data_sarana);
+            }
+        }
+
+        // Insert Fasilitas Perumahan
+        if ($req->fasilitas) {
+            foreach ($req->fasilitas_perumahan as $f) {
+                $data_fasilitas = [
+                    "id_perumahan" => $get_latest_id_perumahan,
+                    "nama_fasilitas_perumahan" => $f
+                ];
+                // Insert Data Fasilitas ke Database
+                DB::table(self::$tblFasilitas)->insert($data_fasilitas);
+            }
+        }
+
+        return "SUCCESS";
+    }
 
     // Get All Kategori
     public static function getAllKategori()
@@ -287,8 +438,8 @@ class Perumahan extends Model
 
         // Lakukan Proses Tambah Data
         // Pembuatan Slug
-        $last_data           = DB::table($perumahan)->orderBy('id_perumahan', 'DESC')->first();
-        $slug                = Str::of($last_data->id_perumahan + 1 . ' ' . $req->nama_perumahan)->slug('-');
+        // $last_data           = DB::table($perumahan)->orderBy('id_perumahan', 'DESC')->first();
+        $slug                = Str::of($req->nama_perumahan)->slug('-');
         $req->perumahan_slug = $slug;
         // End Pembuatan Slug
 
@@ -306,7 +457,9 @@ class Perumahan extends Model
             "slug"                => $req->perumahan_slug,
             "legalitas"           => $legalitas,
             "status_perumahan"    => 0,
-            "status_deleted"      => 0
+            "status_deleted"      => 0,
+            "created_at"          => Carbon::now(),
+            "updated_at"          => Carbon::now(),
         ];
         // Insert Data Perumahan to Database
         $cek_insert = DB::table($perumahan)->insert($data_perumahan);

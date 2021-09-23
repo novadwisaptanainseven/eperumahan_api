@@ -11,6 +11,68 @@ use Illuminate\Support\Facades\Storage;
 
 class PerumahanController extends Controller
 {
+    // Insert Perumahan Master
+    public function insertPerumahanMaster(Request $req)
+    {
+        // Validation
+        $message = [
+            "required" => ":attribute harus diisi",
+            "max" => ":attribute maksimal 5 MB",
+        ];
+
+        $validator = Validator::make(
+            $req->all(),
+            [
+                "nama_perumahan"      => "required",
+                "deskripsi_perumahan" => "required",
+                "lokasi"              => "required",
+                "tahun"               => "required",
+                "luas"                => "required",
+                'foto_perumahan'      => 'max:5048',
+                'legalitas'           => 'mimes:pdf,xls,xlsx|max:5048',
+                'siteplan'           => 'mimes:pdf,xls,xlsx|max:5048',
+                "longitude"           => "required",
+                "latitude"            => "required",
+                // "fasilitas_perumahan" => "required",
+                // "sarana_prasarana_perumahan" => "required",
+                "id_kecamatan"        => 'required',
+                "id_kelurahan"        => 'required',
+                "id_kategori"         => 'required',
+                "id_pengembang"       => 'required',
+            ],
+            $message
+        );
+
+        // Set ekstensi yang diizinkan untuk upload foto bangunan
+        $req->ext_allowed = ['jpg', 'jpeg', 'png'];
+
+        // Cek Validasi
+        if ($validator->fails()) {
+            // Jika Validasi Gagal, tampilkan response 400 BAD REQUEST
+            return response()->json([
+                'errors' => $validator->errors()
+            ], 400);
+        }
+
+        // Proses Tambah Data
+        $tambah = Perumahan::addPerumahanMaster($req);
+
+        // Cek apakah proses tambah data berhasil
+        if ($tambah !== 'WRONG_EXTENSION') {
+            // Jika berhasil, maka tampilkan response 201 CREATED
+            return response()->json([
+                "message" => "Tambah Data Perumahan Berhasil",
+                "data"    => $tambah
+            ], 201);
+        } else if ($tambah === 'WRONG_EXTENSION') {
+            // Jika ekstensi file yang dimasukkan tidak diizinkan, tampilkan response 400 BAD REQUEST
+            return response()->json([
+                "message" => "Ekstensi file foto / gambar harus bertipe jpg, jpeg, atau png!",
+                "status_response" => "400 BAD REQUEST"
+            ], 400);
+        }
+    }
+
     // Get Select Perumahan
     public function getSelectPerumahan()
     {
@@ -32,8 +94,6 @@ class PerumahanController extends Controller
             "data"    => $kategori
         ], 200);
     }
-
-
 
     // Get All Kecamatan
     public function getAllKecamatan()

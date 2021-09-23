@@ -13,6 +13,9 @@ Route::prefix($prefix1)->group(function () {
   // Get All Data Perumahan
   Route::get('/select', [PerumahanController::class, 'getSelectPerumahan']);
 
+  // Insert Data Perumahan
+  Route::post('/', [PerumahanController::class, 'insertPerumahanMaster']);
+
   // Get All Data Perumahan
   Route::get('/', [PerumahanController::class, 'getAll']);
 
