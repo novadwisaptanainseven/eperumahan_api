@@ -23,6 +23,9 @@ Route::prefix($prefix1)->group(function () {
   Route::post('', [PerumahanController::class, 'addPerumahan']);
 
   // Update Data Perumahan
+  Route::delete('/{id_perumahan}', [PerumahanController::class, 'updatePerumahanById']);
+
+  // Update Data Perumahan
   Route::post('/{id_perumahan}', [PerumahanController::class, 'updatePerumahanById']);
 
   // Update Status Perumahan

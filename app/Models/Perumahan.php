@@ -84,6 +84,9 @@ class Perumahan extends Model
         $req->perumahan_slug = $slug;
         // End Pembuatan Slug
 
+        // Get current user admin
+        $userAdmin = Auth::user();
+
         // Persiapan Data Perumahan
         $data_perumahan = [
             "id_pengembang"       => $req->id_pengembang,
@@ -107,6 +110,8 @@ class Perumahan extends Model
             "status_deleted"      => 0,
             "created_at"          => Carbon::now(),
             "updated_at"          => Carbon::now(),
+            "created_by"          => $userAdmin->username,
+            "updated_by"          => $userAdmin->username,
         ];
         // Insert Data Perumahan to Database
         $cek_insert = DB::table(self::$tblPerumahan)->insert($data_perumahan);
@@ -170,6 +175,102 @@ class Perumahan extends Model
         }
 
         return "SUCCESS";
+    }
+
+    // Update Perumahan Master
+    public static function updatePerumahanMaster($req, $id_perumahan)
+    {
+        // Table - Table
+        $kelurahan  = 'kelurahan';
+        $kecamatan  = 'kecamatan';
+        $perumahan  = 'perumahan';
+
+        // Cari data perumahan yang akan diupdate berdasarkan ID
+        $data_perumahan = DB::table(self::$tblPerumahan)->where(['id_perumahan' => $id_perumahan])->first();
+
+        // Cek apakah data perumahan ditemukan
+        if ($data_perumahan) {
+            // Cek apakah ada file legalitas
+            if (!$req->hasFile('legalitas')) {
+                $legalitas = $data_perumahan->legalitas;
+            } else {
+                $file = $req->file('legalitas');
+
+                // Hapus file legalitas lama jika user update file legalitas
+                // Get path file legalitas untuk keperluan menghapus file legalitas di storage
+                $path_legalitas = $data_perumahan->legalitas;
+                Storage::delete("$path_legalitas");
+
+                // Sanitize nama file
+                $file_name = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+                $file_ext = pathinfo($file->getClientOriginalName(), PATHINFO_EXTENSION);
+                $sanitize = Str::of($file_name)->slug('-');
+                $sanitize = $sanitize . '.' . $file_ext;
+
+                $legalitas = $file->storeAs("perumahan/file", rand(0, 9999) . '-' . date('Ymd') . '-' . $sanitize);
+            }
+
+            // Cek apakah ada file siteplan
+            if (!$req->hasFile('siteplan')) {
+                $siteplan = $data_perumahan->siteplan;
+            } else {
+                $file = $req->file('siteplan');
+
+                // Hapus file siteplan lama jika user update file siteplan
+                // Get path file siteplan untuk keperluan menghapus file siteplan di storage
+                $path_siteplan = $data_perumahan->siteplan;
+                Storage::delete("$path_siteplan");
+
+                // Sanitize nama file
+                $file_name = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+                $file_ext = pathinfo($file->getClientOriginalName(), PATHINFO_EXTENSION);
+                $sanitize = Str::of($file_name)->slug('-');
+                $sanitize = $sanitize . '.' . $file_ext;
+
+                $siteplan = $file->storeAs("perumahan/file", rand(0, 9999) . '-' . date('Ymd') . '-' . $sanitize);
+            }
+
+            // Lakukan Proses Update Data
+            // Pembuatan Slug
+            $slug = Str::of($req->nama_perumahan)->slug('-');
+            // End Pembuatan Slug
+
+            // Get current user admin
+            $userAdmin = Auth::user();
+
+            $data = [
+                'id_pengembang' => ($req->id_pengembang) ? $req->id_pengembang : $data_perumahan->id_pengembang,
+                'nama_perumahan' => ($req->nama_perumahan) ? $req->nama_perumahan : $data_perumahan->nama_perumahan,
+                'tahun' => ($req->tahun) ? $req->tahun : $data_perumahan->tahun,
+                'luas' => ($req->luas) ? $req->luas : $data_perumahan->luas,
+                'jumlah_unit_mbr' => ($req->jumlah_unit_mbr) ? $req->jumlah_unit_mbr : $data_perumahan->jumlah_unit_mbr,
+                'jumlah_unit_non_mbr' => ($req->jumlah_unit_non_mbr) ? $req->jumlah_unit_non_mbr : $data_perumahan->jumlah_unit_non_mbr,
+                'jumlah_unit' => ($req->jumlah_unit) ? $req->jumlah_unit : $data_perumahan->jumlah_unit,
+                'deskripsi_perumahan' => ($req->deskripsi_perumahan) ? $req->deskripsi_perumahan : $data_perumahan->deskripsi_perumahan,
+                'lokasi' => ($req->lokasi) ? $req->lokasi : $data_perumahan->lokasi,
+                'legalitas' => $legalitas,
+                'latitude' => ($req->latitude) ? $req->latitude : $data_perumahan->latitude,
+                'longitude' => ($req->longitude) ? $req->longitude : $data_perumahan->longitude,
+                'id_kelurahan' => ($req->id_kelurahan) ? $req->id_kelurahan : $data_perumahan->id_kelurahan,
+                'id_kecamatan' => ($req->id_kecamatan) ? $req->id_kecamatan : $data_perumahan->id_kecamatan,
+                'id_kategori' => ($req->id_kategori) ? $req->id_kategori : $data_perumahan->id_kategori,
+                'slug' => $slug,
+                'updated_at' => Carbon::now(),
+                'updated_by' => $userAdmin->username,
+            ];
+
+            // Update data in database
+            DB::table(self::$tblPerumahan)->where('id_perumahan', $id_perumahan)->update($data);
+
+            $data_perumahan = DB::table(self::$tblPerumahan)
+                ->where('id_perumahan', $id_perumahan)
+                ->leftJoin($kelurahan, "$kelurahan.id_kelurahan", "=", "$perumahan.id_kelurahan")
+                ->leftJoin($kecamatan, "$kecamatan.id_kecamatan", "=", "$perumahan.id_kecamatan")
+                ->first();
+            return $data_perumahan;
+        } else {
+            return null;
+        }
     }
 
     // Get All Kategori
@@ -579,7 +680,7 @@ class Perumahan extends Model
 
             // Lakukan Proses Tambah Data
             // Pembuatan Slug
-            $slug                = Str::of($data_perumahan->id_perumahan . ' ' . $req->nama_perumahan)->slug('-');
+            $slug = Str::of($data_perumahan->id_perumahan . ' ' . $req->nama_perumahan)->slug('-');
             // End Pembuatan Slug
 
             $data = [
@@ -618,7 +719,7 @@ class Perumahan extends Model
         $pengembang = 'pengembang';
         $kelurahan = 'kelurahan';
         $kecamatan = 'kecamatan';
-        $tbl_kategori = 'kategori';
+        $tblKategori = 'kategori';
 
         // Inisialisasi Pagination
         $page = intval($req->page);
@@ -630,7 +731,7 @@ class Perumahan extends Model
             ->leftJoin($pengembang, "$perumahan.id_pengembang", '=', "$pengembang.id_pengembang")
             ->leftJoin($kelurahan, "$kelurahan.id_kelurahan", "=", "$perumahan.id_kelurahan")
             ->leftJoin($kecamatan, "$kecamatan.id_kecamatan", "=", "$perumahan.id_kecamatan")
-            ->leftJoin($tbl_kategori, "$tbl_kategori.id_kategori", "=", "$perumahan.id_kategori")
+            ->leftJoin($tblKategori, "$tblKategori.id_kategori", "=", "$perumahan.id_kategori")
             ->get()
             ->count();
 
@@ -643,7 +744,7 @@ class Perumahan extends Model
             ->leftJoin($pengembang, "$perumahan.id_pengembang", '=', "$pengembang.id_pengembang")
             ->leftJoin($kelurahan, "$kelurahan.id_kelurahan", "=", "$perumahan.id_kelurahan")
             ->leftJoin($kecamatan, "$kecamatan.id_kecamatan", "=", "$perumahan.id_kecamatan")
-            ->leftJoin($tbl_kategori, "$tbl_kategori.id_kategori", "=", "$perumahan.id_kategori")
+            ->leftJoin($tblKategori, "$tblKategori.id_kategori", "=", "$perumahan.id_kategori")
             ->offset($offset)
             ->limit($per_page)
             ->orderBy("$perumahan.status_perumahan", $order)
@@ -699,7 +800,7 @@ class Perumahan extends Model
         $kelurahan = 'kelurahan';
         $kecamatan = 'kecamatan';
         $bangunan = 'bangunan';
-        $tbl_kategori = 'kategori';
+        $tblKategori = 'kategori';
 
         // Get data pengembang sekarang berdasarkan current user
         $user = Auth::user();
@@ -727,7 +828,7 @@ class Perumahan extends Model
             ->where("$perumahan.id_pengembang", $data_pengembang->id_pengembang)
             ->leftJoin($kelurahan, "$kelurahan.id_kelurahan", "=", "$perumahan.id_kelurahan")
             ->leftJoin($kecamatan, "$kecamatan.id_kecamatan", "=", "$perumahan.id_kecamatan")
-            ->leftJoin($tbl_kategori, "$tbl_kategori.id_kategori", "=", "$perumahan.id_kategori")
+            ->leftJoin($tblKategori, "$tblKategori.id_kategori", "=", "$perumahan.id_kategori")
             ->offset($offset)
             ->limit($limit)
             ->orderBy("$perumahan.id_perumahan", $order)
@@ -788,7 +889,11 @@ class Perumahan extends Model
         $sarana_prasarana_perumahan = "sarana_prasarana_perumahan";
         $fasilitas_perumahan = "fasilitas_perumahan";
         $foto_perumahan = "foto_perumahan";
-        $tbl_kategori = "kategori";
+        $tblKategori = "kategori";
+        $tblPengembang = "pengembang";
+        $tblKecamatan = "kecamatan";
+        $tblKelurahan = "kelurahan";
+        $tblPerumahan = "perumahan";
 
         // Get Data Fasilitas
         $fasilitas = DB::table($fasilitas_perumahan)
@@ -807,10 +912,20 @@ class Perumahan extends Model
 
         // Get Data Perumahan
         $perumahan = DB::table('perumahan')
+            ->select(
+                "$tblPerumahan.*",
+                "$tblKategori.*",
+                "$tblKecamatan.*",
+                "$tblKelurahan.*",
+                "$tblPengembang.id_pengembang",
+                "$tblPengembang.nama_perusahaan",
+                "$tblPengembang.nama_pengembang",
+            )
             ->where(['id_perumahan' => $id_perumahan])
-            ->leftJoin('kecamatan', 'perumahan.id_kecamatan', '=', 'kecamatan.id_kecamatan')
-            ->leftJoin('kelurahan', 'perumahan.id_kelurahan', '=', 'kelurahan.id_kelurahan')
-            ->leftJoin($tbl_kategori, "$tbl_kategori.id_kategori", '=', "perumahan.id_kategori")
+            ->leftJoin($tblKecamatan, "$tblPerumahan.id_kecamatan", '=', "$tblKecamatan.id_kecamatan")
+            ->leftJoin($tblKelurahan, "$tblPerumahan.id_kelurahan", '=', "$tblKelurahan.id_kelurahan")
+            ->leftJoin($tblKategori, "$tblKategori.id_kategori", '=', "$tblPerumahan.id_kategori")
+            ->leftJoin($tblPengembang, "$tblPengembang.id_pengembang", '=', "$tblPerumahan.id_pengembang")
             ->first();
 
 

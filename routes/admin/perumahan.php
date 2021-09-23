@@ -16,6 +16,12 @@ Route::prefix($prefix1)->group(function () {
   // Insert Data Perumahan
   Route::post('/', [PerumahanController::class, 'insertPerumahanMaster']);
 
+  // Update Data Perumahan
+  Route::post('/{id_perumahan}', [PerumahanController::class, 'updatePerumahanMaster']);
+
+  // Delete Perumahan
+  Route::delete('/{id_perumahan}', [PerumahanController::class, 'deletePerumahan']);
+
   // Get All Data Perumahan
   Route::get('/', [PerumahanController::class, 'getAll']);
 

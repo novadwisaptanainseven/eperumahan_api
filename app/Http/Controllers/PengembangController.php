@@ -105,6 +105,8 @@ class PengembangController extends Controller
                 "message" => "Konfirmasi Password Tidak Sesuai!"
             ], 400);
 
+        // Get current admin
+        $userAdmin = Auth::user();
         // Tambah Data Pengembang
         $pengembang = new Pengembang;
         $pengembang->nama_perusahaan     = $request->nama_perusahaan;
@@ -125,6 +127,8 @@ class PengembangController extends Controller
         $pengembang->status_aktif       = 0;
         $pengembang->id_user            = $id_user;
         $pengembang->status_deleted     = 0;
+        $pengembang->created_by         = $userAdmin->username;
+        $pengembang->updated_by         = $userAdmin->username;
         // Simpan Data Pengembag ke database
         $pengembang->save();
         return response()->json([
@@ -173,13 +177,15 @@ class PengembangController extends Controller
         // Mengambil data pengembang yang akan diupdate berdasarkan ID
         $pengembang = Pengembang::where('id_pengembang', $id_pengembang)->first();
 
+        // Get current user admin
+        $userAdmin = Auth::user();
         if ($pengembang) {
             // Lakukan proses update
-            $pengembang->nik_pengembang     = ($request->nik_pengembang !== null) ? $request->nik_pengembang : $pengembang->nik_pengembang;
-            $pengembang->nama_pengembang    = ($request->nama_pengembang !== null) ? $request->nama_pengembang : $pengembang->nama_pengembang;
-            $pengembang->telepon_pengembang = ($request->telepon_pengembang !== null) ? $request->telepon_pengembang : $pengembang->telepon_pengembang;
-            $pengembang->alamat_pengembang  = ($request->alamat_pengembang !== null) ? $request->alamat_pengembang : $pengembang->alamat_pengembang;
-            $pengembang->email_pengembang   = ($request->email_pengembang !== null) ? $request->email_pengembang : $pengembang->email_pengembang;
+            $pengembang->nama_perusahaan = ($request->nama_perusahaan) ? $request->nama_perusahaan : $pengembang->nama_perusahaan;
+            $pengembang->nama_pengembang    = ($request->nama_pengembang) ? $request->nama_pengembang : $pengembang->nama_pengembang;
+            $pengembang->telepon_pengembang = ($request->telepon_pengembang) ? $request->telepon_pengembang : $pengembang->telepon_pengembang;
+            $pengembang->alamat_pengembang  = ($request->alamat_pengembang) ? $request->alamat_pengembang : $pengembang->alamat_pengembang;
+            $pengembang->email_pengembang   = ($request->email_pengembang) ? $request->email_pengembang : $pengembang->email_pengembang;
 
             // Pembuatan Slug -> id-nama_pengembang
             // Dapatkan data terakhir di tabel pengembang
@@ -202,6 +208,7 @@ class PengembangController extends Controller
 
             $pengembang->ijin_perusahaan = ($ijin !== '') ? $ijin : $pengembang->ijin_perusahaan;
             $pengembang->foto_pengembang = ($foto !== '') ? $foto : $pengembang->foto_pengembang;
+            $pengembang->updated_by = $userAdmin->username;
 
             // Insert data to database
             $pengembang->save();

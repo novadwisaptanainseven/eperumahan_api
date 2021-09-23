@@ -73,6 +73,42 @@ class PerumahanController extends Controller
         }
     }
 
+    // Update Perumahan Master
+    public function updatePerumahanMaster(Request $req, $id_perumahan)
+    {
+        $validator = Validator::make(
+            $req->all(),
+            [
+                "foto_perumahan" => 'mimes:jpg,jpeg,png|max:5048',
+                "legalitas"      => 'mimes:pdf,xls,xlsx|max:5048'
+            ]
+        );
+        // Cek Validasi
+        if ($validator->fails()) {
+            // Jika Validasi Gagal, maka tampilkan response 400 BAD REQUEST
+            return response()->json([
+                "errors" => $validator->errors()
+            ], 400);
+        }
+        // Jika Validasi Berhasil, lakukan proses dibawah
+        // Proses Update Data
+        $updateData = Perumahan::updatePerumahanMaster($req, $id_perumahan);
+
+        // Cek apakah proses update data berhasil
+        if ($updateData) {
+            // Jika berhasil, maka tampilkan response 201 CREATED
+            return response()->json([
+                "message" => "Update Data Perumahan dengan id: $id_perumahan, Berhasil",
+                "data"    => $updateData
+            ], 201);
+        } else {
+            // Jika gagal, maka tampilkan response 404 NOT FOUND
+            return response()->json([
+                "message" => "Update Data Perumahan Gagal, Data Tidak Ditemukan"
+            ], 404);
+        }
+    }
+
     // Get Select Perumahan
     public function getSelectPerumahan()
     {
@@ -672,7 +708,7 @@ class PerumahanController extends Controller
             return response()->json([
                 "message" => "Data perumahan dengan id_perumahan: $id_perumahan berhasil dihapus",
                 "data" => $perumahan,
-            ], 200);
+            ], 201);
         } else {
             return response()->json([
                 "message" => "Data perumahan dengan id_perumahan: $id_perumahan tidak ditemukan",
