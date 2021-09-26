@@ -33,8 +33,6 @@ class PerumahanController extends Controller
                 'siteplan'           => 'mimes:pdf,xls,xlsx|max:5048',
                 "longitude"           => "required",
                 "latitude"            => "required",
-                // "fasilitas_perumahan" => "required",
-                // "sarana_prasarana_perumahan" => "required",
                 "id_kecamatan"        => 'required',
                 "id_kelurahan"        => 'required',
                 "id_kategori"         => 'required',
@@ -437,6 +435,7 @@ class PerumahanController extends Controller
         // Validation
         $message = [
             "required" => ":attribute harus diisi",
+            "max" => ":attribute maksimal 5 MB",
         ];
 
         $validator = Validator::make(
@@ -445,12 +444,13 @@ class PerumahanController extends Controller
                 "nama_perumahan"      => "required",
                 "deskripsi_perumahan" => "required",
                 "lokasi"              => "required",
-                'foto_perumahan'      => 'max:5048|required',
-                'legalitas'           => 'mimes:pdf,xls,xlsx|max:10048|required',
+                "tahun"               => "required",
+                "luas"                => "required",
+                'foto_perumahan'      => 'max:5048',
+                'legalitas'           => 'mimes:pdf,xls,xlsx|max:5048',
+                'siteplan'           => 'mimes:pdf,xls,xlsx|max:5048',
                 "longitude"           => "required",
                 "latitude"            => "required",
-                "fasilitas_perumahan" => "required",
-                "sarana_prasarana_perumahan" => "required",
                 "id_kecamatan"        => 'required',
                 "id_kelurahan"        => 'required',
                 "id_kategori"         => 'required',
@@ -462,19 +462,19 @@ class PerumahanController extends Controller
         $request->ext_allowed = ['jpg', 'jpeg', 'png'];
 
         // Cek apakah ada data request fasilitas perumahan, dibuat pengecekan tersendiri karena fitur validasi request Laravel belum bisa menangani request tipe array
-        if (in_array(null, $request->fasilitas_perumahan)) {
-            return response()->json([
-                "message" => "Fasilitas perumahan harus diisi!",
-                "status_response" => "400 BAD REQUEST"
-            ], 400);
-        }
+        // if (in_array(null, $request->fasilitas_perumahan)) {
+        //     return response()->json([
+        //         "message" => "Fasilitas perumahan harus diisi!",
+        //         "status_response" => "400 BAD REQUEST"
+        //     ], 400);
+        // }
         // Cek apakah ada data request sarana prasarana perumahan
-        if (in_array(null, $request->sarana_prasarana_perumahan)) {
-            return response()->json([
-                "message" => "Sarana prasarana perumahan harus diisi!",
-                "status_response" => "400 BAD REQUEST"
-            ], 400);
-        }
+        // if (in_array(null, $request->sarana_prasarana_perumahan)) {
+        //     return response()->json([
+        //         "message" => "Sarana prasarana perumahan harus diisi!",
+        //         "status_response" => "400 BAD REQUEST"
+        //     ], 400);
+        // }
 
         // Cek Validasi
         if ($validator->fails()) {
@@ -517,7 +517,7 @@ class PerumahanController extends Controller
             $request->all(),
             [
                 "foto_perumahan" => 'mimes:jpg,jpeg,png|max:5048',
-                "legalitas"      => 'mimes:pdf,xls,xlsx|max:10048'
+                "legalitas"      => 'mimes:pdf,xls,xlsx|max:5048'
             ]
         );
         // Cek Validasi
