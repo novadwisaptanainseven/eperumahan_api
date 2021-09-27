@@ -1,0 +1,83 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
+
+class Website extends Model
+{
+    use HasFactory;
+
+    public static function getPerumahan($limit = null, $kecamatan = null, $kategori = null)
+    {
+        $tblPerumahan = "perumahan";
+        $tblKategori = "kategori";
+        $tblFotoPerumahan = "foto_perumahan";
+
+        $perumahan = "";
+
+        if ($kecamatan && $kategori) {
+            $perumahan = Perumahan::where(
+                [
+                    ["id_kecamatan", "=", $kecamatan],
+                    ["id_kategori", "=", $kategori],
+                ]
+            )->limit($limit)
+                ->orderBy("created_at", "desc")
+                ->get();
+        } elseif ($kecamatan) {
+            $perumahan = Perumahan::where("id_kecamatan", $kecamatan)
+                ->limit($limit)
+                ->orderBy("created_at", "desc")
+                ->get();
+        } elseif ($kategori) {
+            $perumahan = Perumahan::where("id_kategori", $kategori)->limit($limit)
+                ->orderBy("created_at", "desc")
+                ->get();
+        } else {
+            $perumahan = Perumahan::limit($limit)
+                ->join($tblKategori, "$tblKategori.id_kategori", "$tblPerumahan.id_kategori")
+                ->orderBy("created_at", "desc")
+                ->get();
+        }
+
+        foreach ($perumahan as $p) {
+            // Get Foto Perumahan
+            $fotoPerumahan = DB::table($tblFotoPerumahan)
+                ->where([
+                    ["id_perumahan", "=", $p->id_perumahan],
+                    ["status_foto", "=", 1]
+                ])
+                ->first();
+
+            if ($fotoPerumahan) {
+                $p->foto = $fotoPerumahan->foto_perumahan;
+            } else {
+                $p->foto = "";
+            }
+
+            // Get Jumlah Properti
+            $total_properti = Properti::where("id_perumahan", $p->id_perumahan)->count();
+            $p->total_properti = $total_properti;
+        }
+
+        return $perumahan;
+    }
+
+    public static function getPerumahanByRequest($req)
+    {
+        // Table
+        $tblPerumahan = "perumahan";
+        $tblKategori = "kategori";
+        $tblFotoPerumahan = "foto_perumahan";
+
+        $limit = $req->limit ?? 3;
+
+        $perumahan = "";
+        $perumahan = Website::getPerumahan($limit, $req->kecamatan, $req->kategori);
+
+        return $perumahan;
+    }
+}

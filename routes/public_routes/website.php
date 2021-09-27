@@ -5,6 +5,7 @@ use App\Http\Controllers\KontakController;
 use App\Http\Controllers\PengembangController;
 use App\Http\Controllers\PerumahanController;
 use App\Http\Controllers\PropertiController;
+use App\Http\Controllers\WebsiteController;
 
 // API UNTUK BAGIAN HALAMAN WEBSITE E-PERUMAHAN
 
@@ -44,4 +45,15 @@ Route::prefix('v1/')->group(function () {
 
   // Kelurahan
   Route::get('/kelurahan/{id_kecamatan}', [PerumahanController::class, 'getAllKelurahan']);
+
+  // Route Halaman Beranda
+  Route::get("/sibaper-beranda", [WebsiteController::class, "getInformasiBeranda"]);
+
+  // Route Halaman Perumahan
+  Route::prefix("/sibaper-perumahan")->group(function () {
+
+    Route::get("/", [WebsiteController::class, "getInformasiPerumahan"]);
+
+    Route::get("/perumahan", [WebsiteController::class, "getPerumahan"]);
+  });
 });
