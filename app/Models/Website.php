@@ -22,19 +22,22 @@ class Website extends Model
             $perumahan = Perumahan::where(
                 [
                     ["id_kecamatan", "=", $kecamatan],
-                    ["id_kategori", "=", $kategori],
+                    ["$tblPerumahan.id_kategori", "=", $kategori],
                 ]
             )->limit($limit)
                 ->orderBy("created_at", "desc")
+                ->join($tblKategori, "$tblKategori.id_kategori", "$tblPerumahan.id_kategori")
                 ->get();
         } elseif ($kecamatan) {
             $perumahan = Perumahan::where("id_kecamatan", $kecamatan)
                 ->limit($limit)
                 ->orderBy("created_at", "desc")
+                ->join($tblKategori, "$tblKategori.id_kategori", "$tblPerumahan.id_kategori")
                 ->get();
         } elseif ($kategori) {
-            $perumahan = Perumahan::where("id_kategori", $kategori)->limit($limit)
+            $perumahan = Perumahan::where("$tblPerumahan.id_kategori", $kategori)->limit($limit)
                 ->orderBy("created_at", "desc")
+                ->join($tblKategori, "$tblKategori.id_kategori", "$tblPerumahan.id_kategori")
                 ->get();
         } else {
             $perumahan = Perumahan::limit($limit)

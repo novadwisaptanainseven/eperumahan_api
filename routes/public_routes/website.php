@@ -46,6 +46,9 @@ Route::prefix('v1/')->group(function () {
   // Kelurahan
   Route::get('/kelurahan/{id_kecamatan}', [PerumahanController::class, 'getAllKelurahan']);
 
+  // Kategori Perumahan
+  Route::get('/kategori', [PerumahanController::class, 'getAllKategori']);
+
   // Route Halaman Beranda
   Route::get("/sibaper-beranda", [WebsiteController::class, "getInformasiBeranda"]);
 
