@@ -58,5 +58,7 @@ Route::prefix('v1/')->group(function () {
     Route::get("/", [WebsiteController::class, "getInformasiPerumahan"]);
 
     Route::get("/perumahan", [WebsiteController::class, "getPerumahan"]);
+
+    Route::get("/list-perumahan", [WebsiteController::class, "getListPerumahan"]);
   });
 });

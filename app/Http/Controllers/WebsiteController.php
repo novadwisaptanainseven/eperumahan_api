@@ -147,6 +147,18 @@ class WebsiteController extends Controller
 
     public function getPerumahan(Request $req)
     {
+        $req2 = count($req->all()) > 0 ? $req : null;
+
+        $perumahan = Website::getPerumahanByRequest($req2);
+
+        return response()->json([
+            "message" => "Get All Perumahan Berhasil",
+            "data" => $perumahan,
+        ], 200);
+    }
+
+    public function getListPerumahan(Request $req)
+    {
         $perumahan = Website::getPerumahanByRequest($req);
 
         return response()->json([

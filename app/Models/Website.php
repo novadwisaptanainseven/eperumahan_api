@@ -15,6 +15,7 @@ class Website extends Model
         $tblPerumahan = "perumahan";
         $tblKategori = "kategori";
         $tblFotoPerumahan = "foto_perumahan";
+        $tblPengembang = "pengembang";
 
         $perumahan = "";
 
@@ -69,17 +70,29 @@ class Website extends Model
         return $perumahan;
     }
 
-    public static function getPerumahanByRequest($req)
+    public static function getPerumahanByRequest($req = null)
     {
         // Table
         $tblPerumahan = "perumahan";
+        $tblPengembang = "pengembang";
         $tblKategori = "kategori";
         $tblFotoPerumahan = "foto_perumahan";
 
         $limit = $req->limit ?? 3;
-
         $perumahan = "";
-        $perumahan = Website::getPerumahan($limit, $req->kecamatan, $req->kategori);
+
+        if($req)
+        {    
+            $perumahan = Website::getPerumahan($limit, $req->kecamatan, $req->kategori);
+        }
+        else
+        {
+            $perumahan = Perumahan::
+                orderBy("$tblPerumahan.created_at", "desc")
+                ->join($tblKategori, "$tblKategori.id_kategori", "$tblPerumahan.id_kategori")
+                ->join($tblPengembang, "$tblPengembang.id_pengembang", "$tblPerumahan.id_pengembang")
+                ->get();
+        }
 
         return $perumahan;
     }
