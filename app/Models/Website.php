@@ -27,23 +27,27 @@ class Website extends Model
                 ]
             )->limit($limit)
                 ->orderBy("created_at", "desc")
+                ->where("$tblPerumahan.status_perumahan", 2)
                 ->join($tblKategori, "$tblKategori.id_kategori", "$tblPerumahan.id_kategori")
                 ->get();
         } elseif ($kecamatan) {
             $perumahan = Perumahan::where("id_kecamatan", $kecamatan)
                 ->limit($limit)
                 ->orderBy("created_at", "desc")
+                ->where("$tblPerumahan.status_perumahan", 2)
                 ->join($tblKategori, "$tblKategori.id_kategori", "$tblPerumahan.id_kategori")
                 ->get();
         } elseif ($kategori) {
             $perumahan = Perumahan::where("$tblPerumahan.id_kategori", $kategori)->limit($limit)
                 ->orderBy("created_at", "desc")
+                ->where("$tblPerumahan.status_perumahan", 2)
                 ->join($tblKategori, "$tblKategori.id_kategori", "$tblPerumahan.id_kategori")
                 ->get();
         } else {
             $perumahan = Perumahan::limit($limit)
                 ->join($tblKategori, "$tblKategori.id_kategori", "$tblPerumahan.id_kategori")
                 ->orderBy("created_at", "desc")
+                ->where("$tblPerumahan.status_perumahan", 2)
                 ->get();
         }
 
@@ -91,6 +95,7 @@ class Website extends Model
                 orderBy("$tblPerumahan.created_at", "desc")
                 ->join($tblKategori, "$tblKategori.id_kategori", "$tblPerumahan.id_kategori")
                 ->join($tblPengembang, "$tblPengembang.id_pengembang", "$tblPerumahan.id_pengembang")
+                ->where("$tblPerumahan.status_perumahan", 2)
                 ->get();
         }
 

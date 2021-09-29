@@ -108,7 +108,7 @@ class Perumahan extends Model
             "slug"                => $req->perumahan_slug,
             "legalitas"           => $legalitas,
             "siteplan"            => $siteplan,
-            "status_perumahan"    => 1,
+            "status_perumahan"    => 2,
             "status_deleted"      => 0,
             "created_at"          => Carbon::now(),
             "updated_at"          => Carbon::now(),
@@ -397,6 +397,7 @@ class Perumahan extends Model
             ->select(
                 "$perumahan.*",
                 "$pengembang.nama_pengembang",
+                "$pengembang.nama_perusahaan",
                 "$kecamatan.nama_kecamatan",
                 "$kelurahan.nama_kelurahan",
                 "$tblKategori.*"
@@ -755,6 +756,7 @@ class Perumahan extends Model
                 'deskripsi_perumahan' => ($req->deskripsi_perumahan) ? $req->deskripsi_perumahan : $data_perumahan->deskripsi_perumahan,
                 'lokasi' => ($req->lokasi) ? $req->lokasi : $data_perumahan->lokasi,
                 'legalitas' => $legalitas,
+                'siteplan' => $siteplan,
                 'latitude' => ($req->latitude) ? $req->latitude : $data_perumahan->latitude,
                 'longitude' => ($req->longitude) ? $req->longitude : $data_perumahan->longitude,
                 'id_kelurahan' => ($req->id_kelurahan) ? $req->id_kelurahan : $data_perumahan->id_kelurahan,
@@ -1121,6 +1123,7 @@ class Perumahan extends Model
         $tbl_pengembang = 'pengembang';
         $tbl_kelurahan = 'kelurahan';
         $tbl_kecamatan = 'kecamatan';
+        $tbl_kategori = 'kategori';
 
         // Get Data Perumahan
         $perumahan = DB::table($tbl_perumahan)
@@ -1128,7 +1131,9 @@ class Perumahan extends Model
                 "$tbl_perumahan.*",
                 "$tbl_kelurahan.*",
                 "$tbl_kecamatan.*",
+                "$tbl_kategori.*",
                 "$tbl_pengembang.nama_pengembang",
+                "$tbl_pengembang.nama_perusahaan",
                 "$tbl_pengembang.email_pengembang",
                 "$tbl_pengembang.telepon_pengembang",
                 "$tbl_pengembang.pengembang_slug",
@@ -1138,6 +1143,7 @@ class Perumahan extends Model
             ->leftJoin($tbl_kecamatan, "$tbl_perumahan.id_kecamatan", '=', "$tbl_kecamatan.id_kecamatan")
             ->leftJoin($tbl_kelurahan, "$tbl_perumahan.id_kelurahan", '=', "$tbl_kelurahan.id_kelurahan")
             ->leftJoin($tbl_pengembang, "$tbl_perumahan.id_pengembang", '=', "$tbl_pengembang.id_pengembang")
+            ->leftJoin($tbl_kategori, "$tbl_perumahan.id_kategori", '=', "$tbl_kategori.id_kategori")
             ->first();
 
         if ($perumahan) {
