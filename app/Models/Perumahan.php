@@ -1150,6 +1150,8 @@ class Perumahan extends Model
             // Get Data Bangunan
             $bangunan = DB::table($tbl_bangunan)
                 ->where('id_perumahan', '=', $perumahan->id_perumahan)
+                ->where('status_publish', '=', 2)
+                ->leftJoin($tbl_kategori, "$tbl_kategori.id_kategori", "=", "$tbl_bangunan.id_kategori")
                 ->get();
 
             foreach ($bangunan as $data) {
@@ -1229,8 +1231,8 @@ class Perumahan extends Model
         }
 
         // Pembuatan Slug
-        $last_data           = DB::table($bangunan)->orderBy('id_bangunan', 'DESC')->first();
-        $bangunan_slug       = Str::of($last_data->id_bangunan + 1 . ' ' . $req->nama_bangunan)->slug('-');
+        
+        $bangunan_slug       = Str::of($req->nama_bangunan)->slug('-');
         // End Pembuatan Slug
 
         $data_bangunan = [

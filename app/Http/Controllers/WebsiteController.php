@@ -53,6 +53,7 @@ class WebsiteController extends Controller
 
         // Get Properti
         $properti = Properti::limit(6)
+            ->where("status_publish", 2)
             ->join($this->tblKategori, "$this->tblKategori.id_kategori", "$this->tblProperti.id_kategori")
             ->orderBy("id_bangunan", "desc")
             ->get();
