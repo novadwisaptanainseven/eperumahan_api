@@ -149,17 +149,29 @@ class Properti extends Model
         // Tabel - tabel
         $tbl_bangunan = 'bangunan';
         $tbl_foto = "foto_bangunan";
+        $tbl_foto_perumahan = "foto_perumahan";
         $tbl_spesifikasi = "spesifikasi_rumah";
         $tbl_pengembang = "pengembang";
         $tbl_sarana_prasarana = 'sarana_prasarana_perumahan';
         $tbl_fasilitas = 'fasilitas_perumahan';
         $tbl_perumahan = 'perumahan';
+        $tbl_kategori = 'kategori';
 
         $data_bangunan = DB::table($tbl_bangunan)
             ->where('bangunan_slug', '=', $slug)
+            ->leftJoin($tbl_kategori, "$tbl_kategori.id_kategori", "=", "$tbl_bangunan.id_kategori")
             ->first();
 
         if ($data_bangunan) {
+            // Get data perumahan
+            $perumahan = DB::table($tbl_perumahan)
+                ->where('id_perumahan', '=', $data_bangunan->id_perumahan)
+                ->first();
+            $fotoPerumahan = DB::table($tbl_foto_perumahan)
+                ->where("status_foto", 1)
+                ->first();
+            $perumahan->foto_perumahan = $fotoPerumahan->foto_perumahan;
+
             // Get Latitude and Longitude dari tabel perumahan
             $lngLat = DB::table($tbl_perumahan)
                 ->select('longitude', 'latitude')
@@ -200,6 +212,7 @@ class Properti extends Model
 
             $data_bangunan->id_pengembang = $data_pengembang->id_pengembang;
             $data_bangunan->nama_pengembang = $data_pengembang->nama_pengembang;
+            $data_bangunan->nama_perusahaan = $data_pengembang->nama_perusahaan;
             $data_bangunan->foto_pengembang = $data_pengembang->foto_pengembang;
             $data_bangunan->email_pengembang = $data_pengembang->email_pengembang;
             $data_bangunan->telepon_pengembang = $data_pengembang->telepon_pengembang;
@@ -211,6 +224,7 @@ class Properti extends Model
             $data_bangunan->legalitas = $data_legalitas;
             $data_bangunan->latitude = $lngLat->latitude;
             $data_bangunan->longitude = $lngLat->longitude;
+            $data_bangunan->perumahan = $perumahan;
 
             return $data_bangunan;
         } else {

@@ -1218,6 +1218,36 @@ class Perumahan extends Model
         // Proses tambah data properti / bangunan
         // Persiapan data
 
+        if (!$req->hasFile('denah'))
+            $denah = '';
+        else {
+
+            $file = $req->file('denah');
+
+            // Sanitize nama file
+            $file_name = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+            $file_ext = pathinfo($file->getClientOriginalName(), PATHINFO_EXTENSION);
+            $sanitize = Str::of($file_name)->slug('-');
+            $sanitize = $sanitize . '.' . $file_ext;
+
+            $denah = $file->storeAs("bangunan/file", rand(0, 9999) . '-' . date('Ymd') . '-' . $sanitize);
+        }
+
+        if (!$req->hasFile('sertifikat'))
+            $sertifikat = '';
+        else {
+
+            $file = $req->file('sertifikat');
+
+            // Sanitize nama file
+            $file_name = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+            $file_ext = pathinfo($file->getClientOriginalName(), PATHINFO_EXTENSION);
+            $sanitize = Str::of($file_name)->slug('-');
+            $sanitize = $sanitize . '.' . $file_ext;
+
+            $sertifikat = $file->storeAs("bangunan/file", rand(0, 9999) . '-' . date('Ymd') . '-' . $sanitize);
+        }
+
         // Cek apakah ada file foto
         if ($req->hasFile('foto_bangunan')) {
             $path_foto = [];
@@ -1231,7 +1261,7 @@ class Perumahan extends Model
         }
 
         // Pembuatan Slug
-        
+
         $bangunan_slug       = Str::of($req->nama_bangunan)->slug('-');
         // End Pembuatan Slug
 
@@ -1240,7 +1270,7 @@ class Perumahan extends Model
             "id_pengembang"      => $data_pengembang->id_pengembang,
             "id_kecamatan"       => $data_perumahan->id_kecamatan,
             "id_kelurahan"       => $data_perumahan->id_kelurahan,
-            "id_kategori"        => $data_perumahan->id_kategori,
+            "id_kategori"        => $req->id_kategori,
             "lokasi_bangunan"    => $data_perumahan->lokasi,
             "longitude"          => $data_perumahan->longitude,
             "latitude"           => $data_perumahan->latitude,
@@ -1260,8 +1290,13 @@ class Perumahan extends Model
             "jumlah_garasi"      => $req->jumlah_garasi,
             "listrik"            => $req->listrik,
             "bangunan_slug"      => $bangunan_slug,
-            "sertifikat"         => '',
-            "status_publish"     => 0
+            "sertifikat"         => $sertifikat,
+            "denah"              => $denah,
+            "status_publish"     => 0,
+            "created_at"         => Carbon::now(),
+            "updated_at"         => Carbon::now(),
+            "created_by"         => $user->username,
+            "updated_by"         => $user->username,
         ];
 
         // Insert data bangunan to database
@@ -1275,62 +1310,66 @@ class Perumahan extends Model
             $id_bangunan = DB::table($bangunan)->orderBy('id_bangunan', 'DESC')->first()->id_bangunan;
 
             // Foto Bangunan
-            $i = 0;
-            $status = 0;
-            $path_foto = [];
-            foreach ($req->foto_bangunan as $foto) {
-                if ($i == 0)
-                    $status = 1;
-                else
-                    $status = 0;
+            if ($req->foto_bangunan) {
+                $path_foto = [];
+                $i = 0;
+                $status = 0;
+                foreach ($req->foto_bangunan as $foto) {
+                    if ($i == 0)
+                        $status = 1;
+                    else
+                        $status = 0;
 
-                // Sanitize nama file
-                $file_name = pathinfo($foto->getClientOriginalName(), PATHINFO_FILENAME);
-                $file_ext = pathinfo($foto->getClientOriginalName(), PATHINFO_EXTENSION);
-                $sanitize = Str::of($file_name)->slug('-');
-                $sanitize = $sanitize . '.' . $file_ext;
+                    // Sanitize nama file
+                    $file_name = pathinfo($foto->getClientOriginalName(), PATHINFO_FILENAME);
+                    $file_ext = pathinfo($foto->getClientOriginalName(), PATHINFO_EXTENSION);
+                    $sanitize = Str::of($file_name)->slug('-');
+                    $sanitize = $sanitize . '.' . $file_ext;
 
-                $path = $foto->storeAs("bangunan/foto", rand(0, 9999) . '-' . date('Ymd') . '-' . $sanitize);
-                $path_foto[] = $path;
+                    $path = $foto->storeAs("bangunan/foto", rand(0, 9999) . '-' . date('Ymd') . '-' . $sanitize);
+                    $path_foto[] = $path;
 
-                $data_foto = [
-                    "id_bangunan" => $id_bangunan,
-                    "foto_bangunan" => $path,
-                    "level_foto" => $status
-                ];
+                    $data_foto = [
+                        "id_bangunan" => $id_bangunan,
+                        "foto_bangunan" => $path,
+                        "level_foto" => $status
+                    ];
 
-                // Insert Data Foto Bangunan ke Database
-                DB::table($foto_bangunan)->insert($data_foto);
-                $i++;
+                    // Insert Data Foto Bangunan ke Database
+                    DB::table($foto_bangunan)->insert($data_foto);
+                    $i++;
+                }
             }
 
             // Spesifikasi Rumah
-            foreach ($req->spesifikasi_rumah as $spek) {
-                $data_spek = [
-                    "id_bangunan" => $id_bangunan,
-                    "nama_spesifikasi_rumah" => $spek,
-                ];
+            if ($req->spesifikasi_rumah) {
+                foreach ($req->spesifikasi_rumah as $spek) {
+                    $data_spek = [
+                        "id_bangunan" => $id_bangunan,
+                        "nama_spesifikasi_rumah" => $spek,
+                    ];
 
-                // Insert Data Spesifikasi ke database
-                DB::table($spesifikasi)->insert($data_spek);
+                    // Insert Data Spesifikasi ke database
+                    DB::table($spesifikasi)->insert($data_spek);
+                }
             }
 
             // Get data bangunan terbaru
-            $data_bangunan = DB::table($bangunan)
-                ->where('id_bangunan', $id_bangunan)
-                ->leftJoin($kelurahan, "$kelurahan.id_kelurahan", "=", "$bangunan.id_kelurahan")
-                ->leftJoin($kecamatan, "$kecamatan.id_kecamatan", "=", "$bangunan.id_kecamatan")
-                ->first();
+            // $data_bangunan = DB::table($bangunan)
+            //     ->where('id_bangunan', $id_bangunan)
+            //     ->leftJoin($kelurahan, "$kelurahan.id_kelurahan", "=", "$bangunan.id_kelurahan")
+            //     ->leftJoin($kecamatan, "$kecamatan.id_kecamatan", "=", "$bangunan.id_kecamatan")
+            //     ->first();
 
 
-            $data_spek = $req->spesifikasi_rumah;
-            $data_foto = $path_foto;
+            // $data_spek = $req->spesifikasi_rumah;
+            // $data_foto = $path_foto;
 
             // Gabungkan semua data untuk ditampilkan dalam response
-            $data_bangunan->spesifikasi_rumah = $data_spek;
-            $data_bangunan->foto_bangunan = $data_foto;
+            // $data_bangunan->spesifikasi_rumah = $data_spek;
+            // $data_bangunan->foto_bangunan = $data_foto;
 
-            return $data_bangunan;
+            return true;
         } else {
             null;
         }
@@ -1639,6 +1678,8 @@ class Perumahan extends Model
         $user = Auth::user();
         $data_pengembang = DB::table($pengembang)->where('id_user', $user->id)->first();
 
+
+
         // Get data bangunan sebelum diupdate
         $data_bangunan = DB::table($bangunan)
             ->where([
@@ -1650,9 +1691,50 @@ class Perumahan extends Model
         // Cek apakah ada data perumahan
         if (!$data_perumahan)
             return 'NOT_FOUND';
+        if (!$data_bangunan)
+            return 'NOT_FOUND';
 
         // Proses update data properti / bangunan
         // Persiapan data
+        // Cek apakah ada file denah
+        if (!$req->hasFile('denah')) {
+            $denah = $data_bangunan->denah;
+        } else {
+            $file = $req->file('denah');
+
+            // Hapus file denah lama jika user update file denah
+            // Get path file denah untuk keperluan menghapus file denah di storage
+            $path_denah = $data_bangunan->denah;
+            Storage::delete("$path_denah");
+
+            // Sanitize nama file
+            $file_name = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+            $file_ext = pathinfo($file->getClientOriginalName(), PATHINFO_EXTENSION);
+            $sanitize = Str::of($file_name)->slug('-');
+            $sanitize = $sanitize . '.' . $file_ext;
+
+            $denah = $file->storeAs("bangunan/file", rand(0, 9999) . '-' . date('Ymd') . '-' . $sanitize);
+        }
+
+        // Cek apakah ada file sertifikat
+        if (!$req->hasFile('sertifikat')) {
+            $sertifikat = $data_bangunan->sertifikat;
+        } else {
+            $file = $req->file('sertifikat');
+
+            // Hapus file sertifikat lama jika user update file sertifikat
+            // Get path file sertifikat untuk keperluan menghapus file sertifikat di storage
+            $path_sertifikat = $data_bangunan->sertifikat;
+            Storage::delete("$path_sertifikat");
+
+            // Sanitize nama file
+            $file_name = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+            $file_ext = pathinfo($file->getClientOriginalName(), PATHINFO_EXTENSION);
+            $sanitize = Str::of($file_name)->slug('-');
+            $sanitize = $sanitize . '.' . $file_ext;
+
+            $sertifikat = $file->storeAs("bangunan/file", rand(0, 9999) . '-' . date('Ymd') . '-' . $sanitize);
+        }
 
         // Pembuatan Slug
         $bangunan_slug       = Str::of($data_bangunan->id_bangunan . ' ' . ($req->nama_bangunan !== null ? $req->nama_bangunan : $data_bangunan->nama_bangunan))->slug('-');
@@ -1677,7 +1759,11 @@ class Perumahan extends Model
             "jumlah_garasi"      => ($req->jumlah_garasi !== null) ? $req->jumlah_garasi : $data_bangunan->jumlah_garasi,
             "listrik"            => ($req->listrik !== null) ? $req->listrik : $data_bangunan->listrik,
             "bangunan_slug"      => $bangunan_slug,
-            "status_publish"     => $data_bangunan->status_publish
+            "status_publish"     => $data_bangunan->status_publish,
+            "updated_at"         => Carbon::now(),
+            "updated_by"         => $user->username,
+            "denah"              => $denah,
+            "sertifikat"         => $sertifikat,
         ];
 
         // Insert data bangunan to database

@@ -744,20 +744,20 @@ class PerumahanController extends Controller
             "jumlah_kamar_mandi" => "required",
             "jumlah_garasi"      => "required",
             "listrik"            => "required",
-            "spesifikasi_rumah"  => "required",
-            "foto_bangunan"      => "max:5048|required"
+            // "spesifikasi_rumah"  => "required",
+            "foto_bangunan"      => "max:5048"
         ], $message);
 
         // Set ekstensi yang diizinkan untuk upload foto bangunan
         $request->ext_allowed = ['jpg', 'jpeg', 'png'];
 
         // Cek apakah ada data request spesifikasi rumah, dibuat pengecekan tersendiri karena fitur validasi request Laravel belum bisa menangani request tipe array
-        if (in_array(null, $request->spesifikasi_rumah)) {
-            return response()->json([
-                "message" => "Spesifikasi rumah harus diisi!",
-                "status_response" => "400 BAD REQUEST"
-            ], 400);
-        }
+        // if (in_array(null, $request->spesifikasi_rumah)) {
+        //     return response()->json([
+        //         "message" => "Spesifikasi rumah harus diisi!",
+        //         "status_response" => "400 BAD REQUEST"
+        //     ], 400);
+        // }
 
         // Cek Validasi
         if ($validator->fails()) {
@@ -768,7 +768,9 @@ class PerumahanController extends Controller
         }
 
         // Jika validasi berhasil, lanjutkan proses di bawah ini
-        // Proses Tambah Data Properti
+        // Proses Tambah Data 
+
+
         $tambah = Perumahan::addProperti($request, $id_perumahan);
 
         if ($tambah === 'WRONG_EXTENSION') {
