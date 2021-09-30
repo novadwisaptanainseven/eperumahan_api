@@ -1162,7 +1162,7 @@ class Perumahan extends Model
                         ['level_foto', '=', '1']
                     ])
                     ->first();
-                $data->foto_bangunan = $foto_bangunan->foto_bangunan;
+                $data->foto_bangunan = $foto_bangunan ? $foto_bangunan->foto_bangunan : "";
             }
 
             // Get Data Fasilitas
