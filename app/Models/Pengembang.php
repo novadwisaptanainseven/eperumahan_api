@@ -154,6 +154,7 @@ class Pengembang extends Model
         $tbl_bangunan = 'bangunan';
         $tbl_foto_perumahan = 'foto_perumahan';
         $tbl_foto_bangunan = 'foto_bangunan';
+        $tblKategori = "kategori";
 
         $data_pengembang = DB::table($pengembang)
             ->where([
@@ -162,10 +163,85 @@ class Pengembang extends Model
             ])
             ->first();
 
-        if ($data_pengembang)
-            return $data_pengembang;
-        else
+        if (!$data_pengembang) {
             return null;
+        }
+
+        // Get Perumahan by Id Pengembang
+        $perumahan = Perumahan::where([
+            ["id_pengembang", "=", $data_pengembang->id_pengembang],
+            ["status_perumahan", "=", 2],
+        ])
+            ->leftJoin($tblKategori, "$tblKategori.id_kategori", "=", "$tbl_perumahan.id_kategori")
+            ->get();
+        $rumahMbr = Perumahan::where([
+            ["id_pengembang", "=", $data_pengembang->id_pengembang],
+            ["status_perumahan", "=", 2],
+            ["id_kategori", "=", 1],
+        ])
+        ->get()->count();
+        $rumahKomersial = Perumahan::where([
+            ["id_pengembang", "=", $data_pengembang->id_pengembang],
+            ["status_perumahan", "=", 2],
+            ["id_kategori", "=", 2],
+        ])
+        ->get()->count();
+        $rumahCampuran = Perumahan::where([
+            ["id_pengembang", "=", $data_pengembang->id_pengembang],
+            ["status_perumahan", "=", 2],
+            ["id_kategori", "=", 3],
+        ])
+        ->get()->count();
+
+        foreach ($perumahan as $p) {
+            $fotoPerumahan = DB::table($tbl_foto_perumahan)
+                ->where([
+                    ["id_perumahan", "=", $p->id_perumahan],
+                    ["status_foto", "=", 1],
+                ])
+                ->first();
+            $totProperti = DB::table($tbl_bangunan)
+                    ->where("id_perumahan", $p->id_perumahan)
+                    ->get()
+                    ->count();
+            $p->foto_perumahan = $fotoPerumahan ? $fotoPerumahan->foto_perumahan : "";
+            $p->jumlah_properti = $totProperti;
+        }
+        // End of Perumahan
+
+        // Get Properti by Id Pengembang
+        $properti = DB::table($tbl_bangunan)
+            ->where([
+                ["id_pengembang", "=", $data_pengembang->id_pengembang],
+                ["status_publish", "=", 2],
+            ])
+            ->leftJoin($tblKategori, "$tblKategori.id_kategori", "=", "$tbl_bangunan.id_kategori")
+            ->get();
+        foreach ($properti as $p) {
+            $fotoProperti = DB::table($tbl_foto_bangunan)
+                ->where([
+                    ["id_bangunan", "=", $p->id_bangunan],
+                    ["level_foto", "=", 1],
+                ])
+                ->first();
+            $p->foto_bangunan = $fotoProperti ? $fotoProperti->foto_bangunan : "";
+        }
+        // End of Properti
+
+        // Get Brosur by Id Pengembang
+        $brosur = Brosur::where("id_pengembang", $data_pengembang->id_pengembang)->get();
+        // End of Brosur
+
+        $data_pengembang->perumahan = $perumahan;
+        $data_pengembang->tot_rumah = [
+            "mbr" => $rumahMbr,
+            "komersial" => $rumahKomersial,
+            "campuran" => $rumahCampuran,
+        ];
+        $data_pengembang->properti = $properti;
+        $data_pengembang->brosur = $brosur;
+
+        return $data_pengembang;
     }
 
     // 
