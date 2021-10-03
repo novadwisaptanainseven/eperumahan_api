@@ -123,6 +123,19 @@ class Pengembang extends Model
         }
     }
 
+    // Get List Pengembang
+    public static function getAll3()
+    {
+        // Tabel - Tabel 
+        $tbl_pengembang = 'pengembang';
+
+        $data_pengembang = DB::table($tbl_pengembang)
+            ->where('status_aktif', '=', '1')
+            ->get();
+
+        return $data_pengembang;
+    }
+
     // Get Pengembang By ID
     public static function getById($id_pengembang)
     {
@@ -179,19 +192,19 @@ class Pengembang extends Model
             ["status_perumahan", "=", 2],
             ["id_kategori", "=", 1],
         ])
-        ->get()->count();
+            ->get()->count();
         $rumahKomersial = Perumahan::where([
             ["id_pengembang", "=", $data_pengembang->id_pengembang],
             ["status_perumahan", "=", 2],
             ["id_kategori", "=", 2],
         ])
-        ->get()->count();
+            ->get()->count();
         $rumahCampuran = Perumahan::where([
             ["id_pengembang", "=", $data_pengembang->id_pengembang],
             ["status_perumahan", "=", 2],
             ["id_kategori", "=", 3],
         ])
-        ->get()->count();
+            ->get()->count();
 
         foreach ($perumahan as $p) {
             $fotoPerumahan = DB::table($tbl_foto_perumahan)
@@ -201,9 +214,9 @@ class Pengembang extends Model
                 ])
                 ->first();
             $totProperti = DB::table($tbl_bangunan)
-                    ->where("id_perumahan", $p->id_perumahan)
-                    ->get()
-                    ->count();
+                ->where("id_perumahan", $p->id_perumahan)
+                ->get()
+                ->count();
             $p->foto_perumahan = $fotoPerumahan ? $fotoPerumahan->foto_perumahan : "";
             $p->jumlah_properti = $totProperti;
         }

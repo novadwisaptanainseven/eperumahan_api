@@ -23,6 +23,10 @@ Route::prefix('v1/')->group(function () {
 
   // Get All Pengembang Aktif
   Route::get('pengembang', [PengembangController::class, 'getAllPengembang2']);
+
+  // Get All Pengembang Aktif
+  Route::get('list-pengembang', [PengembangController::class, 'getAllPengembang3']);
+
   // Get Pengembang by Slug Pengembang
   Route::get('pengembang/{slug}', [PengembangController::class, 'getPengembangBySlug']);
 

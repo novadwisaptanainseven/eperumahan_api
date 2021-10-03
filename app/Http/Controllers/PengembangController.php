@@ -352,7 +352,7 @@ class PengembangController extends Controller
 
         if ($pengembang) {
             return response()->json([
-                "message" => "Get All Pengembange Success",
+                "message" => "Get All Pengembang Success",
                 "total_data" => $total_data,
                 "data" => $pengembang
             ], 200);
@@ -360,6 +360,19 @@ class PengembangController extends Controller
             return response()->json([
                 "message" => "Belum Ada Pengembang yang Aktif",
                 "total_data" => $total_data,
+                "data" => $pengembang
+            ], 200);
+        }
+    }
+
+    // Get All Pengembang 3
+    public function getAllPengembang3()
+    {
+        $pengembang = Pengembang::getAll3();
+
+        if ($pengembang) {
+            return response()->json([
+                "message" => "Get All Pengembang Success",
                 "data" => $pengembang
             ], 200);
         }
