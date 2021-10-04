@@ -19,9 +19,11 @@ class Properti extends Model
         // Tabel - Tabel
         $tbl_bangunan = 'bangunan';
         $tbl_foto = "foto_bangunan";
+        $tblKategori = "kategori";
 
         $id_kecamatan = $req->id_kecamatan ? $req->id_kecamatan : null;
         $id_kelurahan = $req->id_kelurahan ? $req->id_kelurahan : null;
+        $id_kategori = $req->id_kategori ? $req->id_kategori : null;
         $min_harga = $req->min_harga ? $req->min_harga : 0;
         $max_harga = $req->max_harga ? $req->max_harga : 1000000000;
         $min_luas_bangunan = $req->min_luas_bangunan ? $req->min_luas_bangunan : 0;
@@ -29,27 +31,55 @@ class Properti extends Model
         $min_luas_tanah = $req->min_luas_tanah ? $req->min_luas_tanah : 0;
         $max_luas_tanah = $req->max_luas_tanah ? $req->max_luas_tanah : 5000;
 
-        if (!$id_kecamatan && !$id_kelurahan) {
+        if (!$id_kecamatan && !$id_kelurahan && !$id_kategori) {
             $bangunan = DB::table($tbl_bangunan)
                 ->where('status_publish', '=', '2')
                 ->whereBetween('harga_bangunan', [$min_harga, $max_harga])
                 ->whereBetween('luas_bangunan', [$min_luas_bangunan, $max_luas_bangunan])
                 ->whereBetween('luas_tanah', [$min_luas_tanah, $max_luas_tanah])
+                ->leftJoin($tblKategori, "$tblKategori.id_kategori", "=", "$tbl_bangunan.id_kategori")
                 ->orderBy('id_bangunan', 'DESC')
                 ->get();
-        } elseif ($id_kecamatan && $id_kelurahan) {
+        } elseif ($id_kecamatan && $id_kelurahan && $id_kategori) {
             $bangunan = DB::table($tbl_bangunan)
                 ->where([
                     ['status_publish', '=', '2'],
                     ['id_kecamatan', '=', $id_kecamatan],
-                    ['id_kelurahan', '=', $id_kelurahan]
+                    ['id_kelurahan', '=', $id_kelurahan],
+                    ["$tbl_bangunan.id_kategori", '=', $id_kategori],
                 ])
                 ->whereBetween('harga_bangunan', [$min_harga, $max_harga])
                 ->whereBetween('luas_bangunan', [$min_luas_bangunan, $max_luas_bangunan])
                 ->whereBetween('luas_tanah', [$min_luas_tanah, $max_luas_tanah])
+                ->leftJoin($tblKategori, "$tblKategori.id_kategori", "=", "$tbl_bangunan.id_kategori")
                 ->orderBy('id_bangunan', 'DESC')
                 ->get();
-        } else {
+        } else if ($id_kecamatan && $id_kelurahan && !$id_kategori) {
+            $bangunan = DB::table($tbl_bangunan)
+                ->where([
+                    ['status_publish', '=', '2'],
+                    ['id_kecamatan', '=', $id_kecamatan],
+                    ['id_kelurahan', '=', $id_kelurahan],
+                ])
+                ->whereBetween('harga_bangunan', [$min_harga, $max_harga])
+                ->whereBetween('luas_bangunan', [$min_luas_bangunan, $max_luas_bangunan])
+                ->whereBetween('luas_tanah', [$min_luas_tanah, $max_luas_tanah])
+                ->leftJoin($tblKategori, "$tblKategori.id_kategori", "=", "$tbl_bangunan.id_kategori")
+                ->orderBy('id_bangunan', 'DESC')
+                ->get();
+        } else if (!$id_kecamatan && !$id_kelurahan && $id_kategori) {
+            $bangunan = DB::table($tbl_bangunan)
+                ->where([
+                    ['status_publish', '=', '2'],
+                    ["$tbl_bangunan.id_kategori", '=', $id_kategori],
+                ])
+                ->whereBetween('harga_bangunan', [$min_harga, $max_harga])
+                ->whereBetween('luas_bangunan', [$min_luas_bangunan, $max_luas_bangunan])
+                ->whereBetween('luas_tanah', [$min_luas_tanah, $max_luas_tanah])
+                ->leftJoin($tblKategori, "$tblKategori.id_kategori", "=", "$tbl_bangunan.id_kategori")
+                ->orderBy('id_bangunan', 'DESC')
+                ->get();
+        } else if ($id_kecamatan && !$id_kelurahan && !$id_kategori) {
             $bangunan = DB::table($tbl_bangunan)
                 ->where([
                     ['status_publish', '=', '2'],
@@ -58,25 +88,36 @@ class Properti extends Model
                 ->whereBetween('harga_bangunan', [$min_harga, $max_harga])
                 ->whereBetween('luas_bangunan', [$min_luas_bangunan, $max_luas_bangunan])
                 ->whereBetween('luas_tanah', [$min_luas_tanah, $max_luas_tanah])
+                ->leftJoin($tblKategori, "$tblKategori.id_kategori", "=", "$tbl_bangunan.id_kategori")
                 ->orderBy('id_bangunan', 'DESC')
                 ->get();
         }
-
-        if (count($bangunan) > 0 && $bangunan) {
-            foreach ($bangunan as $i => $data) {
-                $data_foto = DB::table($tbl_foto)
-                    ->where([
-                        ['id_bangunan', '=', $data->id_bangunan],
-                        ['level_foto', '=', '1'],
-                    ])
-                    ->first();
-                $data->foto_bangunan = $data_foto->foto_bangunan;
-            }
-
-            return $bangunan;
-        } else {
-            return null;
+        else
+        {
+            $bangunan = DB::table($tbl_bangunan)
+            ->where([
+                ['status_publish', '=', '2'],
+            ])
+            ->whereBetween('harga_bangunan', [$min_harga, $max_harga])
+            ->whereBetween('luas_bangunan', [$min_luas_bangunan, $max_luas_bangunan])
+            ->whereBetween('luas_tanah', [$min_luas_tanah, $max_luas_tanah])
+            ->leftJoin($tblKategori, "$tblKategori.id_kategori", "=", "$tbl_bangunan.id_kategori")
+            ->orderBy('id_bangunan', 'DESC')
+            ->get();
         }
+
+
+        foreach ($bangunan as $i => $data) {
+            $data_foto = DB::table($tbl_foto)
+                ->where([
+                    ['id_bangunan', '=', $data->id_bangunan],
+                    ['level_foto', '=', '1'],
+                ])
+                ->first();
+            $data->foto_bangunan = $data_foto ? $data_foto->foto_bangunan : "";
+        }
+
+        return $bangunan;
     }
 
     // Get All Properties
@@ -85,14 +126,14 @@ class Properti extends Model
         // Tabel - tabel
         $tbl_bangunan = 'bangunan';
         $tbl_foto = "foto_bangunan";
+        $tblKategori = "kategori";
 
         $data_bangunan = DB::table($tbl_bangunan)
             ->where('status_publish', '=', '2')
             ->limit($limit)
             ->orderBy('id_bangunan', 'DESC')
+            ->leftJoin($tblKategori, "$tblKategori.id_kategori", "=", "$tbl_bangunan.id_kategori")
             ->get();
-
-        if (count($data_bangunan) > 0) {
 
             foreach ($data_bangunan as $i => $data) {
                 $data_foto = DB::table($tbl_foto)
@@ -101,13 +142,11 @@ class Properti extends Model
                         ['level_foto', '=', '1'],
                     ])
                     ->first();
-                $data->foto_bangunan = $data_foto->foto_bangunan;
+                $data->foto_bangunan = $data_foto ? $data_foto->foto_bangunan : "";
             }
 
             return $data_bangunan;
-        } else {
-            return null;
-        }
+ 
     }
 
     // Get Properti By ID Pengembang
