@@ -90,8 +90,8 @@ class Pengembang extends Model
             ->get();
         // End Pagination
 
-        if (count($data_pengembang) == 0)
-            $data_pengembang = "Data Tidak Tersedia";
+        // if (count($data_pengembang) == 0)
+        //     $data_pengembang = "Data Tidak Tersedia";
 
         $data = [
             "total_data"   => $total,

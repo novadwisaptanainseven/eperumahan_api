@@ -1599,6 +1599,9 @@ class PerumahanController extends Controller
             ->first();
 
         if ($properti) {
+            // Delete Sertifikat Rumah dan denah
+            Storage::delete($properti->sertifikat);
+            Storage::delete($properti->denah);
 
             // Delete Foto Bangunan
             $foto_properti = DB::table($tbl_foto)->where("id_bangunan", $id_bangunan)->get();

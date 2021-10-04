@@ -1,1 +1,1 @@
-1. Tangani fitur delete denah dan legalitas di bangunan
+1. Tambahkan field keterangan luasan

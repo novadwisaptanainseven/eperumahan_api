@@ -98,6 +98,10 @@ class UserController extends Controller
         // Cek apakah akun dibuatkan untuk pengembang (id_pengembang)
         if ($request->id_pengembang) {
             $pengembang = Pengembang::find($request->id_pengembang);
+
+            // Hapus Akun Lama dari database
+            User::find($pengembang->id_user)->delete();
+            
             $pengembang->id_user = $user->id;
             $pengembang->save();
 

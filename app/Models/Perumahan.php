@@ -822,8 +822,8 @@ class Perumahan extends Model
         // End Pagination
 
         // Cek apakah data perumahan ada isinya
-        if (count($data_perumahan) <= 0)
-            $data_perumahan = "Data Tidak Tersedia";
+        // if (count($data_perumahan) <= 0)
+        //     $data_perumahan = "Data Tidak Tersedia";
 
         $nomor = $offset;
         // Get jumlah bangunan by id perumahan
@@ -840,7 +840,7 @@ class Perumahan extends Model
             $data->no = $nomor;
         }
 
-        $data_perumahan->jumlah_properti = $jumlah_properti;
+        // $data_perumahan->jumlah_properti = $jumlah_properti;
 
         //  Get data belum konfirmasi
         $belum_konfirmasi = DB::table($perumahan)
@@ -1201,8 +1201,6 @@ class Perumahan extends Model
         $foto_bangunan = 'foto_bangunan';
         $spesifikasi = 'spesifikasi_rumah';
         $bangunan = 'bangunan';
-        $kelurahan = 'kelurahan';
-        $kecamatan = 'kecamatan';
 
         // Get Data Perumahan by ID Perumahan
         $data_perumahan = DB::table($perumahan)->where('id_perumahan', $id_perumahan)->first();
