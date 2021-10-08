@@ -73,7 +73,7 @@ class Pengembang extends Model
             ->where([
                 'status_deleted' => 0
             ])
-            ->orderBy('id_pengembang', 'DESC')
+            ->orderBy('id_pengembang', 'ASC')
             ->get()
             ->count();
 
@@ -112,7 +112,7 @@ class Pengembang extends Model
 
         $data_pengembang = DB::table($tbl_pengembang)
             ->where('status_aktif', '=', '1')
-            ->orderBy('id_pengembang', 'DESC')
+            ->orderBy('id_pengembang', 'ASC')
             ->limit($limit)
             ->get();
 

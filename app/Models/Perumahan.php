@@ -2321,8 +2321,8 @@ class Perumahan extends Model
         // End Pagination
 
         // Cek apakah ada data Foto Perumahan
-        if (count($data_foto) == 0)
-            $data_foto = 'Data Tidak Tersedia';
+        // if (count($data_foto) == 0)
+        //     $data_foto = 'Data Tidak Tersedia';
 
         $data = [
             "total_data"   => $total,
