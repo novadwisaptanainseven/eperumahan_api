@@ -52,7 +52,6 @@ Route::prefix('v1/')->group(function () {
 
   // Kategori Perumahan
   Route::get('/kategori', [PerumahanController::class, 'getAllKategori']);
-
   
   // Route Halaman Beranda
   Route::get("/sibaper-beranda", [WebsiteController::class, "getInformasiBeranda"]);

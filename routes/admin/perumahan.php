@@ -1,12 +1,15 @@
 <?php
 
 use App\Http\Controllers\PerumahanController;
+use App\Http\Controllers\WebsiteController;
 
 $prefix1 = "perumahan";
 $prefix2 = "properti";
 
 // Perumahan
 Route::prefix($prefix1)->group(function () {
+  Route::get("/rekap", [WebsiteController::class, "getInformasiPerumahan"]);
+
   // Search Perumahan
   Route::get('/search', [PerumahanController::class, 'searchPerumahan']);
 

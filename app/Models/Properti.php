@@ -193,6 +193,7 @@ class Properti extends Model
         $tbl_pengembang = "pengembang";
         $tbl_sarana_prasarana = 'sarana_prasarana_perumahan';
         $tbl_fasilitas = 'fasilitas_perumahan';
+        $tblFasilitasBangunan = 'fasilitas';
         $tbl_perumahan = 'perumahan';
         $tbl_kategori = 'kategori';
 
@@ -207,9 +208,12 @@ class Properti extends Model
                 ->where('id_perumahan', '=', $data_bangunan->id_perumahan)
                 ->first();
             $fotoPerumahan = DB::table($tbl_foto_perumahan)
-                ->where("status_foto", 1)
+                ->where([
+                    ["id_perumahan", "=", $data_bangunan->id_perumahan],
+                    ["status_foto", "=", 1],
+                ])
                 ->first();
-            $perumahan->foto_perumahan = $fotoPerumahan->foto_perumahan;
+            $perumahan->foto_perumahan = $fotoPerumahan ? $fotoPerumahan->foto_perumahan : "";
 
             // Get Latitude and Longitude dari tabel perumahan
             $lngLat = DB::table($tbl_perumahan)
@@ -227,6 +231,11 @@ class Properti extends Model
             $data_fasilitas = DB::table($tbl_fasilitas)
                 ->where('id_perumahan', '=', $data_bangunan->id_perumahan)
                 ->get();
+
+                // Get Fasilitas
+            $data_fasilitas_bangunan = DB::table($tblFasilitasBangunan)
+            ->where('id_bangunan', '=', $data_bangunan->id_bangunan)
+            ->get();
 
             // Get Sarana Prasarana
             $data_sarana_prasarana = DB::table($tbl_sarana_prasarana)
@@ -260,6 +269,7 @@ class Properti extends Model
             $data_bangunan->foto_bangunan = $data_foto;
             $data_bangunan->sarana_prasarana = $data_sarana_prasarana;
             $data_bangunan->fasilitas = $data_fasilitas;
+            $data_bangunan->fasilitas_bangunan = $data_fasilitas_bangunan;
             $data_bangunan->legalitas = $data_legalitas;
             $data_bangunan->latitude = $lngLat->latitude;
             $data_bangunan->longitude = $lngLat->longitude;

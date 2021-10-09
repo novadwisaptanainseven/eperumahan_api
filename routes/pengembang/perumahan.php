@@ -105,6 +105,9 @@ Route::prefix($prefix1)->group(function () {
   // Add Spesifikasi Bangunan
   Route::post('/{id_perumahan}/properti/{id_bangunan}/spesifikasi', [PerumahanController::class, 'addSpesifikasiProperti']);
 
+  // Add Fasilitas Bangunan
+  Route::post('/{id_perumahan}/properti/{id_bangunan}/fasilitas', [PerumahanController::class, 'addFasilitasProperti']);
+
   // Delete Bangunan
   Route::delete('/{id_perumahan}/properti/{id_bangunan}', [PerumahanController::class, 'deleteProperti']);
 });
@@ -128,6 +131,12 @@ Route::prefix($prefix2)->group(function () {
 
   // Delete Spesifikasi Bangunan By ID
   Route::delete('/{id_bangunan}/spesifikasi/{id_spesifikasi_rumah}', [PerumahanController::class, 'deleteSpesifikasiProperti']);
+
+  // Get All Fasilitas By ID Bangunan
+  Route::get('/{id_bangunan}/fasilitas', [PerumahanController::class, 'getFasilitasProperti']);
+
+  // Delete Fasilitas Bangunan By ID
+  Route::delete('/{id_bangunan}/fasilitas/{id_fasilitas}', [PerumahanController::class, 'deleteFasilitasProperti']);
 
   // GROUP PERUMAHAN / PROPERTI / FOTO
 

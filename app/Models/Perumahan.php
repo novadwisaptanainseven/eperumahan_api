@@ -992,7 +992,7 @@ class Perumahan extends Model
                 "$tblPengembang.nama_pengembang",
             )
             ->where(['id_perumahan' => $id_perumahan])
-            ->leftJoin($tblKecamatan, "$tblPerumahan.id_kecamatan", '=', "$tblKecamatan.id_kecamatan")
+            ->leftJoin($tblKecamatan, "$tblKecamatan.id_kecamatan", '=', "$tblPerumahan.id_kecamatan")
             ->leftJoin($tblKelurahan, "$tblPerumahan.id_kelurahan", '=', "$tblKelurahan.id_kelurahan")
             ->leftJoin($tblKategori, "$tblKategori.id_kategori", '=', "$tblPerumahan.id_kategori")
             ->leftJoin($tblPengembang, "$tblPengembang.id_pengembang", '=', "$tblPerumahan.id_pengembang")
@@ -1200,6 +1200,7 @@ class Perumahan extends Model
         $pengembang = 'pengembang';
         $foto_bangunan = 'foto_bangunan';
         $spesifikasi = 'spesifikasi_rumah';
+        $tblFasilitas = 'fasilitas';
         $bangunan = 'bangunan';
 
         // Get Data Perumahan by ID Perumahan
@@ -1349,6 +1350,19 @@ class Perumahan extends Model
 
                     // Insert Data Spesifikasi ke database
                     DB::table($spesifikasi)->insert($data_spek);
+                }
+            }
+
+            // Fasilitas Bangunan
+            if ($req->fasilitas) {
+                foreach ($req->fasilitas as $fas) {
+                    $data_fasilitas = [
+                        "id_bangunan" => $id_bangunan,
+                        "nama_fasilitas" => $fas,
+                    ];
+
+                    // Insert Data Fasilitas ke database
+                    DB::table($tblFasilitas)->insert($data_fasilitas);
                 }
             }
 
@@ -1626,6 +1640,7 @@ class Perumahan extends Model
         $kecamatan = 'kecamatan';
         $foto_bangunan = 'foto_bangunan';
         $spesifikasi_rumah = 'spesifikasi_rumah';
+        $tblFasilitas = 'fasilitas';
         $tblKategori = 'kategori';
 
         // Get Data Foto Bangunan By ID Bangunan
@@ -1635,6 +1650,11 @@ class Perumahan extends Model
 
         // Get Data Spesifikasi By ID Bangunan
         $data_spesifikasi = DB::table($spesifikasi_rumah)
+            ->where(['id_bangunan' => $id_bangunan])
+            ->get();
+
+        // Get Data Fasilitas By ID Bangunan
+        $data_fasilitas = DB::table($tblFasilitas)
             ->where(['id_bangunan' => $id_bangunan])
             ->get();
 
@@ -1653,6 +1673,7 @@ class Perumahan extends Model
             // Gabungkan hasil pencarian data
             $data_bangunan->foto_bangunan = $data_foto;
             $data_bangunan->spesifikasi_rumah = $data_spesifikasi;
+            $data_bangunan->fasilitas = $data_fasilitas;
 
             return $data_bangunan;
         } else
@@ -1930,6 +1951,126 @@ class Perumahan extends Model
         if ($delete) {
             $data = [
                 "id_spesifikasi_properti" => $data_spesifikasi->id_spesifikasi_rumah
+            ];
+
+            return $data;
+        } else
+            return null;
+    }
+
+    // Add Fasilitas Properti
+    public static function addFasilitasProperti($req, $id_perumahan, $id_bangunan)
+    {
+        // Tabel - Tabel
+        $tblFasilitas = 'fasilitas';
+        $bangunan = 'bangunan';
+        $perumahan = 'perumahan';
+
+        // Get data perumahan
+        $data_perumahan = DB::table($perumahan)->where('id_perumahan', $id_perumahan)->first();
+
+        // Get data bangunan
+        $data_bangunan = DB::table($bangunan)->where('id_bangunan', $id_bangunan)->first();
+
+        // Cek apakah ada data perumahan atau data bangunan
+        if (!$data_perumahan || !$data_bangunan)
+            return 'NOT_FOUND';
+
+        $data_fasilitas = $req->fasilitas;
+
+        // Dilakukan perulangan FOREACH dikarenakan request bertipe Array
+        foreach ($data_fasilitas as $data) {
+            // Proses update
+            $tambah = DB::table($tblFasilitas)->insert([
+                "id_bangunan" => $id_bangunan,
+                "nama_fasilitas" => $data
+            ]);
+
+            if (!$tambah)
+                return null;
+        }
+
+        // Get data fasilitas rumah setelah ditambahkan
+        $data_fasilitas = DB::table($tblFasilitas)
+            ->select("$tblFasilitas.id_fasilitas", "$tblFasilitas.nama_fasilitas")
+            ->where('id_bangunan', $id_bangunan)
+            ->orderBy('id_fasilitas', 'DESC')
+            ->get();
+
+        // Gabungkan semua hasil proses ke dalam 1 variabel
+        $data = [
+            "id_perumahan" => $id_perumahan,
+            "id_bangunan" => $id_bangunan,
+            "fasilitas" => $data_fasilitas
+        ];
+
+        return $data;
+    }
+
+    // Get All Fasilitas Properti by ID Bangunan
+    public static function getFasilitasProperti($id_bangunan)
+    {
+        // Tabel - Tabel
+        $tblFasilitas = 'fasilitas';
+        $bangunan = 'bangunan';
+
+        // Get data bangunan
+        $data_bangunan = DB::table($bangunan)->where('id_bangunan', $id_bangunan)->first();
+
+        // Cek apakah ada data perumahan atau data bangunan
+        if (!$data_bangunan)
+            return 'NOT_FOUND';
+
+        // Get id perumahan
+        $id_perumahan = $data_bangunan->id_perumahan;
+
+        // Get all data fasilitas by id bangunan
+        $data_bangunan = DB::table($tblFasilitas)
+            ->select("$tblFasilitas.id_fasilitas", "$tblFasilitas.nama_fasilitas")
+            ->where('id_bangunan', $id_bangunan)
+            ->orderBy('id_fasilitas', 'desc')
+            ->get();
+
+        // Gabungkan semua hasil proses ke dalam 1 variabel
+        $data = [
+            "id_perumahan" => $id_perumahan,
+            "id_bangunan"  => $id_bangunan,
+            "fasilitas" => $data_bangunan
+        ];
+
+        return $data;
+    }
+
+    // Delete Fasilitas Properti
+    public static function deleteFasilitasProperti($id_bangunan, $id_fasilitas)
+    {
+        // Tabel - Tabel
+        $tblFasilitas = 'fasilitas';
+        $bangunan = 'bangunan';
+
+        // Get data bangunan dan fasilitas properti
+        $data_bangunan = DB::table($bangunan)->where('id_bangunan', $id_bangunan)->first();
+        $data_fasilitas = DB::table($tblFasilitas)
+            ->where([
+                'id_fasilitas' => $id_fasilitas,
+                'id_bangunan' => $id_bangunan
+            ])
+            ->first();
+
+        if (!$data_bangunan || !$data_fasilitas)
+            return 'NOT_FOUND';
+
+        // Proses delete
+        $delete = DB::table($tblFasilitas)
+            ->where([
+                "id_fasilitas" => $id_fasilitas,
+                "id_bangunan" => $id_bangunan
+            ])
+            ->delete();
+
+        if ($delete) {
+            $data = [
+                "id_fasilitas" => $data_fasilitas->id_fasilitas
             ];
 
             return $data;
