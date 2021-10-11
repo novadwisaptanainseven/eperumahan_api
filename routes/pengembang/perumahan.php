@@ -22,14 +22,14 @@ Route::prefix($prefix1)->group(function () {
   // Add Data Perumahan
   Route::post('', [PerumahanController::class, 'addPerumahan']);
 
-  // Update Data Perumahan
-  Route::delete('/{id_perumahan}', [PerumahanController::class, 'updatePerumahanById']);
+  // Delete Data Perumahan
+  Route::get('/{id_perumahan}/delete', [PerumahanController::class, 'updatePerumahanById']);
 
   // Update Data Perumahan
   Route::post('/{id_perumahan}', [PerumahanController::class, 'updatePerumahanById']);
 
   // Update Status Perumahan
-  Route::put('/{id_perumahan}/status', [PerumahanController::class, 'updateStatus']);
+  Route::post('/{id_perumahan}/status', [PerumahanController::class, 'updateStatus']);
 
   // Get All Perumahan
   Route::get('', [PerumahanController::class, 'getAllPerumahan']);
@@ -44,7 +44,7 @@ Route::prefix($prefix1)->group(function () {
   Route::get('/file/{filename}', [PerumahanController::class, 'getFileLegalitas']);
 
   // Delete Perumahan
-  Route::delete('/{id_perumahan}', [PerumahanController::class, 'deletePerumahan']);
+  Route::get('/{id_perumahan}/delete', [PerumahanController::class, 'deletePerumahan']);
 
   // GROUP PERUMAHAN / FOTO
 
@@ -52,10 +52,10 @@ Route::prefix($prefix1)->group(function () {
   Route::post('/{id_perumahan}/foto', [PerumahanController::class, 'addFotoPerumahan']);
 
   // Update Status Utama Foto Perumahan
-  Route::put('/{id_perumahan}/foto/{id_foto_perumahan}/status', [PerumahanController::class, 'updateStatusFoto']);
+  Route::post('/{id_perumahan}/foto/{id_foto_perumahan}/status', [PerumahanController::class, 'updateStatusFoto']);
 
   // Delete Foto Perumahan By ID
-  Route::delete('/{id_perumahan}/foto/{id_foto_perumahan}', [PerumahanController::class, 'deleteFoto']);
+  Route::get('/{id_perumahan}/foto/{id_foto_perumahan}/delete', [PerumahanController::class, 'deleteFoto']);
 
   // Get All Foto Perumahan
   Route::get('/{id_perumahan}/foto', [PerumahanController::class, 'getAllFoto']);
@@ -69,7 +69,7 @@ Route::prefix($prefix1)->group(function () {
   Route::get('/{id_perumahan}/sarana_prasarana', [PerumahanController::class, 'getSaranaPrasarana']);
 
   // Delete Sarana dan Prasarana By ID
-  Route::delete('/{id_perumahan}/sarana_prasarana/{id_sarana_prasarana_perumahan}', [PerumahanController::class, 'deleteSaranaPrasarana']);
+  Route::get('/{id_perumahan}/sarana_prasarana/{id_sarana_prasarana_perumahan}/delete', [PerumahanController::class, 'deleteSaranaPrasarana']);
 
   // GROUP PERUMAHAN / FASILITAS
 
@@ -80,7 +80,7 @@ Route::prefix($prefix1)->group(function () {
   Route::get('/{id_perumahan}/fasilitas', [PerumahanController::class, 'getFasilitas']);
 
   // Delete Fasilitas By ID
-  Route::delete('/{id_perumahan}/fasilitas/{id_fasilitas_perumahan}', [PerumahanController::class, 'deleteFasilitas']);
+  Route::get('/{id_perumahan}/fasilitas/{id_fasilitas_perumahan}/delete', [PerumahanController::class, 'deleteFasilitas']);
 
   // GROUP PERUMAHAN / PROPERTI
 
@@ -100,7 +100,7 @@ Route::prefix($prefix1)->group(function () {
   Route::post('/{id_perumahan}/properti/{id_bangunan}', [PerumahanController::class, 'updatePropertiById']);
 
   // Update Status Publish Properti By ID Perumahan & ID Bangunan
-  Route::put('/{id_perumahan}/properti/{id_bangunan}/status', [PerumahanController::class, 'updateStatusProperti']);
+  Route::post('/{id_perumahan}/properti/{id_bangunan}/status', [PerumahanController::class, 'updateStatusProperti']);
 
   // Add Spesifikasi Bangunan
   Route::post('/{id_perumahan}/properti/{id_bangunan}/spesifikasi', [PerumahanController::class, 'addSpesifikasiProperti']);
@@ -109,7 +109,7 @@ Route::prefix($prefix1)->group(function () {
   Route::post('/{id_perumahan}/properti/{id_bangunan}/fasilitas', [PerumahanController::class, 'addFasilitasProperti']);
 
   // Delete Bangunan
-  Route::delete('/{id_perumahan}/properti/{id_bangunan}', [PerumahanController::class, 'deleteProperti']);
+  Route::get('/{id_perumahan}/properti/{id_bangunan}/delete', [PerumahanController::class, 'deleteProperti']);
 });
 
 Route::prefix($prefix2)->group(function () {
@@ -121,7 +121,7 @@ Route::prefix($prefix2)->group(function () {
   Route::get('/{id_properti}', [PerumahanController::class, 'getPropertiById2']);
 
   // Update Status Publish By ID
-  Route::put('/{id_properti}/status', [PerumahanController::class, 'updateStatusProperti2']);
+  Route::post('/{id_properti}/status', [PerumahanController::class, 'updateStatusProperti2']);
 
 
   // GROUP PERUMAHAN / PROPERTI / SPESIFIKASI
@@ -130,13 +130,13 @@ Route::prefix($prefix2)->group(function () {
   Route::get('/{id_bangunan}/spesifikasi', [PerumahanController::class, 'getSpesifikasiProperti']);
 
   // Delete Spesifikasi Bangunan By ID
-  Route::delete('/{id_bangunan}/spesifikasi/{id_spesifikasi_rumah}', [PerumahanController::class, 'deleteSpesifikasiProperti']);
+  Route::get('/{id_bangunan}/spesifikasi/{id_spesifikasi_rumah}/delete', [PerumahanController::class, 'deleteSpesifikasiProperti']);
 
   // Get All Fasilitas By ID Bangunan
   Route::get('/{id_bangunan}/fasilitas', [PerumahanController::class, 'getFasilitasProperti']);
 
   // Delete Fasilitas Bangunan By ID
-  Route::delete('/{id_bangunan}/fasilitas/{id_fasilitas}', [PerumahanController::class, 'deleteFasilitasProperti']);
+  Route::get('/{id_bangunan}/fasilitas/{id_fasilitas}/delete', [PerumahanController::class, 'deleteFasilitasProperti']);
 
   // GROUP PERUMAHAN / PROPERTI / FOTO
 
@@ -147,8 +147,8 @@ Route::prefix($prefix2)->group(function () {
   Route::post('/{id_bangunan}/foto', [PerumahanController::class, 'addFotoBangunan']);
 
   // Update Status Utama Foto Bangunan
-  Route::put('/{id_bangunan}/foto/{id_foto}/status', [PerumahanController::class, 'updateStatusFotoBangunan']);
+  Route::post('/{id_bangunan}/foto/{id_foto}/status', [PerumahanController::class, 'updateStatusFotoBangunan']);
 
   // Delete Foto Bangunan
-  Route::delete('/{id_bangunan}/foto/{id_foto}', [PerumahanController::class, 'deleteFotoBangunan']);
+  Route::get('/{id_bangunan}/foto/{id_foto}/delete', [PerumahanController::class, 'deleteFotoBangunan']);
 });

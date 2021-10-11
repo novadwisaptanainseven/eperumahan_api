@@ -6,7 +6,7 @@ $prefix = "pengembang";
 
 Route::prefix($prefix)->group(function () {
   // Update Status Aktif Pengembang
-  Route::put('/{id_pengembang}/status', [PengembangController::class, 'updateStatusPengembang']);
+  Route::post('/{id_pengembang}/status', [PengembangController::class, 'updateStatusPengembang']);
 
   // Search Pengembang
   Route::get('/search', [PengembangController::class, 'searchPengembang']);
@@ -18,10 +18,10 @@ Route::prefix($prefix)->group(function () {
   Route::post('/{id_pengembang}', [PengembangController::class, 'updatePengembang']);
 
   // Delete Pengembang
-  Route::delete('/{id_pengembang}', [PengembangController::class, 'deletePengembang']);
+  Route::get('/{id_pengembang}/delete', [PengembangController::class, 'deletePengembang']);
 
   // Delete Permanent Pengembang
-  Route::delete('/{id_pengembang}/delete-permanent', [PengembangController::class, 'destroy']);
+  Route::get('/{id_pengembang}/delete-permanent', [PengembangController::class, 'destroy']);
 
   // Get All Pengembang
   Route::get('/', [PengembangController::class, 'getAllPengembang']);

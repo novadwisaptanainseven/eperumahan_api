@@ -15,7 +15,7 @@ Route::post('register', [UserController::class, 'register']);
 Route::get('users', [UserController::class, 'getAllUsers']);
 
 // Delete User By ID
-Route::delete('user/{id_user}', [UserController::class, 'destroy']);
+Route::get('user/{id_user}/delete', [UserController::class, 'destroy']);
 
 // For Checking User who is active at this moment
 Route::get('/user/me', [AuthController::class, 'me'])->withoutMiddleware([CheckStatus::class]);
@@ -24,10 +24,10 @@ Route::get('/user/me', [AuthController::class, 'me'])->withoutMiddleware([CheckS
 Route::get('user/{id_user}', [UserController::class, 'getUserById']);
 
 // Update Data User
-Route::put('user/{id_user}', [UserController::class, 'updateUser']);
+Route::post('user/{id_user}', [UserController::class, 'updateUser']);
 
 // Update Status User
-Route::put('user/{id_user}/status', [UserController::class, 'updateStatusUser']);
+Route::post('user/{id_user}/status', [UserController::class, 'updateStatusUser']);
 
 // Logout User Admin
 Route::post('user/logout', [AuthController::class, 'logout']);

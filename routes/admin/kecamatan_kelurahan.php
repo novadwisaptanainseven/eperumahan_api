@@ -12,9 +12,9 @@ Route::prefix($prefix)->group(function () {
 
   Route::post("/", [PerumahanController::class, "insertKecamatan"]);
 
-  Route::put("/{id_kecamatan}", [PerumahanController::class, "editKecamatan"]);
+  Route::post("/{id_kecamatan}", [PerumahanController::class, "editKecamatan"]);
 
-  Route::delete("/{id_kecamatan}", [PerumahanController::class, "deleteKecamatan"]);
+  Route::get("/{id_kecamatan}/delete", [PerumahanController::class, "deleteKecamatan"]);
 
   // Kelurahan
   Route::get("/{id_kecamatan}/kelurahan", [PerumahanController::class, "getAllKelurahan"]);
@@ -23,7 +23,7 @@ Route::prefix($prefix)->group(function () {
 
   Route::post("{id_kecamatan}/kelurahan", [PerumahanController::class, "insertKelurahan"]);
 
-  Route::put("/kelurahan/{id_kelurahan}", [PerumahanController::class, "editKelurahan"]);
+  Route::post("/kelurahan/{id_kelurahan}", [PerumahanController::class, "editKelurahan"]);
 
-  Route::delete("/kelurahan/{id_kelurahan}", [PerumahanController::class, "deleteKelurahan"]);
+  Route::get("/kelurahan/{id_kelurahan}/delete", [PerumahanController::class, "deleteKelurahan"]);
 });

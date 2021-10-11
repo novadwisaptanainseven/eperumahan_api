@@ -23,5 +23,5 @@ Route::prefix($prefix)->group(function () {
   Route::post('/{id_form}', [FormController::class, 'updateForm']);
 
   // Delete Form Data Perumahan By ID
-  Route::delete('/{id_form}', [FormController::class, 'deleteForm']);
+  Route::get('/{id_form}/delete', [FormController::class, 'deleteForm']);
 });

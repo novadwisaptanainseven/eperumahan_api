@@ -11,7 +11,7 @@ use App\Http\Controllers\WebsiteController;
 
 Route::prefix('v1/')->group(function () {
   // Search Properti
-  Route::put('properti-search', [PropertiController::class, 'searchProperti']);
+  Route::post('properti-search', [PropertiController::class, 'searchProperti']);
   // Get All Properti Yang Status Publishnya Aktif
   Route::get('properti', [PropertiController::class, 'getAllProperties']);
   // Get Properti berdasarkan slug
@@ -38,7 +38,7 @@ Route::prefix('v1/')->group(function () {
   // Kontak
   Route::post('kontak', [KontakController::class, 'sendMessage']);
   Route::get('kontak', [KontakController::class, 'getAllMessages']);
-  Route::delete('kontak/{id}', [KontakController::class, 'deleteMessage']);
+  Route::get('kontak/{id}/delete', [KontakController::class, 'deleteMessage']);
 
   // Brosur
   Route::get('brosur', [BrosurController::class, 'getAllBrosurUmum']);

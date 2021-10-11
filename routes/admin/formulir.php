@@ -14,12 +14,12 @@ Route::post("formulir", [FormController::class, 'addFormMaster']);
 Route::get('form', [FormController::class, 'getAllForm']);
 
 // Update Status Active Form Master By ID
-Route::put("formulir/{id_form}/status_active", [FormController::class, 'updateStatusActive']);
+Route::post("formulir/{id_form}/status_active", [FormController::class, 'updateStatusActive']);
 // Get Form By ID
 Route::get("formulir/{id_form}", [FormController::class, 'getFormAdminById']);
 
 // Delete Form Master By ID
-Route::delete("formulir/{id_form}", [FormController::class, 'deleteFormMaster']);
+Route::get("formulir/{id_form}/delete", [FormController::class, 'deleteFormMaster']);
 
 // GROUP FORMULIR PENGEMBANG
 

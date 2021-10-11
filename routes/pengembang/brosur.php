@@ -20,5 +20,5 @@ Route::prefix($prefix)->group(function () {
   // Update Brosur By ID
 
   // Delete Brosur By ID
-  Route::delete('/{id_brosur}', [BrosurController::class, 'deleteBrosur']);
+  Route::get('/{id_brosur}/delete', [BrosurController::class, 'deleteBrosur']);
 });
