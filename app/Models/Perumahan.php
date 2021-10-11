@@ -2712,4 +2712,54 @@ class Perumahan extends Model
         } else
             return null;
     }
+
+    // Get Rekapitulasi Perumahan
+    public static function getRekapPerumahan()
+    {
+        // Get jumlah perumahan tersedia
+        $rumah_mbr = Perumahan::where("id_kategori", 1)->count();
+        $rumah_komersial = Perumahan::where("id_kategori", 2)->count();
+        $rumah_campuran = Perumahan::where("id_kategori", 3)->count();
+        $pengembang = Pengembang::get()->count();
+
+        // Get Jumlah Perumahan Berdasarkan Kecamatan
+        $kecamatan = DB::table(self::$tblKecamatan)->get();
+        foreach ($kecamatan as $k) {
+            $totalRumah = Perumahan::where("id_kecamatan", $k->id_kecamatan)->count();
+            $totalRumahMBR = Perumahan::where([
+                ["id_kecamatan", $k->id_kecamatan],
+                ["id_kategori", 1],
+            ])->count();
+            $totalRumahKomersial = Perumahan::where([
+                ["id_kecamatan", $k->id_kecamatan],
+                ["id_kategori", 2],
+            ])->count();
+            $totalRumahCampuran = Perumahan::where([
+                ["id_kecamatan", $k->id_kecamatan],
+                ["id_kategori", 3],
+            ])->count();
+
+            $k->rumah = [
+                "mbr" => $totalRumahMBR,
+                "komersial" => $totalRumahKomersial,
+                "campuran" => $totalRumahCampuran,
+                "total" => $totalRumah,
+            ];
+        }
+
+        $perumahan = Perumahan::all();
+
+        $output = [
+            "perumahan" => $perumahan,
+            "jumlah_perumahan" => [
+                "mbr" => $rumah_mbr,
+                "komersial" => $rumah_komersial,
+                "campuran" => $rumah_campuran,
+                "pengembang" => $pengembang,
+            ],
+            "kecamatan" => $kecamatan
+        ];
+
+        return $output;
+    }
 }

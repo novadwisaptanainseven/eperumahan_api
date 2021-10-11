@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\RekapPerumahanExport;
 use Illuminate\Http\Request;
 use App\Models\Perumahan;
 use App\Models\Properti;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Maatwebsite\Excel\Facades\Excel;
 
 class PerumahanController extends Controller
 {
@@ -1734,5 +1736,11 @@ class PerumahanController extends Controller
                 "message" => "Data bangunan dengan id_perumahan: $id_perumahan & id_bangunan: $id_bangunan tidak ditemukan",
             ], 404);
         }
+    }
+
+    // Export Rekap Perumahan
+    public function exportRekapPerumahan()
+    {
+        return Excel::download(new RekapPerumahanExport, 'rekap-perumahan.xlsx');
     }
 }
