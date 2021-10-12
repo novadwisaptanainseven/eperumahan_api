@@ -10,4 +10,5 @@ Route::get('/document/{path}/{filename}/preview', [FileController::class, 'docum
 Route::get('/form/{path}/{filename}', [FileController::class, 'form']);
 Route::get('/form/{path}/{filename}/preview', [FileController::class, 'formPreview']);
 
-Route::get("/rekapitulasi", [PerumahanController::class, "exportRekapPerumahan"]);
+// Export Excel
+Route::get("/export/rekapitulasi", [PerumahanController::class, "exportRekapPerumahan"]);

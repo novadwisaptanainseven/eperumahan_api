@@ -1403,6 +1403,7 @@ class Perumahan extends Model
         $pengembang = 'pengembang';
         $kelurahan  = 'kelurahan';
         $kecamatan  = 'kecamatan';
+        $tblKategori = "kategori";
 
         // Inisialisasi Pagination
         $page = intval($req->page);
@@ -1427,6 +1428,7 @@ class Perumahan extends Model
             ->leftJoin($pengembang, "$bangunan.id_pengembang", "=", "$pengembang.id_pengembang")
             ->leftJoin($kelurahan, "$bangunan.id_kelurahan", "=", "$kelurahan.id_kelurahan")
             ->leftJoin($kecamatan, "$bangunan.id_kecamatan", "=", "$kecamatan.id_kecamatan")
+            ->leftJoin($tblKategori, "$bangunan.id_kategori", "=", "$tblKategori.id_kategori")
             ->offset($offset)
             ->limit($limit)
             // ->orderBy("$bangunan.id_bangunan", $order)
@@ -1435,8 +1437,8 @@ class Perumahan extends Model
         // End Pagination
 
         // Cek apakah data perumahan ada isinya
-        if (count($data_bangunan) == 0)
-            $data_bangunan = "Data Tidak Tersedia";
+        // if (count($data_bangunan) == 0)
+        //     $data_bangunan = "Data Tidak Tersedia";
 
         $properti_belum_konfirmasi = DB::table($bangunan)
             ->where(["status_publish" => 0])
