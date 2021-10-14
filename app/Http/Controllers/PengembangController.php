@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\PengembangExport;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Pengembang;
@@ -11,6 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Maatwebsite\Excel\Facades\Excel;
 
 class PengembangController extends Controller
 {
@@ -502,5 +504,13 @@ class PengembangController extends Controller
             "message" => "Berhasil mendapatkan semua data pengembang",
             "data" => $pengembang
         ], 200);
+    }
+
+    // Export Rekap Pengembang
+    public function exportPengembang($id_user)
+    {
+        $user = User::find($id_user);
+
+        return Excel::download(new PengembangExport($user), 'data-pengembang.xlsx');
     }
 }

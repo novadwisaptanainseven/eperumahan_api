@@ -1743,4 +1743,12 @@ class PerumahanController extends Controller
     {
         return Excel::download(new RekapPerumahanExport, 'rekap-perumahan.xlsx');
     }
+
+    // Testing
+    public function exportPerumahan($req)
+    {
+        $perumahan = Perumahan::getAllPerumahanExport($req);
+
+        return response()->json($perumahan);
+    }
 }
