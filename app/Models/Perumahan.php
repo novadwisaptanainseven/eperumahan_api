@@ -2772,22 +2772,24 @@ class Perumahan extends Model
         $tblPengembang = "pengembang";
         $tblKategori = "kategori";
 
+        // dd($req->all());
+
         $order = $req->order ?? "asc";
-        $orderBy = $req->orderBy ?? "";
-        $kategori = $req->kategori ?? "";
+        $orderBy = $req->orderBy;
+        $kategori = $req->kategori;
         if ($orderBy && $kategori) {
-            $perumahan = Perumahan::where("id_kategori", $kategori)
+            $perumahan = Perumahan::where("$tblPerumahan.id_kategori", $kategori)
                 ->leftJoin($tblKategori, "$tblKategori.id_kategori", "=", "$tblPerumahan.id_kategori")
                 ->leftJoin($tblPengembang, "$tblPengembang.id_pengembang", "=", "$tblPerumahan.id_pengembang")
-                ->orderBy($orderBy, $order)
+                ->orderBy("$tblPerumahan.$orderBy", $order)
                 ->get();
         } elseif ($orderBy) {
             $perumahan = Perumahan::leftJoin($tblKategori, "$tblKategori.id_kategori", "=", "$tblPerumahan.id_kategori")
                 ->leftJoin($tblPengembang, "$tblPengembang.id_pengembang", "=", "$tblPerumahan.id_pengembang")
-                ->orderBy($orderBy, $order)
+                ->orderBy("$tblPerumahan.$orderBy", $order)
                 ->get();
         } elseif ($kategori) {
-            $perumahan = Perumahan::where("id_kategori", $kategori)
+            $perumahan = Perumahan::where("$tblPerumahan.id_kategori", $kategori)
                 ->leftJoin($tblKategori, "$tblKategori.id_kategori", "=", "$tblPerumahan.id_kategori")
                 ->leftJoin($tblPengembang, "$tblPengembang.id_pengembang", "=", "$tblPerumahan.id_pengembang")
                 ->orderBy("$tblPerumahan.created_at", $order)
@@ -2796,6 +2798,38 @@ class Perumahan extends Model
             $perumahan = Perumahan::leftJoin($tblKategori, "$tblKategori.id_kategori", "=", "$tblPerumahan.id_kategori")
                 ->leftJoin($tblPengembang, "$tblPengembang.id_pengembang", "=", "$tblPerumahan.id_pengembang")
                 ->orderBy("$tblPerumahan.created_at", $order)
+                ->get();
+        }
+
+        return $perumahan;
+    }
+
+    // Get All Perumahan Verifikasi 
+    public static function getAllPerumahanVerifikasiExport($req)
+    {
+        $tblPerumahan = "perumahan";
+        $tblPengembang = "pengembang";
+        $tblKategori = "kategori";
+
+        $status = $req->status;
+        $order = $req->order ?? "desc";
+        if ($status == 1 || $status == 2) {
+            $perumahan = Perumahan::where("$tblPerumahan.status_perumahan", 1)
+                ->orWhere("status_perumahan", 2)
+                ->leftJoin($tblKategori, "$tblKategori.id_kategori", "=", "$tblPerumahan.id_kategori")
+                ->leftJoin($tblPengembang, "$tblPengembang.id_pengembang", "=", "$tblPerumahan.id_pengembang")
+                ->orderBy("$tblPerumahan.created_at", $order)
+                ->get();
+        } elseif ($status === 0) {
+            $perumahan = Perumahan::where("$tblPerumahan.status_perumahan", 0)
+                ->leftJoin($tblKategori, "$tblKategori.id_kategori", "=", "$tblPerumahan.id_kategori")
+                ->leftJoin($tblPengembang, "$tblPengembang.id_pengembang", "=", "$tblPerumahan.id_pengembang")
+                ->orderBy("$tblPerumahan.created_at", $order)
+                ->get();
+        } else {
+            $perumahan = Perumahan::leftJoin($tblKategori, "$tblKategori.id_kategori", "=", "$tblPerumahan.id_kategori")
+                ->leftJoin($tblPengembang, "$tblPengembang.id_pengembang", "=", "$tblPerumahan.id_pengembang")
+                ->orderBy("$tblPerumahan.status_perumahan", $order)
                 ->get();
         }
 

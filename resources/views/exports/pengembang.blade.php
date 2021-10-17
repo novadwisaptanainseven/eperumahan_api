@@ -9,7 +9,7 @@
     <td><b>Tanggal: {{ $tanggal }}</b></td>
   </tr>
   <tr>
-    <td><b>Diekspor oleh: {{ $user }}</b></td>
+    <td><b>Diekspor oleh: {{ ucfirst($user) }}</b></td>
   </tr>
   <tr>
     <td></td>

@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\KonfirmasiPerumahanExport;
+use App\Exports\PerumahanExport;
 use App\Exports\RekapPerumahanExport;
 use Illuminate\Http\Request;
 use App\Models\Perumahan;
 use App\Models\Properti;
+use App\Models\User;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -1744,11 +1747,29 @@ class PerumahanController extends Controller
         return Excel::download(new RekapPerumahanExport, 'rekap-perumahan.xlsx');
     }
 
+    // Export Perumahan
+    public function exportPerumahan(Request $req, $id_user)
+    {
+        $user = User::find($id_user);
+
+        return Excel::download(new PerumahanExport($user, $req), 'perumahan.xlsx');
+
+        // $perumahan = Perumahan::getAllPerumahanExport($req);
+        // return response()->json($perumahan);
+    }
+
+    // Export Perumahan Verifikasi
+    public function exportPerumahanVerifikasi(Request $req, $id_user)
+    {
+        $user = User::find($id_user);
+
+        return Excel::download(new KonfirmasiPerumahanExport($user, $req), 'verifikasi-perumahan.xlsx');
+    }
+
     // Testing
-    public function exportPerumahan($req)
+    public function getPerumahanTest(Request $req, $id_user)
     {
         $perumahan = Perumahan::getAllPerumahanExport($req);
-
         return response()->json($perumahan);
     }
 }

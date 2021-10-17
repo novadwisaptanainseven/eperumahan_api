@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\BangunanExport;
 use App\Models\Properti;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
 
 class PropertiController extends Controller
 {
@@ -99,5 +102,13 @@ class PropertiController extends Controller
                 "data" => $bangunan
             ], 404);
         }
+    }
+
+    // Export Bangunan Verifikasi
+    public function exportBangunanVerifikasi(Request $req, $id_user)
+    {
+        $user = User::find($id_user);
+
+        return Excel::download(new BangunanExport($user, $req), 'verifikasi-bangunan.xlsx');
     }
 }

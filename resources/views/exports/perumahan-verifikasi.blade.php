@@ -24,6 +24,7 @@
     <th>Jumlah Unit</th>
     <th>Lokasi</th>
     <th>Tahun</th>
+    <th>Status Verifikasi</th>
   </tr>
   @foreach ($data as $i => $item) 
   <tr>
@@ -54,6 +55,15 @@
     </th> 
     <th>{{ $item->lokasi }}</th>
     <th>{{ $item->tahun }}</th>
+      @if ($item->status_perumahan == 1 || $item->status_perumahan == 2)
+      <th style="background-color: #00ff1a">
+        Sudah
+      </th>
+      @else
+      <th style="background-color: #ff2929">
+        Belum
+      </th>
+      @endif
   </tr>
   @endforeach
 </table>

@@ -2,7 +2,6 @@
 
 namespace App\Exports;
 
-use App\Models\Pengembang;
 use App\Models\Perumahan;
 use Illuminate\Contracts\View\View;
 use Maatwebsite\Excel\Concerns\FromView;
@@ -15,7 +14,7 @@ use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use Maatwebsite\Excel\Concerns\WithColumnWidths;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-class PerumahanExport implements FromView, WithStyles, WithColumnWidths, WithEvents
+class KonfirmasiPerumahanExport implements FromView, WithStyles, WithColumnWidths, WithEvents
 {
     private $user;
     private $perumahan;
@@ -23,14 +22,14 @@ class PerumahanExport implements FromView, WithStyles, WithColumnWidths, WithEve
     public function __construct($user, $request)
     {
         $this->user = $user;
-        $this->perumahan = Perumahan::GetAllPerumahanExport($request);
+        $this->perumahan = Perumahan::GetAllPerumahanVerifikasiExport($request);
     }
 
     public function view(): View
     {
         $currentDate = date("d/m/Y");
 
-        return view('exports/perumahan', [
+        return view('exports/perumahan-verifikasi', [
             'data' => $this->perumahan,
             'tanggal' => $currentDate,
             'user' => $this->user->username
@@ -50,7 +49,7 @@ class PerumahanExport implements FromView, WithStyles, WithColumnWidths, WithEve
                     'size' => "12px"
                 ]
             ],
-            "A6:I6"    => [
+            "A6:J6"    => [
                 'alignment' => [
                     'horizontal' => Alignment::HORIZONTAL_CENTER,
                     'vertical' => Alignment::VERTICAL_CENTER,
@@ -83,11 +82,6 @@ class PerumahanExport implements FromView, WithStyles, WithColumnWidths, WithEve
                     'horizontal' => Alignment::HORIZONTAL_CENTER
                 ],
             ],
-            // "G" => [
-            //     'alignment' => [
-            //         'horizontal' => Alignment::HORIZONTAL_LEFT
-            //     ],
-            // ],
             "F" => [
                 'alignment' => [
                     'horizontal' => Alignment::HORIZONTAL_CENTER
@@ -98,12 +92,12 @@ class PerumahanExport implements FromView, WithStyles, WithColumnWidths, WithEve
                     'horizontal' => Alignment::HORIZONTAL_CENTER
                 ],
             ],
-            // "H" => [
-            //     'alignment' => [
-            //         'horizontal' => Alignment::HORIZONTAL_LEFT
-            //     ],
-            // ],
             "I" => [
+                'alignment' => [
+                    'horizontal' => Alignment::HORIZONTAL_CENTER
+                ],
+            ],
+            "J" => [
                 'alignment' => [
                     'horizontal' => Alignment::HORIZONTAL_CENTER
                 ],
@@ -122,6 +116,7 @@ class PerumahanExport implements FromView, WithStyles, WithColumnWidths, WithEve
             'F' => 25,
             'G' => 25,
             'H' => 35,
+            'J' => 20,
         ];
     }
 
@@ -130,12 +125,12 @@ class PerumahanExport implements FromView, WithStyles, WithColumnWidths, WithEve
         return [
             AfterSheet::class => function (AfterSheet $event) {
                 // Set Title
-                $title = "DATA PERUMAHAN DI DINAS PERUMAHAN DAN PERMUKIMAN SAMARINDA";
+                $title = "DATA VERIFIKASI PERUMAHAN PENGEMBANG DI DINAS PERUMAHAN DAN PERMUKIMAN SAMARINDA";
                 $currentDate = date("d/m/Y");
                 // $currentDate2 = formatTanggalIndonesia($currentDate);
 
 
-                $event->sheet->mergeCells('A1:I2');
+                $event->sheet->mergeCells('A1:J2');
                 $event->sheet->getStyle('A1')->applyFromArray([
                     'alignment' => [
                         'horizontal' => Alignment::HORIZONTAL_CENTER,
@@ -158,7 +153,7 @@ class PerumahanExport implements FromView, WithStyles, WithColumnWidths, WithEve
                     ]
                 ]);
 
-                $event->sheet->getStyle('A6:I6')->applyFromArray([
+                $event->sheet->getStyle('A6:J6')->applyFromArray([
                     'fill' => [
                         'fillType' => Fill::FILL_SOLID,
                         'startColor' => [
@@ -172,7 +167,7 @@ class PerumahanExport implements FromView, WithStyles, WithColumnWidths, WithEve
                 $totPerumahan = count($this->perumahan);
                 $beginRow = 6;
                 $rangeRow = $totPerumahan + $beginRow;
-                $rangeCell = "A{$beginRow}:I{$rangeRow}";
+                $rangeCell = "A{$beginRow}:J{$rangeRow}";
                 $event->sheet->getStyle($rangeCell)->applyFromArray([
                     'borders' => [
                         'allBorders' => [
