@@ -743,6 +743,8 @@ class PerumahanController extends Controller
             "id_kategori"        => "required",
             "tipe_bangunan"      => "required",
             "jumlah_tersedia"    => "required|numeric",
+            "jumlah_terhuni"     => "required|numeric",
+            "jumlah_tidak_terhuni"  => "required|numeric",
             "harga_bangunan"     => "required|numeric",
             "luas_bangunan"      => "required|numeric",
             "dimensi_bangunan"   => "required",

@@ -1287,6 +1287,8 @@ class Perumahan extends Model
             "deskripsi_bangunan" => $req->deskripsi_bangunan,
             "harga_bangunan"     => $req->harga_bangunan,
             "jumlah_tersedia"    => $req->jumlah_tersedia,
+            "jumlah_terhuni"     => $req->jumlah_terhuni,
+            "jumlah_tidak_terhuni"  => $req->jumlah_tidak_terhuni,
             "luas_bangunan"      => $req->luas_bangunan,
             "luas_tanah"         => $req->luas_tanah,
             "dimensi_bangunan"   => $req->dimensi_bangunan,
@@ -1404,6 +1406,7 @@ class Perumahan extends Model
         $kelurahan  = 'kelurahan';
         $kecamatan  = 'kecamatan';
         $tblKategori = "kategori";
+        $tblPerumahan = "perumahan";
 
         // Inisialisasi Pagination
         $page = intval($req->page);
@@ -1429,6 +1432,7 @@ class Perumahan extends Model
             ->leftJoin($kelurahan, "$bangunan.id_kelurahan", "=", "$kelurahan.id_kelurahan")
             ->leftJoin($kecamatan, "$bangunan.id_kecamatan", "=", "$kecamatan.id_kecamatan")
             ->leftJoin($tblKategori, "$bangunan.id_kategori", "=", "$tblKategori.id_kategori")
+            ->leftJoin($tblPerumahan, "$bangunan.id_perumahan", "=", "$tblPerumahan.id_perumahan")
             ->offset($offset)
             ->limit($limit)
             // ->orderBy("$bangunan.id_bangunan", $order)
@@ -1778,6 +1782,8 @@ class Perumahan extends Model
             "deskripsi_bangunan" => ($req->deskripsi_bangunan !== null) ? $req->deskripsi_bangunan : $data_bangunan->deskripsi_bangunan,
             "harga_bangunan"     => ($req->harga_bangunan !== null) ? $req->harga_bangunan : $data_bangunan->harga_bangunan,
             "jumlah_tersedia"    => ($req->jumlah_tersedia !== null) ? $req->jumlah_tersedia : $data_bangunan->jumlah_tersedia,
+            "jumlah_terhuni"    => ($req->jumlah_terhuni !== null) ? $req->jumlah_terhuni : $data_bangunan->jumlah_terhuni,
+            "jumlah_tidak_terhuni"    => ($req->jumlah_tidak_terhuni !== null) ? $req->jumlah_tidak_terhuni : $data_bangunan->jumlah_tidak_terhuni,
             "luas_bangunan"      => ($req->luas_bangunan !== null) ? $req->luas_bangunan : $data_bangunan->luas_bangunan,
             "luas_tanah"         => ($req->luas_tanah !== null) ? $req->luas_tanah : $data_bangunan->luas_tanah,
             "dimensi_bangunan"   => ($req->dimensi_bangunan !== null) ? $req->dimensi_bangunan : $data_bangunan->dimensi_bangunan,
@@ -2820,7 +2826,7 @@ class Perumahan extends Model
                 ->leftJoin($tblPengembang, "$tblPengembang.id_pengembang", "=", "$tblPerumahan.id_pengembang")
                 ->orderBy("$tblPerumahan.created_at", $order)
                 ->get();
-        } elseif ($status === 0) {
+        } elseif ($status == 0) {
             $perumahan = Perumahan::where("$tblPerumahan.status_perumahan", 0)
                 ->leftJoin($tblKategori, "$tblKategori.id_kategori", "=", "$tblPerumahan.id_kategori")
                 ->leftJoin($tblPengembang, "$tblPengembang.id_pengembang", "=", "$tblPerumahan.id_pengembang")

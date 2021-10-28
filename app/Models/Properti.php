@@ -299,7 +299,7 @@ class Properti extends Model
         $tblKategori = "kategori";
 
         $status = $req->status;
-        $order = $req->order ?? "desc";
+        $order = $req->order ?? 'desc';
         if ($status == 1 || $status == 2) {
             $bangunan = Properti::where("$tblBangunan.status_publish", 1)
                 ->orWhere("status_publish", 2)
@@ -307,7 +307,7 @@ class Properti extends Model
                 ->leftJoin($tblPerumahan, "$tblPerumahan.id_perumahan", "=", "$tblBangunan.id_perumahan")
                 ->orderBy("$tblBangunan.created_at", $order)
                 ->get();
-        } elseif ($status === 0) {
+        } elseif ($status == "0") {
             $bangunan = Properti::where("$tblBangunan.status_publish", 0)
                 ->leftJoin($tblKategori, "$tblKategori.id_kategori", "=", "$tblBangunan.id_kategori")
                 ->leftJoin($tblPerumahan, "$tblPerumahan.id_perumahan", "=", "$tblBangunan.id_perumahan")
@@ -315,8 +315,8 @@ class Properti extends Model
                 ->get();
         } else {
             $bangunan = Properti::leftJoin($tblKategori, "$tblKategori.id_kategori", "=", "$tblBangunan.id_kategori")
-                ->leftJoin($tblPerumahan, "$tblPerumahan.id_perumahan", "=", "$tblBangunan.id_perumahan")
                 ->orderBy("$tblBangunan.status_publish", $order)
+                ->leftJoin($tblPerumahan, "$tblPerumahan.id_perumahan", "=", "$tblBangunan.id_perumahan")
                 ->get();
         }
 

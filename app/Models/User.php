@@ -118,4 +118,32 @@ class User extends Authenticatable
 
         return $data;
     }
+
+    // Get All Users Export
+    public static function getAllUsersExport($req)
+    {
+        $order = $req->order ?? "asc";
+        $tblPengembang = "pengembang";
+        $tblUser = "users";
+
+        // Cek filter
+        if ($req->filter == "admin") {
+            $users = User::orderBy("$tblUser.id", $order)
+                ->where("level", 1)
+                ->orWhere("level", 2)
+                ->leftJoin($tblPengembang, "$tblPengembang.id_user", "=", "$tblUser.id")
+                ->get();
+        } elseif ($req->filter == "pengembang") {
+            $users = User::where("level", 3)
+                ->orderBy("$tblUser.id", $order)
+                ->leftJoin($tblPengembang, "$tblPengembang.id_user", "=", "$tblUser.id")
+                ->get();
+        } else {
+            $users = User::orderBy("$tblUser.id", $order)
+                ->leftJoin($tblPengembang, "$tblPengembang.id_user", "=", "$tblUser.id")
+                ->get();
+        }
+
+        return $users;
+    }
 }

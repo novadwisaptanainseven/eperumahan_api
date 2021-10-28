@@ -30,7 +30,7 @@
     <th>{{ $item->nama_pengembang }}</th>
     <th>{{ $item->email_pengembang }}</th>
     <th>{{ $item->telepon_pengembang }}</th>
-    <th>{{ $item->nama_pengembang }}</th>
+    <th>{{ $item->alamat_pengembang }}</th>
     <th>{{ $item->status_aktif == 1 ? "Aktif" : "Tidak Aktif"  }}</th>
   </tr>
   @endforeach

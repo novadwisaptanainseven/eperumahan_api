@@ -4,6 +4,7 @@ use App\Http\Controllers\FileController;
 use App\Http\Controllers\PengembangController;
 use App\Http\Controllers\PerumahanController;
 use App\Http\Controllers\PropertiController;
+use App\Http\Controllers\UserController;
 
 Route::get('/image/{path}/{filename}', [FileController::class, 'image']);
 Route::get('/brosur/{path}/{filename}', [FileController::class, 'brosur']);
@@ -26,6 +27,9 @@ Route::get("/export/perumahan-verifikasi/user/{id_user}", [PerumahanController::
 
 // Export Excel Verifikasi Bangunan
 Route::get("/export/bangunan-verifikasi/user/{id_user}", [PropertiController::class, "exportBangunanVerifikasi"]);
+
+// Export Excel Akun
+Route::get("/export/akun/user/{id_user}", [UserController::class, "exportUser"]);
 
 // Export Excel Perumahan
 Route::get("/export/perumahan-test/user/{id_user}", [PerumahanController::class, "getPerumahanTest"]);

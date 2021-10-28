@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\AkunExport;
 use App\Http\Requests\UserStoreRequest;
 use App\Models\Pengembang;
 use Illuminate\Http\Request;
@@ -9,6 +10,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
+use Maatwebsite\Excel\Facades\Excel;
 
 class UserController extends Controller
 {
@@ -101,7 +103,7 @@ class UserController extends Controller
 
             // Hapus Akun Lama dari database
             User::find($pengembang->id_user)->delete();
-            
+
             $pengembang->id_user = $user->id;
             $pengembang->save();
 
@@ -261,5 +263,13 @@ class UserController extends Controller
                 "message" => "Data user dengan id: {$id_user} tidak ditemukan",
             ], 404);
         }
+    }
+
+    // Export Akun ke Excel
+    public function exportUser(Request $req, $id_user)
+    {
+        $user = User::find($id_user);
+
+        return Excel::download(new AkunExport($user, $req), 'data-user.xlsx');
     }
 }

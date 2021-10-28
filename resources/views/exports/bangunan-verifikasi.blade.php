@@ -21,6 +21,8 @@
     <th rowspan="2">Nama Perumahan</th>
     <th rowspan="2">Tipe</th>
     <th rowspan="2">Jumlah Unit</th>
+    <th rowspan="2">Jumlah Terhuni</th>
+    <th rowspan="2">Jumlah Tidak Terhuni</th>
     <th rowspan="2">Harga</th>
     <th rowspan="2">Lokasi</th>
     <th colspan="7">Variabel</th>
@@ -43,6 +45,8 @@
     <td>{{ $item->nama_perumahan }}</td>
     <td>{{ $item->tipe_bangunan }}</td>
     <td>{{ $item->jumlah_tersedia }}</td>
+    <td>{{ $item->jumlah_terhuni }}</td>
+    <td>{{ $item->jumlah_tidak_terhuni }}</td>
     <td>Rp. {{ number_format($item->harga_bangunan, 2, ',','.') }}</td>
     <td>{{ $item->lokasi_bangunan }}</td>
     <td>{{ $item->luas_bangunan }} m2</td>

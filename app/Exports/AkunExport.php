@@ -2,7 +2,9 @@
 
 namespace App\Exports;
 
+use App\Models\Perumahan;
 use App\Models\Properti;
+use App\Models\User;
 use Illuminate\Contracts\View\View;
 use Maatwebsite\Excel\Concerns\FromView;
 use Maatwebsite\Excel\Events\AfterSheet;
@@ -14,23 +16,23 @@ use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use Maatwebsite\Excel\Concerns\WithColumnWidths;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-class BangunanExport implements FromView, WithStyles, WithColumnWidths, WithEvents
+class AkunExport implements FromView, WithStyles, WithColumnWidths, WithEvents
 {
     private $user;
-    private $bangunan;
+    private $users;
 
     public function __construct($user, $request)
     {
         $this->user = $user;
-        $this->bangunan = Properti::getAllBangunanVerifikasiExport($request);
+        $this->users = User::getAllUsersExport($request);
     }
 
     public function view(): View
     {
         $currentDate = date("d/m/Y");
 
-        return view('exports/bangunan-verifikasi', [
-            'data' => $this->bangunan,
+        return view('exports/users', [
+            'data' => $this->users,
             'tanggal' => $currentDate,
             'user' => $this->user->username
         ]);
@@ -49,7 +51,7 @@ class BangunanExport implements FromView, WithStyles, WithColumnWidths, WithEven
                     'size' => "12px"
                 ]
             ],
-            "A6:R7"    => [
+            "A6:D6"    => [
                 'alignment' => [
                     'horizontal' => Alignment::HORIZONTAL_CENTER,
                     'vertical' => Alignment::VERTICAL_CENTER,
@@ -79,6 +81,11 @@ class BangunanExport implements FromView, WithStyles, WithColumnWidths, WithEven
                     'horizontal' => Alignment::HORIZONTAL_CENTER
                 ],
             ],
+            "D" => [
+                'alignment' => [
+                    'horizontal' => Alignment::HORIZONTAL_CENTER
+                ],
+            ],
             "E" => [
                 'alignment' => [
                     'horizontal' => Alignment::HORIZONTAL_CENTER
@@ -94,11 +101,6 @@ class BangunanExport implements FromView, WithStyles, WithColumnWidths, WithEven
                     'horizontal' => Alignment::HORIZONTAL_CENTER
                 ],
             ],
-            "H" => [
-                'alignment' => [
-                    'horizontal' => Alignment::HORIZONTAL_CENTER
-                ],
-            ],
             "I" => [
                 'alignment' => [
                     'horizontal' => Alignment::HORIZONTAL_CENTER
@@ -106,7 +108,7 @@ class BangunanExport implements FromView, WithStyles, WithColumnWidths, WithEven
             ],
             "J" => [
                 'alignment' => [
-                    'horizontal' => Alignment::HORIZONTAL_LEFT
+                    'horizontal' => Alignment::HORIZONTAL_CENTER
                 ],
             ],
             "K" => [
@@ -139,16 +141,6 @@ class BangunanExport implements FromView, WithStyles, WithColumnWidths, WithEven
                     'horizontal' => Alignment::HORIZONTAL_CENTER
                 ],
             ],
-            "Q" => [
-                'alignment' => [
-                    'horizontal' => Alignment::HORIZONTAL_CENTER
-                ],
-            ],
-            "R" => [
-                'alignment' => [
-                    'horizontal' => Alignment::HORIZONTAL_CENTER
-                ],
-            ],
 
         ];
     }
@@ -157,21 +149,20 @@ class BangunanExport implements FromView, WithStyles, WithColumnWidths, WithEven
     {
         return [
             'B' => 35,
-            'C' => 20,
+            'C' => 35,
             'D' => 35,
             'E' => 25,
             'F' => 20,
             'G' => 20,
-            'H' => 20,
-            'I' => 20,
-            'J' => 35,
+            'H' => 35,
+            'I' => 13,
+            'J' => 13,
             'K' => 13,
             'L' => 13,
-            'M' => 13,
+            'M' => 14,
             'N' => 14,
             'P' => 14,
-            'Q' => 16,
-            'R' => 16,
+            'Q' => 11,
         ];
     }
 
@@ -180,13 +171,14 @@ class BangunanExport implements FromView, WithStyles, WithColumnWidths, WithEven
         return [
             AfterSheet::class => function (AfterSheet $event) {
                 // Set Title
-                $title = "DATA VERIFIKASI BANGUNAN PENGEMBANG DI DINAS PERUMAHAN DAN PERMUKIMAN SAMARINDA";
+                $title = "DATA AKUN SIBAPER DI DINAS PERUMAHAN DAN PERMUKIMAN SAMARINDA";
 
-                $event->sheet->mergeCells('A1:S2');
+                $event->sheet->mergeCells('A1:D2');
                 $event->sheet->getStyle('A1')->applyFromArray([
                     'alignment' => [
                         'horizontal' => Alignment::HORIZONTAL_CENTER,
                         'vertical' => Alignment::VERTICAL_CENTER,
+                        'wrapText' => true
                     ],
                     'fill' => [
                         'fillType' => Fill::FILL_SOLID,
@@ -205,7 +197,7 @@ class BangunanExport implements FromView, WithStyles, WithColumnWidths, WithEven
                     ]
                 ]);
 
-                $event->sheet->getStyle('A6:R7')->applyFromArray([
+                $event->sheet->getStyle('A6:D6')->applyFromArray([
                     'fill' => [
                         'fillType' => Fill::FILL_SOLID,
                         'startColor' => [
@@ -216,10 +208,10 @@ class BangunanExport implements FromView, WithStyles, WithColumnWidths, WithEven
                 // End of Title
 
                 // Set Content
-                $totBangunan = count($this->bangunan);
+                $totUser = count($this->users);
                 $beginRow = 6;
-                $rangeRow = $totBangunan + $beginRow + 1;
-                $rangeCell = "A{$beginRow}:R{$rangeRow}";
+                $rangeRow = $totUser + $beginRow;
+                $rangeCell = "A{$beginRow}:D{$rangeRow}";
                 $event->sheet->getStyle($rangeCell)->applyFromArray([
                     'borders' => [
                         'allBorders' => [
